@@ -1,0 +1,37 @@
+services:
+  redis_books:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - default
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    networks:
+      - default
+    environment:
+      - DEBUG=True
+      - REDIS_URL=redis://redis_books:6379/1
+    ports:
+      - "8002:8000"
+    depends_on:
+      - redis_books
+
+networks:
+  default:
+    driver: bridge
+
+volumes:
+  redis_data:

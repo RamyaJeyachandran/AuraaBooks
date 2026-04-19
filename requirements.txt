@@ -1,0 +1,45 @@
+# Core Django
+Django>=5.0,<5.1
+djangorestframework>=3.15.0,<3.16.0
+django-cors-headers>=4.3.0
+django-environ>=0.11.0
+django-filter>=24.2
+
+# Authentication
+django-allauth>=0.61.0
+djangorestframework-simplejwt>=5.3.0
+
+# Database & Task Queue
+psycopg[binary]>=3.1.0
+celery[redis]>=5.3.0
+redis>=5.0.0
+django-redis>=5.4.0
+django-multitenant>=3.2.0
+flower>=2.0.0
+
+# Realtime
+channels[daphne]>=4.0.0
+channels-redis>=4.2.0
+
+# API Documentation
+drf-spectacular>=0.27.0
+
+# Storage & Search
+django-storages[s3]>=1.14.0
+meilisearch-python-sdk>=3.0.0
+
+# Security
+django-axes>=6.3.0
+django-csp>=3.7.0
+django-encrypted-model-fields>=0.6.5
+
+# Audit & Monitoring
+django-auditlog>=2.3.0
+django-prometheus>=2.3.1
+sentry-sdk>=1.40.0
+
+# Utilities
+weasyprint>=61.0
+python-json-logger>=2.0.0
+gunicorn>=21.2.0
+uvicorn[standard]>=0.27.0
