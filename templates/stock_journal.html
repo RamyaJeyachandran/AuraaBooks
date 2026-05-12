@@ -1,0 +1,369 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Stock Journal - Auraa Books{% endblock %}
+{% block breadcrumb_parent %}
+    <span class="hover:text-accent cursor-pointer">Masters</span>
+    <span class="opacity-50">/</span>
+{% endblock %}
+{% block breadcrumb_active %}Stock Journal{% endblock %}
+
+{% block content %}
+<div class="p-8 stagger-in max-w-[1600px] mx-auto">
+    <!-- Page Header -->
+    <div class="flex items-center justify-between mb-8 relative z-[60]">
+        <div class="flex items-center gap-3">
+            <h1 class="text-[32px] font-black text-slate-800 tracking-tight">Stock Journal</h1>
+            <div class="relative group">
+                <button class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-all">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                </button>
+                <div class="absolute left-0 mt-2 w-64 bg-white border border-slate-100 shadow-xl rounded-2xl p-4 hidden group-hover:block z-[100] animate-in fade-in zoom-in-95 duration-200">
+                    <label class="flex items-center gap-3 cursor-pointer group/item">
+                        <input type="checkbox" class="w-5 h-5 rounded-lg accent-[var(--accent)]">
+                        <span class="text-[12px] font-black text-slate-600 uppercase tracking-widest">BOM/Manufacturing Journal</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <!-- Add Button -->
+            <button onclick="openModal('stock')" class="h-12 px-8 bg-[var(--accent)] text-white rounded-2xl flex items-center gap-3 shadow-lg shadow-[var(--accent)]/20 hover:brightness-110 transition-all group">
+                <span class="text-[14px] font-black uppercase tracking-widest">+ Add Stock Journal</span>
+            </button>
+
+            <!-- Filter Button -->
+            <div class="relative" id="filterDropdown">
+                <button onclick="toggleFilter()" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-[var(--accent)] border border-[var(--accent)] text-white hover:brightness-110 transition-all shadow-lg shadow-[var(--accent)]/20">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                </button>
+                
+                <!-- Filter Popup -->
+                <div id="filterPopup" class="absolute right-0 mt-3 w-[400px] bg-white border border-slate-100 shadow-2xl rounded-[30px] p-8 hidden z-[100] animate-in fade-in slide-in-from-top-4">
+                    <div class="space-y-6">
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Items</label>
+                            <select class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white shadow-inner">
+                                <option>Select Item...</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Contacts / # / Ref# / Amount</label>
+                            <select class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white shadow-inner">
+                                <option>Select Option...</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Attributes</label>
+                            <input type="text" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white shadow-inner">
+                        </div>
+                        <div class="pt-2">
+                            <div class="flex items-center gap-6 mb-4">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="dateType" checked class="w-4 h-4 accent-[var(--accent)]">
+                                    <span class="text-[11px] font-black text-slate-600 uppercase">Transaction Date</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="dateType" class="w-4 h-4 accent-[var(--accent)]">
+                                    <span class="text-[11px] font-black text-slate-600 uppercase">Due Date</span>
+                                </label>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="relative">
+                                    <input type="text" placeholder="Start Date" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none shadow-inner">
+                                    <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-width="2"/></svg>
+                                </div>
+                                <div class="relative">
+                                    <input type="text" placeholder="End Date" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none shadow-inner">
+                                    <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-width="2"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 pt-4">
+                            <button class="flex-1 h-12 bg-[var(--accent)] text-white rounded-2xl text-[13px] font-black uppercase tracking-widest hover:brightness-110 shadow-lg shadow-[var(--accent)]/20 transition-all">Search</button>
+                            <button onclick="toggleFilter()" class="flex-1 h-12 bg-slate-100 text-slate-600 rounded-2xl text-[13px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all">Clear</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Button -->
+            <div class="relative group">
+                <button class="h-12 px-6 flex items-center gap-3 rounded-2xl bg-[var(--accent)] border border-[var(--accent)] text-white hover:brightness-110 transition-all shadow-lg shadow-[var(--accent)]/20">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div class="absolute right-0 mt-2 w-48 bg-white border border-slate-100 shadow-xl rounded-2xl p-2 hidden group-hover:block z-[100] animate-in fade-in zoom-in-95 duration-200">
+                    <button class="w-full text-left px-4 py-3 text-[12px] font-bold text-slate-700 hover:bg-slate-50 rounded-xl transition-all">Export PDF</button>
+                    <button class="w-full text-left px-4 py-3 text-[12px] font-bold text-slate-700 hover:bg-slate-50 rounded-xl transition-all">Export XLS</button>
+                    <button class="w-full text-left px-4 py-3 text-[12px] font-bold text-slate-700 hover:bg-slate-50 rounded-xl transition-all">Export CSV</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty State / Grid -->
+    <div class="bg-white rounded-[40px] shadow-sm border border-slate-100 p-20 flex flex-col items-center justify-center min-h-[400px]">
+        <div class="w-20 h-20 rounded-3xl bg-slate-50 flex items-center justify-center text-slate-300 mb-6">
+            <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
+        </div>
+        <p class="text-slate-400 font-black text-[18px] uppercase tracking-widest">No Records Found</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block modal_content %}
+<!-- ADD/EDIT STOCK JOURNAL MODAL -->
+<div id="modal-stock" class="sub-modal hidden flex flex-col w-[98vw] max-w-[1550px] h-fit bg-white rounded-[40px] shadow-2xl overflow-hidden scale-in-center mx-auto my-auto">
+    <!-- Modal Header -->
+    <div class="px-8 py-6 border-b-2 border-white/20 flex items-center justify-between bg-[var(--accent)] h-[80px]">
+        <h3 class="text-[24px] font-black text-white">New Stock Details</h3>
+        <div class="flex items-center gap-4">
+            <div class="relative group">
+                <button class="px-8 h-12 bg-white text-[var(--accent)] rounded-2xl text-[13px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-lg flex items-center gap-2">
+                    SAVE <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div class="absolute right-0 mt-2 w-48 bg-white border border-slate-100 shadow-xl rounded-2xl p-2 hidden group-hover:block z-50 animate-in fade-in zoom-in-95 duration-200">
+                    <button class="w-full text-left px-4 py-3 text-[12px] font-bold text-slate-700 hover:bg-slate-50 rounded-xl transition-all">Save & New</button>
+                    <button class="w-full text-left px-4 py-3 text-[12px] font-bold text-slate-700 hover:bg-slate-50 rounded-xl transition-all">Save</button>
+                </div>
+            </div>
+            <button onclick="closeModal()" class="px-8 h-12 bg-slate-700 text-white rounded-2xl text-[13px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all">CANCEL</button>
+            <button onclick="closeModal()" class="w-12 h-12 bg-rose-500 text-white rounded-2xl flex items-center justify-center hover:bg-rose-600 shadow-lg shadow-rose-500/20">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="p-8 space-y-8">
+        <!-- Top Details Section -->
+        <div class="grid grid-cols-3 gap-12 items-end">
+            <!-- Stock Number -->
+            <div class="space-y-1">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Stock No</label>
+                <div class="text-[32px] font-black text-slate-800 leading-none">1</div>
+            </div>
+
+            <!-- Type -->
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2 relative group/help">
+                    Type 
+                    <svg class="w-3.5 h-3.5 text-slate-300 cursor-pointer" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/></svg>
+                    <div class="absolute bottom-full left-0 mb-2 w-[280px] bg-white border border-slate-100 shadow-2xl rounded-2xl p-4 hidden group-hover/help:block z-50 animate-in fade-in slide-in-from-bottom-2">
+                        <div class="absolute -bottom-2 left-4 w-4 h-4 bg-white border-b border-r border-slate-100 rotate-45"></div>
+                        <p class="text-[12px] font-bold text-slate-600 leading-relaxed">Usage/Purpose/Status of the stock of particular item</p>
+                    </div>
+                </label>
+                <div class="relative">
+                    <select onchange="handleTypeChange(this.value)" id="stockType" class="w-full h-11 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[14px] font-bold appearance-none outline-none focus:bg-white shadow-inner">
+                        <option value="Production">Production</option>
+                        <option value="Physical Stock">Physical Stock</option>
+                        <option value="Consumed for Production">Consumed for Production</option>
+                        <option value="Disposed/Wastage">Disposed/Wastage</option>
+                        <option value="Transfer between locations">Transfer between locations</option>
+                        <option value="Expired">Expired</option>
+                        <option value="Damaged">Damaged</option>
+                        <option value="Lost/Missing">Lost/Missing</option>
+                        <option value="Damaged during Transit">Damaged during Transit</option>
+                    </select>
+                    <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                </div>
+            </div>
+
+            <!-- Date -->
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Date</label>
+                <div class="relative">
+                    <input type="text" placeholder="DD/MM/YYYY" class="w-full h-11 bg-slate-50 border border-slate-100 rounded-xl pl-4 pr-12 text-[14px] font-bold outline-none focus:bg-white shadow-inner">
+                    <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-width="2"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Item Entry Grid -->
+        <div class="bg-white rounded-[30px] border border-slate-100 shadow-sm overflow-hidden">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 border-b border-slate-100" id="tableHeader">
+                        <!-- Default Production Header -->
+                        <th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest w-[30%]">Item</th>
+                        <th class="col-sku px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">SKU</th>
+                        <th class="col-qty px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Inward Qty</th>
+                        <th class="col-unit px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Unit</th>
+                        <th class="col-price px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Unit Price</th>
+                        <th class="col-amount px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Amount</th>
+                        <th class="col-mrp px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">MRP</th>
+                        <th class="px-6 py-4 text-center w-[60px] relative group/settings">
+                            <svg class="w-4 h-4 text-slate-300 mx-auto cursor-pointer hover:text-slate-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.543-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            <div class="absolute top-full right-0 mt-2 w-[280px] bg-white border border-slate-100 shadow-2xl rounded-2xl p-6 hidden group-hover/settings:block z-50 text-left animate-in fade-in zoom-in-95">
+                                <div class="absolute -top-2 right-4 w-4 h-4 bg-white border-t border-l border-slate-100 rotate-45"></div>
+                                <label class="flex items-center gap-3 cursor-pointer mb-6 group/item">
+                                    <div class="w-5 h-5 rounded border-2 border-slate-200 flex items-center justify-center transition-all group-hover/item:border-[var(--accent)]">
+                                        <div class="w-2.5 h-2.5 rounded-sm bg-transparent"></div>
+                                    </div>
+                                    <span class="text-[13px] font-bold text-slate-600">Description (Below Item)</span>
+                                </label>
+                                <div class="flex gap-2">
+                                    <button class="flex-1 h-10 bg-[var(--accent)] text-white rounded-xl text-[12px] font-black uppercase tracking-widest hover:brightness-110 shadow-lg shadow-[var(--accent)]/20 transition-all">Save</button>
+                                    <button class="flex-1 h-10 bg-slate-100 text-slate-600 rounded-xl text-[12px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all">Cancel</button>
+                                </div>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    <!-- Row 1 -->
+                    <tr>
+                        <td class="px-4 py-2">
+                            <input type="text" placeholder="Select Item..." class="w-full h-9 px-3 bg-transparent outline-none text-[13px] font-bold text-slate-700">
+                        </td>
+                        <td class="col-sku px-4 py-2 text-[13px] font-bold text-slate-400"></td>
+                        <td class="col-qty px-4 py-2">
+                            <input type="text" placeholder="" class="w-full h-9 px-3 bg-transparent outline-none text-[13px] font-black text-slate-700">
+                        </td>
+                        <td class="col-unit px-4 py-2">
+                            <select class="w-full h-9 px-2 bg-transparent outline-none text-[12px] font-black uppercase text-slate-700">
+                                <option>PCS</option>
+                                <option>BOX</option>
+                                <option>PACK</option>
+                                <option>KG</option>
+                            </select>
+                        </td>
+                        <td class="col-price px-4 py-2">
+                            <input type="text" placeholder="" class="w-full h-9 px-3 bg-transparent outline-none text-[13px] font-black text-slate-700 text-right">
+                        </td>
+                        <td class="col-amount px-4 py-2 text-[13px] font-black text-slate-800 text-right"></td>
+                        <td class="col-mrp px-4 py-2">
+                            <input type="text" placeholder="" class="w-full h-9 px-3 bg-transparent outline-none text-[13px] font-black text-slate-700 text-right">
+                        </td>
+                        <td class="px-4 py-2 text-center">
+                            <button class="w-8 h-8 rounded-lg text-blue-500 hover:bg-blue-50 flex items-center justify-center mx-auto transition-all">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </td>
+                    </tr>
+                    <!-- Row 2 -->
+                    <tr>
+                        <td class="px-4 py-2">
+                            <input type="text" placeholder="Select Item..." class="w-full h-9 px-3 bg-transparent outline-none text-[13px] font-bold text-slate-700">
+                        </td>
+                        <td class="col-sku px-4 py-2 text-[13px] font-bold text-slate-400"></td>
+                        <td class="col-qty px-4 py-2">
+                            <input type="text" placeholder="" class="w-full h-9 px-3 bg-transparent outline-none text-[13px] font-black text-slate-700">
+                        </td>
+                        <td class="col-unit px-4 py-2">
+                            <select class="w-full h-9 px-2 bg-transparent outline-none text-[12px] font-black uppercase text-slate-700">
+                                <option>PCS</option>
+                                <option>BOX</option>
+                            </select>
+                        </td>
+                        <td class="col-price px-4 py-2">
+                            <input type="text" placeholder="" class="w-full h-9 px-3 bg-transparent outline-none text-[13px] font-black text-slate-700 text-right">
+                        </td>
+                        <td class="col-amount px-4 py-2 text-[13px] font-black text-slate-800 text-right"></td>
+                        <td class="col-mrp px-4 py-2">
+                            <input type="text" placeholder="" class="w-full h-9 px-3 bg-transparent outline-none text-[13px] font-black text-slate-700 text-right">
+                        </td>
+                        <td class="px-4 py-2 text-center">
+                            <button class="w-8 h-8 rounded-lg text-blue-500 hover:bg-blue-50 flex items-center justify-center mx-auto transition-all">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </td>
+                    </tr>
+                    <!-- Row 3 -->
+                    <tr>
+                        <td class="px-4 py-2">
+                            <input type="text" placeholder="Select Item..." class="w-full h-9 px-3 bg-transparent outline-none text-[13px] font-bold text-slate-700">
+                        </td>
+                        <td class="col-sku px-4 py-2 text-[13px] font-bold text-slate-400"></td>
+                        <td class="col-qty px-4 py-2">
+                            <input type="text" placeholder="" class="w-full h-9 px-3 bg-transparent outline-none text-[13px] font-black text-slate-700">
+                        </td>
+                        <td class="col-unit px-4 py-2">
+                            <select class="w-full h-9 px-2 bg-transparent outline-none text-[12px] font-black uppercase text-slate-700">
+                                <option>PCS</option>
+                                <option>BOX</option>
+                            </select>
+                        </td>
+                        <td class="col-price px-4 py-2">
+                            <input type="text" placeholder="" class="w-full h-9 px-3 bg-transparent outline-none text-[13px] font-black text-slate-700 text-right">
+                        </td>
+                        <td class="col-amount px-4 py-2 text-[13px] font-black text-slate-800 text-right"></td>
+                        <td class="col-mrp px-4 py-2">
+                            <input type="text" placeholder="" class="w-full h-9 px-3 bg-transparent outline-none text-[13px] font-black text-slate-700 text-right">
+                        </td>
+                        <td class="px-4 py-2 text-center">
+                            <button class="w-8 h-8 rounded-lg text-blue-500 hover:bg-blue-50 flex items-center justify-center mx-auto transition-all">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer Section (Notes & Attachments) -->
+        <div class="grid grid-cols-2 gap-12">
+            <div class="space-y-4">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Notes</label>
+                    <textarea placeholder="Add internal notes here..." class="w-full h-24 bg-slate-50 border border-slate-100 rounded-2xl p-4 text-[13px] font-bold outline-none focus:bg-white shadow-inner resize-none"></textarea>
+                </div>
+                <button class="inline-flex items-center gap-2 text-[12px] font-black text-[var(--accent)] uppercase tracking-widest hover:brightness-90">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                    Attach File
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function openModal(type) {
+    document.querySelectorAll('.sub-modal').forEach(m => m.classList.add('hidden'));
+    document.getElementById('modal-' + type).classList.remove('hidden');
+    document.getElementById('modalOverlay').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('modalOverlay').classList.add('hidden');
+    document.querySelectorAll('.sub-modal').forEach(m => m.classList.add('hidden'));
+}
+
+function toggleFilter() {
+    const popup = document.getElementById('filterPopup');
+    popup.classList.toggle('hidden');
+}
+
+function handleTypeChange(value) {
+    const tableHeader = document.getElementById('tableHeader');
+    const qtyHeader = tableHeader.querySelector('.col-qty');
+    const priceCols = document.querySelectorAll('.col-price, .col-amount, .col-mrp');
+    
+    if (value === 'Production') {
+        qtyHeader.textContent = 'Inward Qty';
+        priceCols.forEach(col => col.classList.remove('hidden'));
+    } else {
+        qtyHeader.textContent = 'Outward Qty';
+        priceCols.forEach(col => col.classList.add('hidden'));
+    }
+}
+</script>
+
+<style>
+.sub-modal { z-index: 1001; }
+.scale-in-center { animation: scale-in-center 0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) both; }
+@keyframes scale-in-center {
+  0% { transform: scale(0.9) translateY(20px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+.stagger-in { animation: staggerIn 0.5s ease-out forwards; }
+@keyframes staggerIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+{% endblock %}

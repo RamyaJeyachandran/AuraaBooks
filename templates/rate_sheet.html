@@ -1,0 +1,617 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Rate Sheet Management - Auraa Books{% endblock %}
+{% block breadcrumb_active %}Rate Sheet{% endblock %}
+
+{% block content %}
+<div class="p-8 stagger-in max-w-[1600px] mx-auto">
+    <!-- Top Navigation Tabs (Segmented Control Style) -->
+    <div class="inline-flex items-center p-1.5 bg-[var(--accent)] rounded-[20px] mb-12 shadow-lg shadow-[var(--accent)]/20">
+        <button onclick="switchMainTab('rate-sheet')" id="tab-rate-sheet" class="main-tab-btn h-11 px-8 rounded-[16px] text-[12px] font-black uppercase tracking-widest transition-all active-tab">Rate Sheet</button>
+        <button onclick="switchMainTab('discounts')" id="tab-discounts" class="main-tab-btn h-11 px-8 rounded-[16px] text-[12px] font-black uppercase tracking-widest transition-all text-white/70 hover:text-white">Discount / Scheme Rules</button>
+        <button onclick="switchMainTab('coupons')" id="tab-coupons" class="main-tab-btn h-11 px-8 rounded-[16px] text-[12px] font-black uppercase tracking-widest transition-all text-white/70 hover:text-white">Coupons</button>
+    </div>
+
+    <!-- RATE SHEET TAB CONTENT -->
+    <div id="content-rate-sheet" class="main-tab-content">
+        <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center gap-3">
+                <h1 class="text-[32px] font-black text-slate-800 tracking-tight">Rate Sheets</h1>
+                <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 cursor-help group relative">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/></svg>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="openModal('rate-sheet')" class="h-12 px-8 bg-[var(--accent)] text-white rounded-2xl flex items-center gap-3 shadow-lg shadow-[var(--accent)]/20 hover:brightness-110 transition-all group">
+                    <span class="text-[14px] font-black uppercase tracking-widest">+ Add Rate Sheet</span>
+                </button>
+                <div class="relative group">
+                    <button class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-slate-600 transition-all shadow-sm">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-64 bg-white border border-slate-100 shadow-xl rounded-2xl p-2 hidden group-hover:block z-50">
+                        <button class="w-full text-left px-4 py-3 text-[12px] font-bold text-slate-700 hover:bg-slate-50 rounded-xl transition-all">Export Rate of Individual Items</button>
+                        <button class="w-full text-left px-4 py-3 text-[12px] font-bold text-slate-700 hover:bg-slate-50 rounded-xl transition-all">Import Rate of Individual Items</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-[40px] shadow-sm border border-slate-100">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-[var(--accent)]">
+                        <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest rounded-tl-[40px]">Name</th>
+                        <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Apply For Items</th>
+                        <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Price List Type</th>
+                        <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Currency</th>
+                        <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest text-right rounded-tr-[40px]">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    <tr class="hover:bg-slate-50 transition-all">
+                        <td class="px-8 py-5 font-black text-slate-800">Retail</td>
+                        <td class="px-8 py-5 text-[14px] font-bold text-slate-500">Individual</td>
+                        <td class="px-8 py-5 text-[14px] font-bold text-slate-500">Sales</td>
+                        <td class="px-8 py-5 text-[14px] font-bold text-slate-500 uppercase">INR</td>
+                        <td class="px-8 py-5 text-right">
+                            <div class="relative group inline-block">
+                                <button class="text-[var(--accent)] font-black text-[12px] uppercase tracking-widest hover:underline flex items-center gap-1 ml-auto">
+                                    Edit <svg class="w-3 h-3 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                                </button>
+                                <div class="absolute right-0 mt-1 w-32 bg-white border border-slate-100 shadow-xl rounded-xl p-1.5 hidden group-hover:block z-50 animate-in fade-in zoom-in-95 duration-200">
+                                    <button onclick="openModal('rate-sheet')" class="w-full text-left px-3 py-2 text-[11px] font-bold text-slate-700 hover:bg-slate-50 rounded-lg transition-all">Edit</button>
+                                    <button class="w-full text-left px-3 py-2 text-[11px] font-bold text-rose-600 hover:bg-rose-50 rounded-lg transition-all">Delete</button>
+                                    <button class="w-full text-left px-3 py-2 text-[11px] font-bold text-slate-700 hover:bg-slate-50 rounded-lg transition-all">Copy</button>
+                                    <button class="w-full text-left px-3 py-2 text-[11px] font-bold text-slate-700 hover:bg-slate-50 rounded-lg transition-all">Export pdf</button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- DISCOUNTS TAB CONTENT -->
+    <div id="content-discounts" class="main-tab-content hidden">
+        <div class="flex items-center justify-between mb-8">
+            <h1 class="text-[32px] font-black text-slate-800 tracking-tight">Discount Rules</h1>
+            <div class="flex items-center gap-4">
+                <button onclick="openModal('discount')" class="h-12 px-8 bg-[var(--accent)] text-white rounded-2xl flex items-center gap-3 shadow-lg shadow-[var(--accent)]/20 hover:brightness-110 transition-all group">
+                    <span class="text-[14px] font-black uppercase tracking-widest">+ Add Discount Rules</span>
+                </button>
+                <button class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-slate-600 transition-all shadow-sm">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                </button>
+            </div>
+        </div>
+        <div class="bg-white rounded-[40px] p-20 flex flex-col items-center justify-center border border-slate-100 shadow-sm">
+            <div class="w-20 h-20 rounded-3xl bg-slate-50 flex items-center justify-center text-slate-300 mb-6">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
+            </div>
+            <p class="text-slate-400 font-bold text-[18px]">No Records Found</p>
+        </div>
+    </div>
+
+    <!-- COUPONS TAB CONTENT -->
+    <div id="content-coupons" class="main-tab-content hidden">
+        <div class="flex items-center justify-between mb-8">
+            <h1 class="text-[32px] font-black text-slate-800 tracking-tight">Coupons</h1>
+            <button onclick="openModal('coupon')" class="h-12 px-8 bg-[var(--accent)] text-white rounded-2xl flex items-center gap-3 shadow-lg shadow-[var(--accent)]/20 hover:brightness-110 transition-all group">
+                <span class="text-[14px] font-black uppercase tracking-widest">+ Add New Coupon</span>
+            </button>
+        </div>
+        <!-- Coupon Grid similar to above -->
+    </div>
+</div>
+{% endblock %}
+
+{% block modal_content %}
+<!-- RATE SHEET MODAL -->
+<div id="modal-rate-sheet" class="sub-modal hidden flex flex-col w-full max-w-[1150px] h-fit bg-white rounded-[40px] shadow-2xl overflow-hidden scale-in-center mx-auto my-auto">
+    <div class="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-[var(--accent)] h-[80px]">
+        <h3 class="text-[24px] font-black text-white">Rate Sheet Details</h3>
+        <div class="flex items-center gap-4">
+            <button class="px-8 h-12 bg-white text-[var(--accent)] rounded-2xl text-[13px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-lg">SAVE</button>
+            <button onclick="closeModal()" class="px-8 h-12 bg-slate-700 text-white rounded-2xl text-[13px] font-black uppercase tracking-widest hover:bg-slate-800">CANCEL</button>
+            <button onclick="closeModal()" class="w-12 h-12 bg-rose-500 text-white rounded-2xl flex items-center justify-center hover:bg-rose-600 shadow-lg shadow-rose-500/20">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+    </div>
+    <div class="p-8 space-y-6">
+        <!-- Row 1 -->
+        <div class="grid grid-cols-3 gap-6">
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Name</label>
+                <input type="text" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white shadow-inner">
+            </div>
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                    <input type="checkbox" class="w-4 h-4 accent-[var(--accent)]"> Valid From
+                </label>
+                <div class="relative">
+                    <input type="text" placeholder="DD/MM/YYYY" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl pl-4 pr-10 text-[13px] font-bold outline-none focus:bg-white shadow-inner">
+                    <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-width="2"/></svg>
+                </div>
+            </div>
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Valid To</label>
+                <div class="relative">
+                    <input type="text" placeholder="DD/MM/YYYY" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl pl-4 pr-10 text-[13px] font-bold outline-none focus:bg-white shadow-inner">
+                    <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-width="2"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 2 & 3 Consolidated into Single Row -->
+        <div class="grid grid-cols-2 gap-6">
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Belongs to Branches / Franchises</label>
+                <div class="relative">
+                    <select class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold appearance-none outline-none focus:bg-white shadow-inner">
+                        <option>Select Branches...</option>
+                    </select>
+                    <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                </div>
+            </div>
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Applicable to Customer / Tags / Branch</label>
+                <div class="relative">
+                    <div class="w-full min-h-[40px] bg-slate-50 border border-slate-100 rounded-xl p-1.5 flex flex-wrap gap-2 shadow-inner pr-10">
+                        <span class="inline-flex items-center gap-2 px-3 py-1 bg-slate-200 text-slate-600 rounded-lg text-[12px] font-bold">All ✕</span>
+                    </div>
+                    <svg class="absolute right-4 top-5 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rate Configuration -->
+        <div class="pt-4 border-t border-slate-100 grid grid-cols-2 gap-8 items-end">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Apply For</label>
+                    <div class="relative">
+                        <select class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold appearance-none outline-none focus:bg-white">
+                            <option>Individual</option>
+                            <option>All Items</option>
+                            <option>Category</option>
+                            <option>Brand</option>
+                        </select>
+                        <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                    </div>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Rate Adjustment</label>
+                    <div class="flex items-center gap-2">
+                        <input type="text" value="100" class="w-16 h-10 bg-slate-50 border border-slate-100 rounded-xl text-center text-[13px] font-black">
+                        <span class="text-[14px] font-black text-slate-400">%</span>
+                        <div class="flex-1 relative">
+                            <select class="w-full h-10 bg-[var(--accent)] text-white border border-[var(--accent)] rounded-xl px-4 text-[11px] font-black uppercase appearance-none outline-none pr-10 shadow-lg shadow-[var(--accent)]/20 cursor-pointer">
+                                <option class="bg-white text-slate-800">Base Sales Rate</option>
+                                <option class="bg-white text-slate-800">Base Purchase Rate</option>
+                                <option class="bg-white text-slate-800">Base MRP</option>
+                            </select>
+                            <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white pointer-events-none" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-between pb-1">
+                <div class="flex items-center gap-6">
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input type="checkbox" checked class="w-5 h-5 rounded-lg accent-[var(--accent)]">
+                        <span class="text-[12px] font-black text-slate-600 uppercase tracking-widest">Active</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input type="checkbox" class="w-5 h-5 rounded-lg accent-[var(--accent)]">
+                        <span class="text-[12px] font-black text-slate-600 uppercase tracking-widest">Default Rate Sheet</span>
+                    </label>
+                </div>
+                <button onclick="toggleAdvancedPricing()" class="w-10 h-10 rounded-2xl bg-[var(--accent)] text-white hover:brightness-110 transition-all shadow-lg shadow-[var(--accent)]/20 flex items-center justify-center">
+                    <svg id="advancedChevron" class="w-5 h-5 transition-transform duration-500" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 13l-7 7-7-7M19 6l-7 7-7-7"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Advanced Pricing (Expandable) -->
+        <div id="advancedPricingArea" class="hidden animate-in slide-in-from-top-4 duration-300">
+            <div class="grid grid-cols-2 gap-6 pt-4 border-t border-slate-50">
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Currency</label>
+                    <div class="relative">
+                        <select class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold appearance-none outline-none">
+                            <option>INR</option>
+                            <option>USD</option>
+                        </select>
+                        <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                    </div>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Round Off</label>
+                    <div class="relative">
+                        <select class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold appearance-none outline-none">
+                            <option>None</option>
+                            <option>Ones</option>
+                            <option>Fives</option>
+                            <option>Tens</option>
+                        </select>
+                        <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DISCOUNT RULE MODAL -->
+<div id="modal-discount" class="sub-modal hidden flex flex-col w-full max-w-[1200px] h-fit bg-white rounded-[40px] shadow-2xl overflow-hidden scale-in-center mx-auto my-auto">
+    <div class="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-[var(--accent)] h-[80px]">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center text-white shadow-inner">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h3 class="text-[24px] font-black text-white">Volume Discount Details</h3>
+                    <svg class="absolute hidden right-0 top-0 w-4 h-4 text-white/50" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                </div>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <button class="px-8 h-12 bg-white text-[var(--accent)] rounded-2xl text-[13px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-lg">SAVE</button>
+            <button onclick="closeModal()" class="px-8 h-12 bg-slate-700 text-white rounded-2xl text-[13px] font-black uppercase tracking-widest hover:bg-slate-800">CANCEL</button>
+            <button onclick="closeModal()" class="w-12 h-12 bg-rose-500 text-white rounded-2xl flex items-center justify-center hover:bg-rose-600 shadow-lg shadow-rose-500/20">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+    </div>
+    <div class="p-8 space-y-6">
+        <!-- Main Form Grid (3 Columns) -->
+        <div class="grid grid-cols-3 gap-6">
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Name</label>
+                <input type="text" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white shadow-inner">
+            </div>
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">Valid From</label>
+                <div class="relative">
+                    <input type="text" placeholder="DD/MM/YYYY" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl pl-4 pr-10 text-[13px] font-bold outline-none focus:bg-white shadow-inner">
+                    <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-width="2"/></svg>
+                </div>
+            </div>
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Valid To</label>
+                <div class="relative">
+                    <input type="text" placeholder="DD/MM/YYYY" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl pl-4 pr-10 text-[13px] font-bold outline-none focus:bg-white shadow-inner">
+                    <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-width="2"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- High-Density Selection Row (3 Columns) -->
+        <div class="grid grid-cols-3 gap-6">
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Belongs to Branches</label>
+                <div class="relative">
+                    <select class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold appearance-none outline-none focus:bg-white shadow-inner">
+                        <option>Select Branches...</option>
+                    </select>
+                    <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                </div>
+            </div>
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Applicable To</label>
+                <div class="relative">
+                    <div class="w-full min-h-[38px] bg-slate-50 border border-slate-100 rounded-xl p-1.5 flex flex-wrap gap-2 shadow-inner pr-10">
+                        <span class="inline-flex items-center gap-2 px-3 py-1 bg-slate-200 text-slate-600 rounded-lg text-[11px] font-bold">All ✕</span>
+                    </div>
+                    <svg class="absolute right-4 top-5 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                </div>
+            </div>
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Item / Category</label>
+                <div class="relative">
+                    <select class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold appearance-none outline-none focus:bg-white shadow-inner">
+                        <option>Select Item/Category...</option>
+                    </select>
+                    <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slab Details Section -->
+        <div class="pt-4 border-t border-slate-100">
+            <h4 class="text-[14px] font-black text-slate-800 mb-4 uppercase tracking-widest">Details</h4>
+            <div class="bg-white border border-slate-100 rounded-2xl p-6 shadow-inner space-y-4">
+                <!-- Header Row -->
+                <div class="grid grid-cols-2 gap-12 px-2 border-b border-slate-50 pb-3">
+                    <span class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Minimum Quantity</span>
+                    <span class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Discount</span>
+                </div>
+                
+                <!-- Fixed 5 Slab Rows -->
+                <div class="space-y-3 pt-2">
+                    <!-- Row 1 -->
+                    <div class="grid grid-cols-2 gap-12">
+                        <div class="flex gap-2">
+                            <input type="text" class="flex-1 h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner">
+                            <div class="relative w-24">
+                                <select class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-3 text-[11px] font-black uppercase appearance-none">
+                                    <option>BOX</option>
+                                    <option>PCS</option>
+                                </select>
+                                <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="text" class="flex-1 h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner">
+                            <div class="relative w-24">
+                                <select class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-3 text-[11px] font-black uppercase appearance-none">
+                                    <option>%</option>
+                                    <option>Amt</option>
+                                </select>
+                                <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Row 2 -->
+                    <div class="grid grid-cols-2 gap-12">
+                        <div class="flex gap-2">
+                            <input type="text" class="flex-1 h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner">
+                            <div class="relative w-24">
+                                <select class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-3 text-[11px] font-black uppercase appearance-none">
+                                    <option>BOX</option>
+                                    <option>PCS</option>
+                                </select>
+                                <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="text" class="flex-1 h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner">
+                            <div class="relative w-24">
+                                <select class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-3 text-[11px] font-black uppercase appearance-none">
+                                    <option>%</option>
+                                    <option>Amt</option>
+                                </select>
+                                <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Row 3 -->
+                    <div class="grid grid-cols-2 gap-12">
+                        <div class="flex gap-2">
+                            <input type="text" class="flex-1 h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner">
+                            <div class="relative w-24">
+                                <select class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-3 text-[11px] font-black uppercase appearance-none">
+                                    <option>BOX</option>
+                                    <option>PCS</option>
+                                </select>
+                                <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="text" class="flex-1 h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner">
+                            <div class="relative w-24">
+                                <select class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-3 text-[11px] font-black uppercase appearance-none">
+                                    <option>%</option>
+                                    <option>Amt</option>
+                                </select>
+                                <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Row 4 -->
+                    <div class="grid grid-cols-2 gap-12">
+                        <div class="flex gap-2">
+                            <input type="text" class="flex-1 h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner">
+                            <div class="relative w-24">
+                                <select class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-3 text-[11px] font-black uppercase appearance-none">
+                                    <option>BOX</option>
+                                    <option>PCS</option>
+                                </select>
+                                <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="text" class="flex-1 h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner">
+                            <div class="relative w-24">
+                                <select class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-3 text-[11px] font-black uppercase appearance-none">
+                                    <option>%</option>
+                                    <option>Amt</option>
+                                </select>
+                                <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Row 5 -->
+                    <div class="grid grid-cols-2 gap-12">
+                        <div class="flex gap-2">
+                            <input type="text" class="flex-1 h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner">
+                            <div class="relative w-24">
+                                <select class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-3 text-[11px] font-black uppercase appearance-none">
+                                    <option>BOX</option>
+                                    <option>PCS</option>
+                                </select>
+                                <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="text" class="flex-1 h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner">
+                            <div class="relative w-24">
+                                <select class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-3 text-[11px] font-black uppercase appearance-none">
+                                    <option>%</option>
+                                    <option>Amt</option>
+                                </select>
+                                <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- COUPON MODAL -->
+<div id="modal-coupon" class="sub-modal hidden flex flex-col w-full max-w-[1150px] h-fit bg-white rounded-[40px] shadow-2xl overflow-hidden scale-in-center mx-auto my-auto">
+    <div class="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-blue-500 h-[80px]">
+        <h3 class="text-[24px] font-black text-white">Add Coupon</h3>
+        <div class="flex items-center gap-4">
+            <button class="px-8 h-12 bg-white text-blue-500 rounded-2xl text-[13px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-lg">SAVE</button>
+            <button onclick="closeModal()" class="px-8 h-12 bg-slate-700 text-white rounded-2xl text-[13px] font-black uppercase tracking-widest hover:bg-slate-800">CANCEL</button>
+            <button onclick="closeModal()" class="w-12 h-12 bg-rose-500 text-white rounded-2xl flex items-center justify-center hover:bg-rose-600 shadow-lg shadow-rose-500/20">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+    </div>
+    <div class="p-8 grid grid-cols-2 gap-8">
+        <div class="space-y-4">
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Name</label>
+                <input type="text" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white shadow-inner">
+            </div>
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Description</label>
+                <textarea class="w-full h-20 bg-slate-50 border border-slate-100 rounded-xl p-4 text-[13px] font-bold resize-none outline-none focus:bg-white shadow-inner"></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Coupon Code</label>
+                    <div class="flex gap-2">
+                        <input type="text" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white shadow-inner">
+                        <button class="px-4 h-9 bg-blue-100 text-blue-600 rounded-xl text-[10px] font-black uppercase hover:bg-blue-200 transition-all whitespace-nowrap">Generate Code</button>
+                    </div>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Discount Type</label>
+                    <div class="relative">
+                        <select class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold appearance-none outline-none focus:bg-white shadow-inner">
+                            <option>Percentage</option>
+                            <option>Amount</option>
+                        </select>
+                        <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Start Date</label>
+                    <input type="text" placeholder="DD/MM/YYYY" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none shadow-inner">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">End Date</label>
+                    <input type="text" placeholder="DD/MM/YYYY" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none shadow-inner">
+                </div>
+            </div>
+            <div class="space-y-1.5">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Allowed Customers</label>
+                <div class="relative">
+                    <select class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold appearance-none outline-none focus:bg-white shadow-inner">
+                        <option>Everyone</option>
+                        <option>Specific customers</option>
+                    </select>
+                    <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                </div>
+            </div>
+            <div class="space-y-3 pt-2">
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input type="checkbox" onchange="toggleUsageLimit(this)" class="w-5 h-5 rounded-lg accent-[var(--accent)]">
+                        <span class="text-[12px] font-black text-slate-600 uppercase tracking-widest">Usage Limit of this Coupon</span>
+                    </label>
+                    <input type="text" id="usageLimitBox" placeholder="Unlimited usage" class="hidden w-40 h-9 bg-white border border-slate-100 rounded-xl px-4 text-[12px] font-bold shadow-sm">
+                </div>
+                <label class="flex items-center gap-3 cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded-lg accent-[var(--accent)]">
+                    <span class="text-[12px] font-black text-slate-600 uppercase tracking-widest">One time Use per Customer</span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded-lg accent-[var(--accent)]">
+                    <span class="text-[12px] font-black text-slate-600 uppercase tracking-widest">Applicable for First time Order</span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded-lg accent-[var(--accent)]">
+                    <span class="text-[12px] font-black text-slate-600 uppercase tracking-widest">Applicable with other coupons</span>
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function switchMainTab(tabId) {
+    // Update buttons
+    document.querySelectorAll('.main-tab-btn').forEach(btn => {
+        btn.classList.remove('active-tab', 'bg-white', 'text-[var(--accent)]', 'shadow-sm');
+        btn.classList.add('text-white/70');
+    });
+    const activeBtn = document.getElementById('tab-' + tabId);
+    activeBtn.classList.add('active-tab', 'bg-white', 'text-[var(--accent)]', 'shadow-sm');
+    activeBtn.classList.remove('text-white/70');
+
+    // Update content
+    document.querySelectorAll('.main-tab-content').forEach(content => {
+        content.classList.add('hidden');
+    });
+    document.getElementById('content-' + tabId).classList.remove('hidden');
+}
+
+function openModal(type) {
+    document.querySelectorAll('.sub-modal').forEach(m => m.classList.add('hidden'));
+    document.getElementById('modal-' + type).classList.remove('hidden');
+    document.getElementById('modalOverlay').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('modalOverlay').classList.add('hidden');
+    document.querySelectorAll('.sub-modal').forEach(m => m.classList.add('hidden'));
+}
+
+function toggleAdvancedPricing() {
+    const area = document.getElementById('advancedPricingArea');
+    const chevron = document.getElementById('advancedChevron');
+    const isHidden = area.classList.contains('hidden');
+    
+    if (isHidden) {
+        area.classList.remove('hidden');
+        chevron.style.transform = 'rotate(180deg)';
+    } else {
+        area.classList.add('hidden');
+        chevron.style.transform = 'rotate(0deg)';
+    }
+}
+
+function toggleUsageLimit(cb) {
+    const box = document.getElementById('usageLimitBox');
+    if (cb.checked) {
+        box.classList.remove('hidden');
+    } else {
+        box.classList.add('hidden');
+    }
+}
+</script>
+
+<style>
+.main-tab-btn.active-tab {
+    background: #fff !important;
+    color: var(--accent) !important;
+}
+.stagger-in { animation: staggerIn 0.5s ease-out forwards; }
+@keyframes staggerIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.scale-in-center { animation: scale-in-center 0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) both; }
+@keyframes scale-in-center {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+</style>
+{% endblock %}

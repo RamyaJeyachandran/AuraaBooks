@@ -1,0 +1,1173 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Items & Inventory - Auraa Books{% endblock %}
+{% block breadcrumb_active %}Items{% endblock %}
+
+{% block content %}
+<div class="p-6 stagger-in max-w-[1600px] mx-auto">
+    <!-- Top Navigation Tabs -->
+    <div class="bg-accent p-2 rounded-[24px] flex items-center gap-2 mb-6 shadow-xl shadow-accent/20 max-w-fit">
+        <button onclick="switchMainTab('Items')" id="tabBtn-Items" class="main-tab-btn px-10 py-3.5 text-[14px] font-black transition-all rounded-[18px] bg-white text-accent shadow-lg shadow-black/5">
+            Items
+        </button>
+        <button onclick="switchMainTab('Categories')" id="tabBtn-Categories" class="main-tab-btn px-10 py-3.5 text-[14px] font-black transition-all rounded-[18px] text-white/70 hover:text-white hover:bg-white/10">
+            Categories
+        </button>
+        <button onclick="switchMainTab('Attributes')" id="tabBtn-Attributes" class="main-tab-btn px-10 py-3.5 text-[14px] font-black transition-all rounded-[18px] text-white/70 hover:text-white hover:bg-white/10">
+            Attributes
+        </button>
+        <button onclick="switchMainTab('Brand')" id="tabBtn-Brand" class="main-tab-btn px-10 py-3.5 text-[14px] font-black transition-all rounded-[18px] text-white/70 hover:text-white hover:bg-white/10">
+            Brand
+        </button>
+    </div>
+
+    <!-- 1. ITEMS TAB -->
+    <div id="mainTab-Items" class="main-tab-pane space-y-6">
+        <!-- Header -->
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-5">
+                <h1 class="text-[32px] font-black text-slate-800 tracking-tight">Items</h1>
+                <button type="button" onclick="toggleToolbarMenu('itemsSettingsDropdown')" class="w-11 h-11 flex items-center justify-center bg-accent text-white rounded-xl shadow-lg shadow-accent/20 hover:brightness-110 transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                </button>
+            </div>
+            <button type="button" onclick="openModal('Items')" class="px-8 py-3.5 bg-accent text-white rounded-2xl text-[14px] font-black flex items-center gap-2 shadow-xl shadow-accent/20 hover:brightness-110 transition-all uppercase tracking-widest">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+                Add Item
+            </button>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="bg-white p-5 rounded-[32px] shadow-sm border border-slate-100 flex items-center justify-between gap-6">
+            <div class="flex items-center gap-4 flex-1">
+                <div class="w-48 relative">
+                    <select class="w-full h-11 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold text-slate-600 outline-none appearance-none focus:border-accent">
+                        <option>Name/SKU</option>
+                        <option>HSN</option>
+                        <option>Type</option>
+                        <option>Description</option>
+                    </select>
+                    <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400 rotate-90" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+                </div>
+                <div class="flex-1 relative">
+                    <input type="text" placeholder="Select Item..." class="w-full h-11 bg-slate-50 border border-slate-100 rounded-xl px-4 pl-10 text-[13px] font-bold outline-none focus:bg-white focus:border-accent transition-all">
+                    <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </div>
+                <div class="w-64 relative">
+                    <select class="w-full h-11 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold text-slate-400 outline-none appearance-none focus:border-accent">
+                        <option>Categories/Brand...</option>
+                    </select>
+                    <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400 rotate-90" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+                </div>
+                <button type="button" class="w-11 h-11 bg-accent text-white rounded-xl text-[16px] font-black hover:brightness-110 transition-all shadow-lg shadow-accent/10">&</button>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <button type="button" onclick="toggleToolbarMenu('itemsPrintDropdown')" class="w-11 h-11 flex items-center justify-center rounded-xl bg-accent text-white shadow-lg shadow-accent/10 hover:brightness-110 transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                    </button>
+                </div>
+                <div class="relative">
+                    <button type="button" onclick="toggleToolbarMenu('itemsColumnSettings')" class="w-11 h-11 flex items-center justify-center rounded-xl bg-accent text-white shadow-lg shadow-accent/10 hover:brightness-110 transition-all">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Items Table -->
+        <div class="bg-white rounded-[32px] shadow-sm border border-slate-100 overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-accent">
+                    <tr>
+                        <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Name</th>
+                        <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Categories</th>
+                        <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Type</th>
+                        <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">SKU</th>
+                        <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">HSN</th>
+                        <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    <tr class="hover:bg-slate-50/50 transition-all group">
+                        <td class="px-8 py-5">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[14px] font-black text-slate-700 uppercase tracking-tight">AERIAL CHOTTA FANCY</span>
+                                <span class="px-2 py-0.5 bg-slate-100 text-slate-400 text-[9px] font-black rounded-md">Pcs</span>
+                            </div>
+                        </td>
+                        <td class="px-8 py-5 text-[13px] font-bold text-slate-500">AERIAL CHOTTA FANCY</td>
+                        <td class="px-8 py-5">
+                            <span class="px-3 py-1 bg-blue-50 text-blue-500 text-[10px] font-black rounded-lg uppercase border border-blue-100">GOODS</span>
+                        </td>
+                        <td class="px-8 py-5 text-[13px] font-bold text-slate-500 font-mono">146</td>
+                        <td class="px-8 py-5 text-[13px] font-bold text-slate-500 font-mono">3604</td>
+                        <td class="px-8 py-5 text-right">
+                            <div class="relative inline-block text-left">
+                                <button type="button" onclick="toggleToolbarMenu('action-1')" class="p-2 text-slate-400 hover:text-accent transition-all">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                                </button>
+                                <div id="action-1" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 z-50 overflow-hidden scale-in-tr">
+                                    <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-accent/10 hover:text-accent transition-all">Edit</button>
+                                    <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-accent/10 hover:text-accent transition-all">Delete</button>
+                                    <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-accent/10 hover:text-accent transition-all">Copy</button>
+                                    <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-accent/10 hover:text-accent transition-all">Stock Recalculate</button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 2. CATEGORIES TAB -->
+    <div id="mainTab-Categories" class="main-tab-pane hidden space-y-6">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <h1 class="text-[32px] font-black text-slate-800 tracking-tight">Categories</h1>
+                <button type="button" onclick="toggleToolbarMenu('categoriesSettingsDropdown')" class="w-9 h-9 flex items-center justify-center bg-accent text-white rounded-xl shadow-lg shadow-accent/20 hover:brightness-110 transition-all mt-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                </button>
+            </div>
+            <button type="button" onclick="openCategoryModal()" class="px-8 py-3.5 bg-accent text-white rounded-2xl text-[14px] font-black flex items-center gap-2 shadow-xl shadow-accent/20 hover:brightness-110 transition-all uppercase tracking-widest">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+                Add Category
+            </button>
+        </div>
+        <div class="bg-white p-6 rounded-[32px] shadow-sm border border-slate-100">
+            <div class="w-64 relative">
+                <select class="w-full h-11 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold text-slate-400 outline-none appearance-none focus:border-accent">
+                    <option>Categories...</option>
+                </select>
+                <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400 rotate-90" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+            </div>
+        </div>
+        <div class="bg-white rounded-[32px] shadow-sm border border-slate-100 overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-accent">
+                    <tr>
+                        <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Category Name</th>
+                        <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Attributes</th>
+                        <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    <tr class="hover:bg-slate-50/50 transition-all">
+                        <td class="px-8 py-5 text-[14px] font-black text-slate-700">AERIAL CHOTTA FANCY</td>
+                        <td class="px-8 py-5 text-[13px] font-bold text-slate-400">None</td>
+                        <td class="px-8 py-5 text-right">
+                            <button class="p-2 text-slate-400 hover:text-accent transition-all">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="mainTab-Attributes" class="main-tab-pane hidden space-y-6">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-5">
+                <h1 class="text-[32px] font-black text-slate-800 tracking-tight">Attributes</h1>
+            </div>
+            <button type="button" onclick="openAttributeModal()" class="px-8 py-3.5 bg-accent text-white rounded-2xl text-[14px] font-black flex items-center gap-2 shadow-xl shadow-accent/20 hover:brightness-110 transition-all uppercase tracking-widest">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+                Add Attribute
+            </button>
+        </div>
+        <div class="bg-white rounded-[32px] shadow-sm border border-slate-100 overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-accent">
+                    <tr>
+                        <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Attribute Name</th>
+                        <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Values / Options</th>
+                        <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    <tr class="hover:bg-slate-50/50 transition-all">
+                        <td class="px-8 py-5 text-[14px] font-black text-slate-700">Size</td>
+                        <td class="px-8 py-5 text-[13px] font-bold text-slate-400">Small, Medium, Large</td>
+                        <td class="px-8 py-5 text-right flex items-center justify-end gap-2">
+                            <button class="p-2 text-slate-400 hover:text-accent transition-all"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+                            <button class="p-2 text-slate-400 hover:text-rose-500 transition-all"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 4. BRAND TAB -->
+    <div id="mainTab-Brand" class="main-tab-pane hidden space-y-6">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-5">
+                <h1 class="text-[32px] font-black text-slate-800 tracking-tight">Brand</h1>
+            </div>
+            <button type="button" onclick="openBrandModal()" class="px-8 py-3.5 bg-accent text-white rounded-2xl text-[14px] font-black flex items-center gap-2 shadow-xl shadow-accent/20 hover:brightness-110 transition-all uppercase tracking-widest">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+                Add Brand
+            </button>
+        </div>
+        <div class="bg-white rounded-[32px] shadow-sm border border-slate-100 overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-accent">
+                    <tr>
+                        <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Brand</th>
+                        <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    <tr class="hover:bg-slate-50/50 transition-all">
+                        <td class="px-8 py-5 text-[14px] font-black text-slate-700">Standard</td>
+                        <td class="px-8 py-5 text-right"><button class="p-2 text-slate-400 hover:text-accent transition-all"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button></td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/50 transition-all">
+                        <td class="px-8 py-5 text-[14px] font-black text-slate-700">Vadivel</td>
+                        <td class="px-8 py-5 text-right"><button class="p-2 text-slate-400 hover:text-accent transition-all"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button></td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/50 transition-all">
+                        <td class="px-8 py-5 text-[14px] font-black text-slate-700">Suriyakalaa</td>
+                        <td class="px-8 py-5 text-right"><button class="p-2 text-slate-400 hover:text-accent transition-all"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button></td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/50 transition-all">
+                        <td class="px-8 py-5 text-[14px] font-black text-slate-700">Auraa</td>
+                        <td class="px-8 py-5 text-right"><button class="p-2 text-slate-400 hover:text-accent transition-all"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button></td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/50 transition-all">
+                        <td class="px-8 py-5 text-[14px] font-black text-slate-700">AK</td>
+                        <td class="px-8 py-5 text-right"><button class="p-2 text-slate-400 hover:text-accent transition-all"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button></td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/50 transition-all">
+                        <td class="px-8 py-5 text-[14px] font-black text-slate-700">Sky King</td>
+                        <td class="px-8 py-5 text-right"><button class="p-2 text-slate-400 hover:text-accent transition-all"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button></td>
+                    </tr>
+                    <tr class="hover:bg-slate-50/50 transition-all">
+                        <td class="px-8 py-5 text-[14px] font-black text-slate-700">Celebrity</td>
+                        <td class="px-8 py-5 text-right"><button class="p-2 text-slate-400 hover:text-accent transition-all"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ADD CATEGORY MODAL -->
+    <div id="categoryModalOverlay" class="fixed inset-0 z-[10000] flex items-center justify-center p-6 hidden">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onclick="closeCategoryModal()"></div>
+        <div class="bg-white w-full max-w-[650px] rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.3)] relative z-10 overflow-hidden border border-white/40 animate-in zoom-in-95 duration-200 flex flex-col">
+            <!-- Modal Header (Customer Page Style) -->
+            <div class="px-8 py-5 border-b border-white/10 flex items-center justify-between bg-accent sticky top-0 z-[100] shadow-sm text-white">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-[20px] font-black text-white tracking-tight leading-tight">Category</h3>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button type="button" class="px-8 h-10 bg-white text-accent rounded-xl text-[12px] font-black uppercase tracking-widest shadow-lg hover:bg-slate-50 transition-all">SAVE</button>
+                    <button type="button" onclick="closeCategoryModal()" class="px-8 h-10 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-[12px] font-black uppercase tracking-widest transition-all">CANCEL</button>
+                    <button type="button" onclick="closeCategoryModal()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-rose-500 hover:bg-rose-600 text-white shadow-lg border border-white/20 transition-all ml-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Form Body -->
+            <div class="p-8 space-y-6 bg-white overflow-y-auto no-scrollbar">
+                <!-- ROW 1: Name & Image -->
+                <div class="grid grid-cols-3 gap-8">
+                    <div class="col-span-2 space-y-2">
+                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Category Name <span class="text-rose-500">*</span></label>
+                        <input type="text" placeholder="Enter category name..." class="w-full h-11 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[14px] font-bold outline-none focus:border-accent focus:bg-white transition-all shadow-inner">
+                    </div>
+                    <div class="col-span-1 space-y-2 flex flex-col items-center">
+                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest w-full">Image / Video</label>
+                        <div class="w-24 h-24 bg-slate-50 border-2 border-dashed border-slate-200 rounded-[24px] flex flex-col items-center justify-center text-slate-300 hover:border-accent hover:text-accent transition-all cursor-pointer group shadow-inner relative overflow-hidden">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <span class="text-[9px] font-black uppercase mt-1">UPLOAD</span>
+                            <input type="file" class="absolute inset-0 opacity-0 cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROW 2: Parent Category -->
+                <div class="space-y-2">
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Parent Category</label>
+                    <div class="relative">
+                        <select class="w-full h-11 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[14px] font-bold outline-none appearance-none focus:border-accent focus:bg-white transition-all shadow-inner">
+                            <option value="">Categories...</option>
+                        </select>
+                        <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                    </div>
+                </div>
+
+                <!-- ROW 3: Category Code -->
+                <div class="space-y-2">
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Category Code</label>
+                    <input type="text" placeholder="Enter code..." class="w-full h-11 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[14px] font-bold outline-none focus:border-accent focus:bg-white transition-all shadow-inner">
+                </div>
+
+                <!-- ROW 4: Attributes -->
+                <div class="space-y-2 border-t border-slate-50 pt-6">
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Attributes</label>
+                    <div class="relative">
+                        <select class="w-full h-11 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[14px] font-bold outline-none appearance-none focus:border-accent focus:bg-white transition-all shadow-inner">
+                            <option value="">Select</option>
+                        </select>
+                        <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD ATTRIBUTE MODAL -->
+    <div id="attributeModalOverlay" class="fixed inset-0 z-[10000] flex items-center justify-center p-6 hidden">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onclick="closeAttributeModal()"></div>
+        <div class="bg-white w-full max-w-[600px] rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.3)] relative z-10 overflow-hidden border border-white/40 animate-in zoom-in-95 duration-200 flex flex-col">
+            <!-- Modal Header -->
+            <div class="px-8 py-5 border-b border-white/10 flex items-center justify-between bg-accent sticky top-0 z-[100] shadow-sm text-white">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-[20px] font-black text-white tracking-tight leading-tight">Attribute</h3>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button type="button" class="px-8 h-10 bg-white text-accent rounded-xl text-[12px] font-black uppercase tracking-widest shadow-lg hover:bg-slate-50 transition-all">SAVE</button>
+                    <button type="button" onclick="closeAttributeModal()" class="px-8 h-10 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-[12px] font-black uppercase tracking-widest transition-all">CANCEL</button>
+                    <button type="button" onclick="closeAttributeModal()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-rose-500 hover:bg-rose-600 text-white shadow-lg border border-white/20 transition-all ml-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Form Body -->
+            <div class="p-8 space-y-6 bg-white">
+                <div class="space-y-1.5">
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Name</label>
+                    <input type="text" placeholder="Enter attribute name..." class="w-full h-9 bg-slate-50 border border-slate-200 rounded-lg px-4 text-[13px] font-bold outline-none focus:border-accent focus:bg-white transition-all shadow-inner">
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Field Type</label>
+                    <div class="relative">
+                        <select class="w-full h-9 bg-slate-50 border border-slate-200 rounded-lg px-4 text-[13px] font-bold outline-none appearance-none focus:border-accent focus:bg-white transition-all shadow-inner">
+                            <option>Text</option>
+                            <option>Number</option>
+                            <option>Dropdown</option>
+                            <option>Date</option>
+                        </select>
+                        <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Associated to Categories</label>
+                    <div class="relative">
+                        <select class="w-full h-9 bg-slate-50 border border-slate-200 rounded-lg px-4 text-[13px] font-bold outline-none appearance-none focus:border-accent focus:bg-white transition-all shadow-inner">
+                            <option value="">Select</option>
+                        </select>
+                        <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                    </div>
+                </div>
+
+                <!-- Checkbox Group -->
+                <div class="flex flex-col gap-3 mt-3">
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input type="checkbox" class="w-5 h-5 rounded border-slate-200 accent-accent">
+                        <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Required</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input type="checkbox" class="w-5 h-5 rounded border-slate-200 accent-accent">
+                        <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Unique Across All Items</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input type="checkbox" class="w-5 h-5 rounded border-slate-200 accent-accent">
+                        <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Display in Print</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD BRAND MODAL -->
+    <div id="brandModalOverlay" class="fixed inset-0 z-[10000] flex items-center justify-center p-6 hidden">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onclick="closeBrandModal()"></div>
+        <div class="bg-white w-full max-w-[850px] rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.3)] relative z-10 overflow-hidden border border-white/40 animate-in zoom-in-95 duration-200 flex flex-col">
+            <!-- Modal Header -->
+            <div class="px-10 py-5 border-b border-white/10 flex items-center justify-between bg-accent sticky top-0 z-[100] shadow-sm text-white">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M7 7h.01M7 3h10a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-[20px] font-black text-white tracking-tight leading-tight">Brand</h3>
+                    </div>
+                </div>
+
+                <!-- Center Tabs -->
+                <div class="flex items-center gap-1 bg-white p-1 rounded-xl shadow-inner border border-white/20">
+                    <button type="button" onclick="setBrandTab('Details')" class="brand-modal-tab px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all bg-accent text-white shadow-md" data-tab="Details">DETAILS</button>
+                    <button type="button" onclick="setBrandTab('E-Commerce')" class="brand-modal-tab px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all text-accent hover:bg-slate-50" data-tab="E-Commerce">E-COMMERCE</button>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <button type="button" class="px-8 h-10 bg-white text-accent rounded-xl text-[12px] font-black uppercase tracking-widest shadow-lg hover:bg-slate-50 transition-all">SAVE</button>
+                    <button type="button" onclick="closeBrandModal()" class="px-8 h-10 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-[12px] font-black uppercase tracking-widest transition-all">CANCEL</button>
+                    <button type="button" onclick="closeBrandModal()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-rose-500 hover:bg-rose-600 text-white shadow-lg border border-white/20 transition-all ml-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Form Body -->
+            <div class="bg-white overflow-y-auto no-scrollbar" style="max-height: 70vh;">
+                <!-- TAB 1: DETAILS -->
+                <div id="brandTab-Details" class="brand-modal-pane p-10 space-y-6">
+                    <div class="space-y-1.5">
+                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Brand <span class="text-rose-500">*</span></label>
+                        <input type="text" placeholder="Enter brand name..." class="w-full h-11 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[14px] font-bold outline-none focus:border-accent focus:bg-white transition-all shadow-inner">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Brand Code</label>
+                        <input type="text" placeholder="Enter code..." class="w-full h-11 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[14px] font-bold outline-none focus:border-accent focus:bg-white transition-all shadow-inner">
+                    </div>
+                </div>
+
+                <!-- TAB 2: E-COMMERCE -->
+                <div id="brandTab-E-Commerce" class="brand-modal-pane hidden p-10 space-y-8">
+                    <div class="grid grid-cols-2 gap-10">
+                        <!-- Left: Options -->
+                        <div class="flex flex-col gap-4 pt-2 border-r border-slate-50 pr-10">
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input type="checkbox" class="w-5 h-5 rounded border-slate-200 accent-accent">
+                                <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Hide in Ecommerce</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input type="checkbox" class="w-5 h-5 rounded border-slate-200 accent-accent">
+                                <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Skip Attributes</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input type="checkbox" class="w-5 h-5 rounded border-slate-200 accent-accent">
+                                <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Product Customer Input Form</span>
+                            </label>
+                        </div>
+
+                        <!-- Right: Images -->
+                        <div class="flex gap-6">
+                            <div class="space-y-2 flex-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block text-center">Brand Image</label>
+                                <div class="w-full aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-slate-300 hover:border-accent hover:text-accent transition-all cursor-pointer group relative overflow-hidden shadow-inner">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    <input type="file" class="absolute inset-0 opacity-0 cursor-pointer">
+                                </div>
+                                <span class="text-[8px] text-slate-400 font-bold block text-center leading-tight">(Recommended: 800 x 800)</span>
+                            </div>
+                            <div class="space-y-2 flex-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block text-center">Header Image</label>
+                                <div class="w-full aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-slate-300 hover:border-accent hover:text-accent transition-all cursor-pointer group relative overflow-hidden shadow-inner">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    <input type="file" class="absolute inset-0 opacity-0 cursor-pointer">
+                                </div>
+                            </div>
+                            <div class="space-y-2 flex-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block text-center">Panel Image</label>
+                                <div class="w-full aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-slate-300 hover:border-accent hover:text-accent transition-all cursor-pointer group relative overflow-hidden shadow-inner">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    <input type="file" class="absolute inset-0 opacity-0 cursor-pointer">
+                                </div>
+                                <span class="text-[8px] text-slate-400 font-bold block text-center leading-tight">(Recommended: 960 x 540)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Description Editor -->
+                    <div class="space-y-3">
+                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Description</label>
+                        <div class="border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
+                            <div class="bg-slate-50 p-2 border-b border-slate-100 flex items-center gap-1.5 flex-wrap">
+                                <button type="button" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm text-slate-500 transition-all font-black">B</button>
+                                <button type="button" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm text-slate-500 transition-all italic font-serif">I</button>
+                                <button type="button" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm text-slate-500 transition-all underline">U</button>
+                                <div class="w-[1px] h-4 bg-slate-200 mx-1"></div>
+                                <select class="h-8 bg-transparent text-[11px] font-bold text-slate-600 outline-none px-2"><option>14px</option></select>
+                                <div class="w-[1px] h-4 bg-slate-200 mx-1"></div>
+                                <button type="button" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm text-slate-500 transition-all"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h18v-2H3v2zm0-4h18V7H3v2zm0 8h18v-2H3v2z"/></svg></button>
+                                <button type="button" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm text-slate-500 transition-all"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-4h18V5H3v2z"/></svg></button>
+                                <div class="w-[1px] h-4 bg-slate-200 mx-1"></div>
+                                <button type="button" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm text-slate-500 transition-all"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg></button>
+                                <button type="button" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm text-slate-500 transition-all"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></button>
+                                <div class="w-[1px] h-4 bg-slate-200 mx-1"></div>
+                                <button type="button" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm text-slate-500 transition-all"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 20L3 13m0 0l7-7m-7 7h18"/></svg></button>
+                                <button type="button" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm text-slate-500 transition-all"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 20l7-7m0 0l-7-7m7 7H3"/></svg></button>
+                            </div>
+                            <textarea class="w-full h-40 p-5 text-[14px] font-medium text-slate-600 outline-none focus:bg-slate-50/30 transition-all resize-none" placeholder="Start typing brand description..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div id="categoriesSettingsDropdown" class="hidden absolute w-48 bg-white rounded-2xl shadow-2xl border border-slate-100 p-5 z-[200] scale-in-tr">
+    <div class="flex items-center gap-3 bg-white">
+        <label class="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" checked class="w-5 h-5 rounded border-slate-200 accent-accent">
+            <span class="text-[14px] font-bold text-slate-700 group-hover:text-slate-900 transition-all">Category Code</span>
+        </label>
+    </div>
+</div>
+
+<div id="itemsSettingsDropdown" class="hidden absolute w-64 bg-white rounded-[32px] shadow-2xl border border-slate-100 p-6 z-[200] scale-in-tr">
+    <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Item View Settings</div>
+    <div class="space-y-3 mb-6">
+        <label class="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" checked class="w-5 h-5 rounded-lg border-slate-200 accent-accent">
+            <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Category/Attributes/Brand</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" class="w-5 h-5 rounded-lg border-slate-200 accent-accent">
+            <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Rental/Returnable Goods</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" class="w-5 h-5 rounded-lg border-slate-200 accent-accent">
+            <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Specifications</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" class="w-5 h-5 rounded-lg border-slate-200 accent-accent">
+            <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Multicurrency (MRP)</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" checked class="w-5 h-5 rounded-lg border-slate-200 accent-accent">
+            <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Item Print Name</span>
+        </label>
+    </div>
+</div>
+
+<div id="itemsPrintDropdown" class="hidden absolute w-56 bg-white rounded-[24px] shadow-2xl border border-slate-100 py-3 z-[200] scale-in-tr">
+    <div class="px-5 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50 mb-2">Export Data</div>
+    <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-accent/10 hover:text-accent transition-all">PDF</button>
+    <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-accent/10 hover:text-accent transition-all">CSV</button>
+    <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-accent/10 hover:text-accent transition-all">XLS</button>
+    <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-accent/10 hover:text-accent transition-all">TallyXML</button>
+    <div class="px-5 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest border-y border-slate-50 my-2 bg-slate-50/50">Import Data</div>
+    <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-accent/10 hover:text-accent transition-all">Items</button>
+    <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-accent/10 hover:text-accent transition-all">Tax%</button>
+    <div class="px-5 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest border-y border-slate-50 my-2 bg-slate-50/50">Other Actions</div>
+    <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-accent/10 hover:text-accent transition-all">Print Barcode</button>
+</div>
+
+<div id="itemsColumnSettings" class="hidden absolute w-64 bg-white rounded-[32px] shadow-2xl border border-slate-100 p-6 z-[200] scale-in-tr">
+    <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Column Settings</div>
+    <div class="space-y-3 mb-6 max-h-60 overflow-y-auto no-scrollbar">
+        <label class="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" class="w-5 h-5 rounded-lg border-slate-200 accent-accent">
+            <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Tax%</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" class="w-5 h-5 rounded-lg border-slate-200 accent-accent">
+            <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Purchase Rate</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" class="w-5 h-5 rounded-lg border-slate-200 accent-accent">
+            <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Modified Date</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" class="w-5 h-5 rounded-lg border-slate-200 accent-accent">
+            <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Stock</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" class="w-5 h-5 rounded-lg border-slate-200 accent-accent">
+            <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">MRP</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" class="w-5 h-5 rounded-lg border-slate-200 accent-accent">
+            <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Brand</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" checked class="w-5 h-5 rounded-lg border-slate-200 accent-accent">
+            <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">SKU</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" checked class="w-5 h-5 rounded-lg border-slate-200 accent-accent">
+            <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">HSN</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" checked class="w-5 h-5 rounded-lg border-slate-200 accent-accent">
+            <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Type</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" checked class="w-5 h-5 rounded-lg border-slate-200 accent-accent">
+            <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Category</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" class="w-5 h-5 rounded-lg border-slate-200 accent-accent">
+            <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Print Name</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" class="w-5 h-5 rounded-lg border-slate-200 accent-accent">
+            <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Sale Rate</span>
+        </label>
+    </div>
+    <div class="space-y-3 border-t border-slate-50 pt-4 mb-4">
+        <label class="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" class="w-5 h-5 rounded-lg border-slate-200 accent-accent">
+            <span class="text-[12px] font-bold text-slate-500 group-hover:text-slate-800 transition-all">Show Items Archived</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" class="w-5 h-5 rounded-lg border-slate-200 accent-accent">
+            <span class="text-[12px] font-bold text-slate-500 group-hover:text-slate-800 transition-all">Show Items Inactive</span>
+        </label>
+    </div>
+    <button type="button" class="w-full h-11 bg-accent text-white rounded-2xl text-[13px] font-black uppercase tracking-widest shadow-lg shadow-accent/20 hover:brightness-110 transition-all">Apply</button>
+</div>
+
+{% endblock %}
+
+{% block modal_content %}
+<div class="flex flex-col w-full h-full bg-white overflow-hidden">
+    <!-- Modal Header (Customer Page Style) -->
+    <div class="px-10 py-5 border-b border-white/10 flex items-center justify-between bg-accent sticky top-0 z-[100] shadow-sm text-white">
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+            </div>
+            <div>
+                <h3 class="text-[20px] font-black text-white tracking-tight leading-tight">Item Details</h3>
+            </div>
+        </div>
+        
+        <!-- Center Tabs (White Container + Primary Highlight) -->
+        <div class="flex items-center gap-1 bg-white p-1 rounded-xl shadow-inner">
+            <button type="button" onclick="setModalTab('Details')" class="modal-tab px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all bg-accent text-white shadow-md" data-tab="Details">DETAILS</button>
+            <button type="button" onclick="setModalTab('Attributes')" class="modal-tab px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all text-slate-400 hover:bg-slate-50" data-tab="Attributes">ATTRIBUTES</button>
+            <button type="button" onclick="setModalTab('Rate Sheet')" class="modal-tab px-6 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all text-slate-400 hover:bg-slate-50" data-tab="Rate Sheet">RATE SHEET</button>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <!-- Save Action Group -->
+            <div class="relative" id="saveActionGroup">
+                <div class="flex items-stretch shadow-xl rounded-2xl overflow-hidden border-2 border-white/30">
+                    <button type="button" class="px-8 h-12 bg-white text-accent rounded-l-[14px] text-[13px] font-black uppercase tracking-widest border-r border-accent/30 hover:bg-slate-50 transition-all">SAVE</button>
+                    <button type="button" onclick="toggleSaveDropdown(event)" class="px-4 h-12 bg-white text-accent rounded-r-[14px] border-l border-accent/30 flex items-center justify-center hover:bg-slate-50 transition-all">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                </div>
+                <!-- Save Dropdown Menu -->
+                <div id="saveDropdownMenu" class="hidden absolute top-full right-0 mt-3 w-56 bg-white rounded-[24px] shadow-2xl border border-slate-100 py-4 z-[110] overflow-hidden">
+                    <button type="button" class="w-full text-left px-7 py-3 text-[12px] font-black text-slate-600 hover:bg-accent hover:text-white transition-all uppercase tracking-widest border-b border-slate-50">Save & New</button>
+                    <button type="button" class="w-full text-left px-7 py-3 text-[12px] font-black text-slate-600 hover:bg-accent hover:text-white transition-all uppercase tracking-widest">Save</button>
+                </div>
+            </div>
+            
+            <button type="button" onclick="closeModal()" class="px-8 h-12 bg-slate-800 text-white rounded-2xl text-[13px] font-black uppercase tracking-widest hover:bg-slate-900 shadow-lg transition-all">CANCEL</button>
+            
+            <button type="button" onclick="closeModal()" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-rose-500 hover:bg-rose-600 text-white shadow-lg border border-white/20 transition-all">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="flex-1 overflow-hidden flex flex-col p-5">
+        <!-- 1. DETAILS TAB -->
+        <div id="modalTab-Details" class="modal-pane flex-1 space-y-3 overflow-hidden">
+            <!-- ROW 1: Header Info (High Density) -->
+            <div class="grid grid-cols-12 gap-3 items-end">
+                <div class="col-span-4 space-y-1">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Item Name <span class="text-rose-500">*</span></label>
+                    <input type="text" placeholder="Enter item name..." class="w-full h-8 bg-slate-50 border border-slate-200 rounded-lg px-3 text-[13px] font-black outline-none focus:bg-white focus:border-accent shadow-inner">
+                </div>
+                <div class="col-span-3 space-y-1">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Print Name</label>
+                    <input type="text" placeholder="Invoice Name" class="w-full h-8 bg-slate-50 border border-slate-200 rounded-lg px-3 text-[13px] font-bold outline-none focus:bg-white focus:border-accent">
+                </div>
+                <div class="col-span-3 space-y-1">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">SKU / Barcode</label>
+                    <input type="text" placeholder="SKU-XXXX" class="w-full h-8 bg-slate-50 border border-slate-200 rounded-lg px-3 text-[13px] font-mono font-bold outline-none focus:bg-white shadow-inner">
+                </div>
+                <div class="col-span-2 space-y-1">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Type</label>
+                    <select class="w-full h-8 bg-slate-50 border border-slate-200 rounded-lg px-3 text-[12px] font-bold outline-none appearance-none focus:bg-white focus:border-accent">
+                        <option>Goods</option>
+                        <option>Service</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- ROW 2: Primary Panels (Compacted) -->
+            <div class="grid grid-cols-12 gap-3">
+                <!-- Sales Panel -->
+                <div class="col-span-5 p-2.5 bg-slate-50/50 rounded-xl border border-slate-100 space-y-2">
+                    <div class="flex items-center gap-2 border-b border-white pb-2 mb-1">
+                        <input type="checkbox" checked id="inSales" onchange="togglePanel('salesPanel', this.checked)" class="w-4 h-4 rounded accent-accent cursor-pointer">
+                        <label for="inSales" class="text-[10px] font-black text-slate-700 uppercase tracking-widest cursor-pointer">In Sales</label>
+                    </div>
+                    <div id="salesPanel" class="grid grid-cols-2 gap-2">
+                        <div class="space-y-0.5">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Sale Rate</label>
+                            <input type="text" placeholder="0.00" class="w-full h-7 bg-white border border-slate-200 rounded px-2 text-[12px] font-black text-accent outline-none">
+                        </div>
+                        <div class="space-y-0.5">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Disc(%)</label>
+                            <input type="text" placeholder="0" class="w-full h-7 bg-white border border-slate-200 rounded px-2 text-[12px] font-bold outline-none text-right">
+                        </div>
+                        <div class="col-span-2 space-y-0.5">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Account</label>
+                            <select class="w-full h-7 bg-white border border-slate-200 rounded px-2 text-[11px] font-bold appearance-none outline-none"><option>Sales Account</option></select>
+                        </div>
+                        <div class="col-span-2 space-y-0.5">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Description</label>
+                            <input type="text" placeholder="Sale description..." class="w-full h-7 bg-white border border-slate-200 rounded px-2 text-[12px] font-bold outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Purchase Panel -->
+                <div class="col-span-5 p-2.5 bg-slate-50/50 rounded-xl border border-slate-100 space-y-2">
+                    <div class="flex items-center justify-between border-b border-white pb-2 mb-1">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" checked id="inPurchase" onchange="togglePanel('purchasePanel', this.checked)" class="w-4 h-4 rounded accent-accent cursor-pointer">
+                            <label for="inPurchase" class="text-[10px] font-black text-slate-700 uppercase tracking-widest cursor-pointer">In Purchase</label>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <input type="checkbox" checked class="w-3.5 h-3.5 rounded accent-accent">
+                            <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">ITC</span>
+                        </div>
+                    </div>
+                    <div id="purchasePanel" class="space-y-2">
+                        <div class="flex items-center gap-2">
+                            <div class="flex-1 space-y-0.5">
+                                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Purchase Rate</label>
+                                <div class="flex items-center gap-1.5">
+                                    <select onchange="togglePurchaseRateMode(this.value)" class="h-7 bg-white border border-slate-200 rounded px-1 text-[10px] font-black text-accent outline-none">
+                                        <option value="Default">Def</option>
+                                        <option value="Recent">Rec</option>
+                                    </select>
+                                    <input type="text" placeholder="0.00" class="flex-1 h-7 bg-white border border-slate-200 rounded px-2 text-[12px] font-black text-slate-600 outline-none">
+                                </div>
+                            </div>
+                            <div class="w-16 space-y-0.5" id="mrpField">
+                                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">MRP</label>
+                                <input type="text" placeholder="0.00" class="w-full h-7 bg-white border border-slate-200 rounded px-2 text-[12px] font-bold outline-none">
+                            </div>
+                        </div>
+                        <div id="purchaseDefaultFields" class="grid grid-cols-2 gap-2">
+                            <div class="space-y-0.5 col-span-2">
+                                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Supplier | Account</label>
+                                <div class="flex gap-1.5">
+                                    <select class="flex-1 h-7 bg-white border border-slate-200 rounded px-2 text-[10px] font-bold appearance-none outline-none"><option>Select Supplier...</option></select>
+                                    <select class="flex-1 h-7 bg-white border border-slate-200 rounded px-2 text-[10px] font-bold appearance-none outline-none"><option>Pur Acc</option></select>
+                                </div>
+                            </div>
+                            <div class="space-y-0.5 col-span-2">
+                                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Description</label>
+                                <input type="text" placeholder="Purchase description..." class="w-full h-7 bg-white border border-slate-200 rounded px-2 text-[12px] font-bold outline-none">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image Upload (Moved after Purchase) -->
+                <div class="col-span-2 flex flex-col items-center justify-center pt-2">
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Item Images / video</label>
+                    <div class="w-full aspect-square rounded-xl bg-slate-50 border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-300 hover:border-accent hover:text-accent transition-all cursor-pointer group shadow-inner">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <span class="text-[8px] font-black uppercase mt-0.5">UPLOAD</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MERGED ROW: Metadata & Compliance -->
+            <div class="grid grid-cols-12 gap-3 items-end">
+                <div class="col-span-2 space-y-1">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Unit</label>
+                    <select onchange="toggleUnitLogic(this.value)" class="w-full h-8 bg-slate-50 border border-slate-200 rounded-lg px-2 text-[12px] font-bold outline-none focus:border-accent appearance-none">
+                        <option value="-">-</option>
+                        <option value="Relative">Relative Unit</option>
+                        <option value="Pack">Pack Unit</option>
+                    </select>
+                </div>
+                <div class="col-span-2 space-y-1">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Category</label>
+                    <select class="w-full h-8 bg-slate-50 border border-slate-200 rounded-lg px-3 text-[11px] font-bold outline-none appearance-none"><option>Category...</option></select>
+                </div>
+                <div class="col-span-2 space-y-1">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Brand</label>
+                    <select class="w-full h-8 bg-slate-50 border border-slate-200 rounded-lg px-3 text-[11px] font-bold outline-none appearance-none"><option>Brand...</option></select>
+                </div>
+                <div class="col-span-1 space-y-1">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tax</label>
+                    <select class="w-full h-8 bg-slate-50 border border-slate-200 rounded-lg px-3 text-[12px] font-bold outline-none focus:border-accent appearance-none"><option>18%</option></select>
+                </div>
+                <div class="col-span-2 space-y-1">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">HSN Code</label>
+                    <input type="text" placeholder="HSN" class="w-full h-8 bg-slate-50 border border-slate-200 rounded-lg px-3 text-[12px] font-mono font-bold outline-none focus:bg-white shadow-inner">
+                </div>
+                <div class="col-span-3 space-y-1">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">HSN Description</label>
+                    <input type="text" placeholder="Description..." class="w-full h-8 bg-slate-50 border border-slate-200 rounded-lg px-3 text-[12px] font-bold outline-none focus:bg-white shadow-inner">
+                </div>
+            </div>
+
+            <!-- UNIT CONDITIONAL (Super Compact) -->
+            <div id="relativeUnitArea" class="hidden p-2.5 bg-accent/5 rounded-xl border border-accent/10 flex items-center gap-4 justify-center">
+                <span class="text-[11px] font-black text-slate-500 uppercase tracking-widest">Relative:</span>
+                <div class="flex items-center gap-2 text-[13px] font-black text-slate-700">
+                    <input type="text" value="1" class="w-10 h-8 text-center bg-white border border-slate-200 rounded-lg outline-none shadow-sm">
+                    <select class="h-8 bg-white border border-slate-200 rounded-lg px-2 text-[11px] font-bold outline-none appearance-none"><option>CASE</option></select>
+                    <span class="text-accent text-[18px] font-black mx-1">=</span>
+                    <input type="text" value="200" class="w-16 h-8 text-center bg-white border border-slate-200 rounded-lg outline-none shadow-sm">
+                    <select class="h-8 bg-white border border-slate-200 rounded-lg px-2 text-[11px] font-bold outline-none appearance-none"><option>Box</option></select>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="text" placeholder="Sale Rate" class="w-20 h-8 bg-white border border-slate-200 rounded-lg px-3 text-[11px] font-bold outline-none shadow-sm">
+                    <input type="text" placeholder="Pur Rate" class="w-20 h-8 bg-white border border-slate-200 rounded-lg px-3 text-[11px] font-bold outline-none shadow-sm">
+                </div>
+            </div>
+
+            <div id="packUnitArea" class="hidden p-2.5 bg-accent/5 rounded-xl border border-accent/10 flex items-center gap-4 justify-center">
+                <span class="text-[11px] font-black text-slate-500 uppercase tracking-widest">Pack:</span>
+                <div class="flex items-center gap-2 text-[13px] font-black text-slate-700">
+                    <select class="h-8 bg-white border border-slate-200 rounded-lg px-2 text-[11px] font-bold outline-none appearance-none"><option>CASE</option></select>
+                    <span class="text-accent text-[18px] font-black mx-1">=</span>
+                    <input type="text" value="200" class="w-16 h-8 text-center bg-white border border-slate-200 rounded-lg outline-none shadow-sm">
+                    <select class="h-8 bg-white border border-slate-200 rounded-lg px-2 text-[11px] font-bold outline-none appearance-none"><option>Box</option></select>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="text" placeholder="Sale Rate" class="w-20 h-8 bg-white border border-slate-200 rounded-lg px-3 text-[11px] font-bold outline-none shadow-sm">
+                    <input type="text" placeholder="Pur Rate" class="w-20 h-8 bg-white border border-slate-200 rounded-lg px-3 text-[11px] font-bold outline-none shadow-sm">
+                </div>
+            </div>
+
+            <!-- ROW 5: Inventory Control -->
+            <div class="p-2 bg-slate-50/50 rounded-xl border border-slate-100 flex items-center gap-6">
+                <div class="flex items-center gap-2 shrink-0">
+                    <input type="checkbox" id="trackInventory" onchange="toggleInventoryFields(this.checked)" class="w-4 h-4 rounded accent-accent cursor-pointer">
+                    <label for="trackInventory" class="text-[10px] font-black text-slate-700 uppercase tracking-widest cursor-pointer">Track Inventory</label>
+                </div>
+                <div id="inventoryFields" class="hidden flex-1 flex items-center gap-6 animate-in fade-in slide-in-from-left-1">
+                    <div class="flex items-center gap-2">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Reorder:</label>
+                        <select onchange="toggleReorderMode(this.value)" class="h-7 bg-white border border-slate-200 rounded px-1 text-[10px] font-black text-accent outline-none">
+                            <option value="Auto">Auto(OBO)</option>
+                            <option value="Manual">Manual</option>
+                        </select>
+                        <div id="reorderAutoVal" class="text-[11px] font-black text-slate-300"> - </div>
+                        <input type="text" id="reorderManualInput" placeholder="Qty" class="hidden w-12 h-7 bg-white border border-slate-200 rounded px-2 text-[12px] font-bold outline-none">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Min Qty:</label>
+                        <input type="text" placeholder="0" class="w-12 h-7 bg-white border border-slate-200 rounded px-2 text-[12px] font-bold outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROW 6: Global Status (Bottom) -->
+            <div class="flex items-center justify-between gap-4 p-2 bg-slate-50/50 rounded-xl border border-slate-100">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" checked class="w-4 h-4 rounded accent-accent">
+                    <span class="text-[10px] font-black text-slate-700 uppercase tracking-widest">Active</span>
+                </label>
+                <div class="flex items-center gap-3">
+                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Applicable For:</span>
+                    <select class="h-6 bg-transparent text-[11px] font-black text-slate-600 outline-none"><option>All Branches</option></select>
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- 2. ATTRIBUTES TAB -->
+        <div id="modalTab-Attributes" class="modal-pane hidden flex-1 flex flex-col space-y-6">
+            <div class="grid grid-cols-4 gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-100 items-end">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sale Rate</label>
+                    <input type="text" placeholder="0.00" class="w-full h-9 bg-white border border-slate-200 rounded-xl px-4 text-[13px] font-bold outline-none">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">MRP</label>
+                    <input type="text" placeholder="0.00" class="w-full h-9 bg-white border border-slate-200 rounded-xl px-4 text-[13px] font-bold outline-none">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">SKU</label>
+                    <input type="text" placeholder="SKU-XXXX" class="w-full h-9 bg-white border border-slate-200 rounded-xl px-4 text-[13px] font-bold outline-none">
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" class="px-6 h-9 bg-accent text-white rounded-xl text-[11px] font-black uppercase tracking-widest shadow-md">Add</button>
+                    <button type="button" class="w-9 h-9 bg-rose-500 text-white rounded-xl flex items-center justify-center shadow-md hover:bg-rose-600 transition-all">✕</button>
+                </div>
+            </div>
+
+            <div class="flex-1 bg-white rounded-2xl border border-slate-100 overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-accent text-white border-b border-white/10">
+                        <tr>
+                            <th class="px-6 py-4 text-[10px] font-black text-white/90 uppercase tracking-widest">Sale Rate</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-white/90 uppercase tracking-widest">MRP</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-white/90 uppercase tracking-widest">SKU</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-white/90 uppercase tracking-widest text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="4" class="px-6 py-20 text-center text-slate-300 text-[13px] font-bold italic">No records found</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 3. RATE SHEET TAB -->
+        <div id="modalTab-RateSheet" class="modal-pane hidden flex-1 flex flex-col">
+            <div class="flex-1 bg-white rounded-2xl border border-slate-100 overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-accent text-white border-b border-white/10">
+                        <tr>
+                            <th class="px-6 py-4 text-[10px] font-black text-white/90 uppercase tracking-widest">Rate Sheet Name</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-white/90 uppercase tracking-widest">Base Sales Rate (₹)</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-white/90 uppercase tracking-widest">Rate Sheet Rate (%)</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-white/90 uppercase tracking-widest text-right">Rate Sheet Rate (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-50">
+                        <tr class="hover:bg-slate-50/50 transition-colors">
+                            <td class="px-6 py-4 text-[13px] font-black text-slate-700">Retail</td>
+                            <td class="px-6 py-4">
+                                <input type="text" value="0.00" class="w-32 h-8 bg-slate-50 border border-slate-100 rounded-lg px-3 text-[13px] font-bold outline-none focus:bg-white focus:border-accent">
+                            </td>
+                            <td class="px-6 py-4">
+                                <input type="text" value="0" class="w-20 h-8 bg-slate-50 border border-slate-100 rounded-lg px-3 text-[13px] font-bold outline-none focus:bg-white focus:border-accent text-right">
+                            </td>
+                            <td class="px-6 py-4 text-right font-black text-accent">₹ 0.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Shared Footer for Rate Sheet -->
+            <div class="flex items-center justify-between pt-6 mt-auto">
+                <div class="flex items-center gap-8">
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" checked class="w-5 h-5 rounded accent-accent">
+                        <span class="text-[11px] font-black text-slate-700 uppercase tracking-widest">Active</span>
+                    </label>
+                    <div class="flex items-center gap-3">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Applicable For:</span>
+                        <select class="h-8 bg-slate-50 border border-slate-200 rounded-lg px-3 text-[11px] font-black text-slate-600 outline-none"><option>All Branches</option></select>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button type="button" class="px-8 h-10 bg-accent text-white rounded-xl text-[12px] font-black uppercase tracking-widest shadow-lg shadow-accent/20">SAVE</button>
+                    <button type="button" onclick="closeModal()" class="px-8 h-10 bg-slate-800 text-white rounded-xl text-[12px] font-black uppercase tracking-widest hover:bg-slate-900 shadow-lg transition-all">CANCEL</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let activeMenu = null;
+
+function toggleToolbarMenu(id) {
+    const menu = document.getElementById(id);
+    if (activeMenu && activeMenu !== menu) {
+        activeMenu.classList.add('hidden');
+    }
+    menu.classList.toggle('hidden');
+    activeMenu = menu.classList.contains('hidden') ? null : menu;
+    
+    if (!menu.classList.contains('hidden')) {
+        const btn = event.currentTarget;
+        const rect = btn.getBoundingClientRect();
+        menu.style.top = (rect.bottom + window.scrollY + 12) + 'px';
+        menu.style.right = (window.innerWidth - rect.right) + 'px';
+    }
+}
+
+document.addEventListener('click', (e) => {
+    if (activeMenu && !activeMenu.parentElement.contains(e.target) && !e.target.closest('button[onclick*="toggleToolbarMenu"]')) {
+        activeMenu.classList.add('hidden');
+        activeMenu = null;
+    }
+});
+
+function switchMainTab(tabName) {
+    document.querySelectorAll('.main-tab-btn').forEach(btn => {
+        if (btn.id === 'tabBtn-' + tabName) {
+            btn.classList.add('bg-white', 'text-accent', 'shadow-lg', 'shadow-black/5');
+            btn.classList.remove('text-white/70', 'hover:bg-white/10');
+        } else {
+            btn.classList.remove('bg-white', 'text-accent', 'shadow-lg', 'shadow-black/5');
+            btn.classList.add('text-white/70', 'hover:bg-white/10');
+        }
+    });
+
+    document.querySelectorAll('.main-tab-pane').forEach(pane => {
+        if (pane.id === 'mainTab-' + tabName) {
+            pane.classList.remove('hidden');
+        } else {
+            pane.classList.add('hidden');
+        }
+    });
+}
+
+// Modal Toggle Override
+window.openModal = function(title) {
+    const overlay = document.getElementById('modalOverlay');
+    if (overlay) overlay.classList.remove('hidden');
+    setModalTab('Details');
+};
+
+function setModalTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.modal-tab').forEach(btn => {
+        if (btn.getAttribute('data-tab') === tabName) {
+            btn.classList.add('bg-accent', 'text-white', 'shadow-md');
+            btn.classList.remove('text-slate-400', 'hover:bg-slate-50');
+        } else {
+            btn.classList.remove('bg-accent', 'text-white', 'shadow-md');
+            btn.classList.add('text-slate-400', 'hover:bg-slate-50');
+        }
+    });
+
+    // Update panes
+    const targetId = 'modalTab-' + tabName.replace(/\s+/g, '');
+    document.querySelectorAll('.modal-pane').forEach(pane => {
+        if (pane.id === targetId) {
+            pane.classList.remove('hidden');
+        } else {
+            pane.classList.add('hidden');
+        }
+    });
+}
+
+// Modal Dynamic Logic
+function togglePanel(id, checked) {
+    const panel = document.getElementById(id);
+    if (!panel) return;
+    if (checked) {
+        panel.classList.remove('opacity-50', 'pointer-events-none');
+        panel.querySelectorAll('input, select').forEach(el => el.disabled = false);
+    } else {
+        panel.classList.add('opacity-50', 'pointer-events-none');
+        panel.querySelectorAll('input, select').forEach(el => el.disabled = true);
+    }
+}
+
+function togglePurchaseRateMode(mode) {
+    const defaultFields = document.getElementById('purchaseDefaultFields');
+    const mrpField = document.getElementById('mrpField');
+    if (mode === 'Recent') {
+        if (defaultFields) defaultFields.classList.add('hidden');
+        if (mrpField) mrpField.classList.add('hidden');
+    } else {
+        if (defaultFields) defaultFields.classList.remove('hidden');
+        if (mrpField) mrpField.classList.remove('hidden');
+    }
+}
+
+function toggleUnitLogic(mode) {
+    const relativeArea = document.getElementById('relativeUnitArea');
+    const packArea = document.getElementById('packUnitArea');
+    
+    if (relativeArea) relativeArea.classList.toggle('hidden', mode !== 'Relative');
+    if (packArea) packArea.classList.toggle('hidden', mode !== 'Pack');
+}
+
+function toggleInventoryFields(checked) {
+    const fields = document.getElementById('inventoryFields');
+    if (fields) fields.classList.toggle('hidden', !checked);
+}
+
+function toggleReorderMode(mode) {
+    const autoVal = document.getElementById('reorderAutoVal');
+    const manualInput = document.getElementById('reorderManualInput');
+    
+    if (mode === 'Auto') {
+        if (autoVal) autoVal.classList.remove('hidden');
+        if (manualInput) manualInput.classList.add('hidden');
+    } else {
+        if (autoVal) autoVal.classList.add('hidden');
+        if (manualInput) manualInput.classList.remove('hidden');
+    }
+}
+
+function toggleSaveDropdown(e) {
+    if (e) e.stopPropagation();
+    const menu = document.getElementById('saveDropdownMenu');
+    if (menu) menu.classList.toggle('hidden');
+}
+
+function openCategoryModal() {
+    const modal = document.getElementById('categoryModalOverlay');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function closeCategoryModal() {
+    const modal = document.getElementById('categoryModalOverlay');
+    if (modal) modal.classList.add('hidden');
+}
+
+function openAttributeModal() {
+    const modal = document.getElementById('attributeModalOverlay');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function closeAttributeModal() {
+    const modal = document.getElementById('attributeModalOverlay');
+    if (modal) modal.classList.add('hidden');
+}
+
+function openBrandModal() {
+    const modal = document.getElementById('brandModalOverlay');
+    if (modal) modal.classList.remove('hidden');
+    setBrandTab('Details');
+}
+
+function closeBrandModal() {
+    const modal = document.getElementById('brandModalOverlay');
+    if (modal) modal.classList.add('hidden');
+}
+
+function setBrandTab(tabName) {
+    document.querySelectorAll('.brand-modal-tab').forEach(btn => {
+        if (btn.getAttribute('data-tab') === tabName) {
+            btn.classList.add('bg-accent', 'text-white', 'shadow-md');
+            btn.classList.remove('text-accent', 'hover:bg-slate-50');
+        } else {
+            btn.classList.remove('bg-accent', 'text-white', 'shadow-md');
+            btn.classList.add('text-accent', 'hover:bg-slate-50');
+        }
+    });
+
+    document.querySelectorAll('.brand-modal-pane').forEach(pane => {
+        if (pane.id === 'brandTab-' + tabName) {
+            pane.classList.remove('hidden');
+        } else {
+            pane.classList.add('hidden');
+        }
+    });
+}
+</script>
+
+<style>
+.scale-in-tr { animation: scale-in-tr 0.2s cubic-bezier(0.250, 0.460, 0.450, 0.940) both; }
+@keyframes scale-in-tr {
+  0% { transform: scale(0); transform-origin: 100% 0%; opacity: 0; }
+  100% { transform: scale(1); transform-origin: 100% 0%; opacity: 1; }
+}
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+{% endblock %}

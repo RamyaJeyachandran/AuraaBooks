@@ -1,0 +1,148 @@
+<!-- Navigation Items -->
+<div class="space-y-1">
+    <!-- Dashboard -->
+    <a href="{% url 'dashboard' %}" class="nav-item flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 {% if request.path == '/' %}active{% endif %}">
+        <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 3h7v7H3V3zm11 0h7v7h-7V3zm0 11h7v7h-7v-7zm-11 0h7v7H3v-7z"/></svg>
+        </div>
+        <span class="text-[13px] flex-1 font-medium text-white">Dashboard</span>
+    </a>
+
+    <div class="h-1"></div>
+
+    <!-- Masters -->
+    <div class="nav-group">
+        <div class="nav-parent flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl {% if '/items/' in request.path or '/customers/' in request.path or '/suppliers/' in request.path or '/referrers/' in request.path or '/warehouse/' in request.path or '/branch/' in request.path or '/franchisee/' in request.path or '/projects/' in request.path or '/sales-rep/' in request.path or '/bank-cash/' in request.path or '/rate-sheet/' in request.path or '/stock-journal/' in request.path %}active-parent{% endif %}" onclick="toggleNavGroup(this)">
+            <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <span class="text-[13px] flex-1 font-medium">Masters</span>
+            <svg class="w-3 h-3 transition-transform chevron {% if '/items/' in request.path or '/customers/' in request.path or '/suppliers/' in request.path or '/referrers/' in request.path or '/warehouse/' in request.path or '/branch/' in request.path or '/franchisee/' in request.path or '/projects/' in request.path or '/sales-rep/' in request.path or '/bank-cash/' in request.path or '/rate-sheet/' in request.path or '/stock-journal/' in request.path %}rotate-90{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+        </div>
+        <div class="nav-children mt-1 space-y-1 ml-6 mr-1 overflow-hidden transition-all duration-300 relative z-20 {% if not '/items/' in request.path and not '/customers/' in request.path and not '/suppliers/' in request.path and not '/referrers/' in request.path and not '/warehouse/' in request.path and not '/branch/' in request.path and not '/franchisee/' in request.path and not '/projects/' in request.path and not '/sales-rep/' in request.path and not '/bank-cash/' in request.path and not '/rate-sheet/' in request.path and not '/stock-journal/' in request.path %}max-h-0{% endif %}">
+            <a href="{% url 'customer-list' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/customers/' %}active-child{% endif %}">Customer</a>
+            <a href="{% url 'supplier-list' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/suppliers/' %}active-child{% endif %}">Suppliers</a>
+            <a href="{% url 'item-list' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/items/' %}active-child{% endif %}">Items</a>
+            <a href="{% url 'referrer-list' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/referrers/' %}active-child{% endif %}">Referred By</a>
+            <a href="{% url 'warehouse-list' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/warehouse/' %}active-child{% endif %}">Warehouse</a>
+            <a href="{% url 'branch-list' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/branch/' %}active-child{% endif %}">Branch</a>
+            <a href="{% url 'franchisee-list' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/franchisee/' %}active-child{% endif %}">Franchisee</a>
+            <a href="{% url 'project-list' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if '/projects/' in request.path %}active-child{% endif %}">Project</a>
+            <a href="{% url 'sales-rep-list' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if '/sales-rep/' in request.path %}active-child{% endif %}">Sales Rep</a>
+            <a href="{% url 'bank-cash-list' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if '/bank-cash/' in request.path %}active-child{% endif %}">Bank / Cash</a>
+            <a href="{% url 'rate-sheet-list' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if '/rate-sheet/' in request.path %}active-child{% endif %}">Rate Sheet</a>
+            <a href="{% url 'stock-journal-list' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if '/stock-journal/' in request.path %}active-child{% endif %}">Stock Journal</a>
+        </div>
+    </div>
+
+    <div class="h-1"></div>
+
+    <!-- Sales -->
+    <div class="nav-group">
+        <div class="nav-parent flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl {% if '/sales/' in request.path %}active-parent{% endif %}" onclick="toggleNavGroup(this)">
+            <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2m4 0v2m0 4v.01M8 4h8a2 2 0 012 2v2H6V6a2 2 0 012-2z"/></svg>
+            </div>
+            <span class="text-[13px] flex-1 font-medium">Sales</span>
+            <svg class="w-3 h-3 transition-transform chevron {% if '/sales/' in request.path %}rotate-90{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+        </div>
+        <div class="nav-children mt-1 space-y-1 ml-6 mr-1 overflow-hidden transition-all duration-300 relative z-20 {% if not '/sales/' in request.path %}max-h-0{% endif %}">
+            <a href="{% url 'sales-quotes' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/sales/quotes/' %}active-child{% endif %}">Quotes</a>
+            <a href="{% url 'sales-orders' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/sales/orders/' %}active-child{% endif %}">Sales Order</a>
+            <a href="{% url 'sales-invoices' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/sales/invoices/' %}active-child{% endif %}">Invoice</a>
+            <a href="{% url 'delivery-challan' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/sales/delivery-challan/' %}active-child{% endif %}">Delivery challan</a>
+            <a href="{% url 'sales-credit-note' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/sales/credit-note/' %}active-child{% endif %}">Credit Note</a>
+            <a href="{% url 'sales-receipt' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/sales/receipt/' %}active-child{% endif %}">Receipt</a>
+        </div>
+    </div>
+
+    <div class="h-1"></div>
+
+    <!-- Purchase -->
+    <div class="nav-group">
+        <div class="nav-parent flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl {% if '/purchase/' in request.path %}active-parent{% endif %}" onclick="toggleNavGroup(this)">
+            <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            </div>
+            <span class="text-[13px] flex-1 font-medium">Purchase</span>
+            <svg class="w-3 h-3 transition-transform chevron {% if '/purchase/' in request.path %}rotate-90{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+        </div>
+        <div class="nav-children mt-1 space-y-1 ml-6 mr-1 overflow-hidden transition-all duration-300 relative z-20 {% if not '/purchase/' in request.path %}max-h-0{% endif %}">
+            <a href="{% url 'purchase-quotes' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/purchase/quotes/' %}active-child{% endif %}">Purchase Quote</a>
+            <a href="{% url 'purchase-orders' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/purchase/orders/' %}active-child{% endif %}">Purchase Order</a>
+            <a href="{% url 'goods-receipt' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/purchase/goods-receipt/' %}active-child{% endif %}">Goods Receipt</a>
+            <a href="{% url 'purchase-bills' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/purchase/bills/' %}active-child{% endif %}">Purchase Bill</a>
+            <a href="{% url 'purchase-payments' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/purchase/payments/' %}active-child{% endif %}">Payment</a>
+            <a href="{% url 'supplier-credit-note' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/purchase/credit-note/' %}active-child{% endif %}">Supplier Credit Note</a>
+        </div>
+    </div>
+
+    <div class="h-1"></div>
+
+    <!-- Expenses -->
+    <div class="nav-group">
+        <div class="nav-parent flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl {% if '/expenses/' in request.path %}active-parent{% endif %}" onclick="toggleNavGroup(this)">
+            <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zM12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z"/></svg>
+            </div>
+            <span class="text-[13px] flex-1 font-medium">Expenses</span>
+            <svg class="w-3 h-3 transition-transform chevron {% if '/expenses/' in request.path %}rotate-90{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+        </div>
+        <div class="nav-children mt-1 space-y-1 ml-6 mr-1 overflow-hidden transition-all duration-300 relative z-20 {% if not '/expenses/' in request.path %}max-h-0{% endif %}">
+            <a href="{% url 'credit-expenses' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/expenses/credit/' %}active-child{% endif %}">Credit Expenses</a>
+            <a href="{% url 'asset-expenses' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/expenses/asset/' %}active-child{% endif %}">Asset Expenses</a>
+            <a href="{% url 'cash-expenses' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/expenses/cash/' %}active-child{% endif %}">Cash Expenses</a>
+            <a href="{% url 'reclaim-expenses' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/expenses/reclaim/' %}active-child{% endif %}">Reclaim Expenses</a>
+        </div>
+    </div>
+
+    <div class="h-1"></div>
+
+    <!-- Accounting -->
+    <div class="nav-group">
+        <div class="nav-parent flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl {% if '/accounting/' in request.path %}active-parent{% endif %}" onclick="toggleNavGroup(this)">
+            <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2" /><line x1="2" y1="10" x2="22" y2="10" /><line x1="7" y1="15" x2="7" y2="15.01" /><line x1="12" y1="15" x2="12" y2="15.01" /><line x1="17" y1="15" x2="17" y2="15.01" /></svg>
+            </div>
+            <span class="text-[13px] flex-1 font-medium">Accounting</span>
+            <svg class="w-3 h-3 transition-transform chevron {% if '/accounting/' in request.path %}rotate-90{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+        </div>
+        <div class="nav-children mt-1 space-y-1 ml-6 mr-1 overflow-hidden transition-all duration-300 relative z-20 {% if not '/accounting/' in request.path %}max-h-0{% endif %}">
+            <a href="{% url 'accounts' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/accounting/accounts/' %}active-child{% endif %}">Accounts</a>
+            <a href="{% url 'opening-balance' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/accounting/opening-balance/' %}active-child{% endif %}">Opening Balance</a>
+        </div>
+    </div>
+
+    <!-- Add other groups (Purchase, Expenses, Accounting, etc.) similarly -->
+</div>
+
+<style>
+    /* 3D Sidebar Active Styles - Purely for mirroring React UI exactly */
+    .nav-item.active, .nav-parent.active-parent {
+        background: rgba(0,0,0,0.4) !important;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 1rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.1);
+        transform: translateZ(15px) scale(1.03);
+        font-weight: 900;
+    }
+    .nav-item.active::before, .nav-parent.active-parent::before {
+        content: '';
+        position: absolute;
+        left: -4px;
+        top: 12px;
+        bottom: 12px;
+        width: 4px;
+        background: white;
+        border-radius: 9999px;
+        box-shadow: 0 0 15px rgba(255,255,255,0.8);
+    }
+    .active-child {
+        color: white !important;
+        background: rgba(0,0,0,0.4) !important;
+        font-weight: 900;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        border: 1px solid rgba(255,255,255,0.1);
+        transform: translateZ(10px) scale(1.02);
+    }
+</style>
