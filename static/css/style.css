@@ -1,0 +1,157 @@
+:root {
+    --accent: #2F80ED;
+    --accent-rgb: 47, 128, 237;
+    --accent2: #56a0f5;
+    --accent2-rgb: 86, 160, 245;
+    --accent-light: #eaf2ff;
+    --accent-text: #1a5fb5;
+    --sidebar-bg: linear-gradient(160deg, #56a0f5, #2F80ED, #1a5fb5);
+    --sidebar-text: #FFFFFF;
+    --sidebar-hover: rgba(255,255,255,0.15);
+    --sidebar-border: rgba(255,255,255,0.2);
+    --bg: #f0f6ff;
+    --surface: #ffffff;
+    --border: #d6e6fb;
+    --text-primary: #0d2444;
+    --text-secondary: #1e3a5f;
+    --text-muted: #5b7da3;
+    --radius: 10px;
+    --transition: all 0.2s ease;
+}
+
+.dark {
+    --bg: #0b1829;
+    --surface: #122040;
+    --border: #1e3560;
+    --text-primary: #deeeff;
+    --text-secondary: #6a9fd4;
+    --text-muted: #2e5480;
+    --accent-light: #112244;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    background-color: var(--bg);
+    color: var(--text-primary);
+    transition: var(--transition);
+    letter-spacing: -0.01em;
+}
+
+/* 2026 3D Effects */
+.perspective-1000 { perspective: 1000px; }
+.preserve-3d { transform-style: preserve-3d; }
+.perspective-2000 { perspective: 2000px; }
+
+.card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.875rem;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(47, 128, 237, 0.14);
+}
+
+.tilt-card {
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+    transform-style: preserve-3d;
+}
+
+.tilt-card:hover {
+    transform: translateZ(10px) rotateX(2deg) rotateY(-2deg);
+    box-shadow: 0 20px 40px -10px rgba(var(--accent-rgb), 0.2);
+}
+
+.glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.dark .glass {
+    background: rgba(18, 32, 64, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.neo-shadow {
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1), 0 4px 10px -5px rgba(0, 0, 0, 0.05);
+}
+
+.dark .neo-shadow {
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+}
+
+.mesh-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-color: var(--bg);
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(47, 128, 237, 0.08) 0, transparent 50%), 
+      radial-gradient(at 100% 0%, rgba(86, 160, 245, 0.08) 0, transparent 50%), 
+      radial-gradient(at 100% 100%, rgba(47, 128, 237, 0.08) 0, transparent 50%), 
+      radial-gradient(at 0% 100%, rgba(86, 160, 245, 0.08) 0, transparent 50%);
+    filter: blur(80px);
+    animation: mesh-move 20s ease infinite alternate;
+}
+
+@keyframes mesh-move {
+    0% { transform: scale(1) rotate(0deg); }
+    100% { transform: scale(1.1) rotate(2deg); }
+}
+
+.stagger-in > * {
+    opacity: 0;
+    transform: translateY(10px) translateZ(-20px);
+    animation: stagger-reveal 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes stagger-reveal {
+    to {
+        opacity: 1;
+        transform: translateY(0) translateZ(0);
+    }
+}
+
+.stagger-in > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-in > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-in > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-in > *:nth-child(4) { animation-delay: 0.2s; }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Selection and Focus */
+::selection {
+    background-color: var(--accent);
+    color: #ffffff;
+}
+
+select option:checked {
+    background: var(--accent) !important;
+    color: white !important;
+}
+
+/* Modal Form Enhancements */
+.modal-pane input:focus, 
+.modal-pane select:focus, 
+.modal-pane textarea:focus {
+    background-color: #ffffff;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.1);
+    transform: translateY(-1px);
+}
+
+.modal-pane label {
+    transition: color 0.2s ease;
+}
+
+.modal-pane div:focus-within > label {
+    color: var(--accent);
+}
