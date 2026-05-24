@@ -1,0 +1,213 @@
+import os
+import re
+
+# 1. Update views.py
+views_file = r"d:\AuraaZenAIProject\abproject\apps\core\views.py"
+with open(views_file, "r", encoding="utf-8") as f:
+    views_content = f.read()
+
+if "class GoodsReceiptListView(TemplateView):" not in views_content:
+    new_view = """
+class GoodsReceiptListView(TemplateView):
+    template_name = 'goods_receipt.html'
+"""
+    views_content += new_view
+    with open(views_file, "w", encoding="utf-8") as f:
+        f.write(views_content)
+
+# 2. Update urls.py
+urls_file = r"d:\AuraaZenAIProject\abproject\apps\core\urls.py"
+with open(urls_file, "r", encoding="utf-8") as f:
+    urls_content = f.read()
+
+old_url = "path('purchase/goods-receipt/', views.GenericMasterView.as_view(title='Goods Receipt', parent_name='Purchase'), name='goods-receipt'),"
+new_url = "path('purchase/goods-receipt/', views.GoodsReceiptListView.as_view(), name='goods-receipt'),"
+
+if old_url in urls_content:
+    urls_content = urls_content.replace(old_url, new_url)
+    with open(urls_file, "w", encoding="utf-8") as f:
+        f.write(urls_content)
+
+# 3. Create goods_receipt.html
+html_file = r"d:\AuraaZenAIProject\abproject\templates\goods_receipt.html"
+
+html_content = """{% extends 'base.html' %}
+
+{% block title %}Goods Receipt - Auraa Books{% endblock %}
+{% block breadcrumb_active %}Goods Receipt{% endblock %}
+{% block breadcrumb_parent %}Purchase <span class="opacity-50">/</span>{% endblock %}
+
+{% block content %}
+<div class="p-8 stagger-in max-w-[1600px] mx-auto">
+    <!-- Header Section -->
+    <div class="flex items-center justify-between mb-8 relative z-[300]">
+        <div class="flex items-center gap-2">
+            <span class="text-[20px] font-medium text-slate-500">Purchase <span class="mx-1">/</span></span>
+            <div class="relative group/title">
+                <button class="flex items-center gap-1 text-[20px] font-black text-blue-600 hover:text-blue-700">
+                    Goods Receipt
+                    <svg class="w-4 h-4 mt-1" fill="currentColor" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+                </button>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-3">
+            <!-- New Button (Primary Color) -->
+            <button type="button" class="px-6 py-2.5 bg-[#10b981] text-white rounded-lg text-[14px] font-bold flex items-center gap-2 shadow-md hover:brightness-110 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                New Goods Receipt
+            </button>
+        </div>
+    </div>
+
+    <!-- Actions Section -->
+    <div class="flex items-center justify-end mb-6 relative z-[200]">
+        <div class="flex items-center gap-4">
+            <!-- Export Split Button -->
+            <div class="relative group/export">
+                <div class="flex items-center rounded-lg overflow-hidden shadow-sm h-10 border border-slate-200">
+                    <button class="px-3 h-full bg-[var(--accent)] text-white hover:brightness-110 transition-all border-r border-white/20 flex items-center justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    </button>
+                    <button onclick="toggleActionMenu(event, 'exportMenu')" class="px-2 h-full bg-[var(--accent)] text-white hover:brightness-110 transition-all flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+                    </button>
+                </div>
+                <!-- Export Dropdown -->
+                <div id="exportMenu" class="hidden absolute top-full right-0 mt-2 w-40 bg-white rounded-lg shadow-xl border border-slate-100 py-2 z-[500]">
+                    <button class="w-full text-left px-6 py-2.5 text-[14px] text-slate-700 hover:bg-slate-50 transition-all">Import XLS</button>
+                    <button class="w-full text-left px-6 py-2.5 text-[14px] text-slate-700 hover:bg-slate-50 transition-all">Export XLS</button>
+                </div>
+            </div>
+
+            <!-- Filter Button -->
+            <div class="relative group/filter">
+                <button onclick="toggleActionMenu(event, 'filterMenu')" class="w-10 h-10 flex items-center justify-center bg-[var(--accent)] text-white hover:brightness-110 rounded-lg transition-all shadow-sm border border-slate-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                </button>
+                <!-- Filter Popup -->
+                <div id="filterMenu" class="hidden absolute top-full right-0 mt-2 w-[400px] bg-white rounded-xl shadow-xl border border-slate-100 p-6 z-[500]">
+                    <div class="absolute -top-1.5 right-4 w-3 h-3 bg-white border-t border-l border-slate-100 rotate-45"></div>
+                    <div class="space-y-4">
+                        <div class="space-y-1">
+                            <label class="text-[12px] font-bold text-slate-700">Contacts / Goods Receipt# / Ref# / Amount</label>
+                            <div class="relative">
+                                <input type="text" class="w-full h-10 bg-white border border-slate-200 rounded text-[13px] outline-none focus:border-slate-400">
+                                <svg class="w-4 h-4 text-slate-400 absolute right-3 top-3 pointer-events-none" fill="currentColor" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-1">
+                                <label class="text-[12px] font-bold text-slate-700">Start Date</label>
+                                <div class="relative">
+                                    <input type="text" placeholder="DD/MM/YYYY" class="w-full h-10 bg-white border border-slate-200 rounded px-3 text-[13px] outline-none focus:border-slate-400">
+                                    <svg class="w-4 h-4 text-slate-400 absolute right-3 top-3 pointer-events-none" fill="currentColor" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 002 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>
+                                </div>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[12px] font-bold text-slate-700">End Date</label>
+                                <div class="relative">
+                                    <input type="text" placeholder="DD/MM/YYYY" class="w-full h-10 bg-white border border-slate-200 rounded px-3 text-[13px] outline-none focus:border-slate-400">
+                                    <svg class="w-4 h-4 text-slate-400 absolute right-3 top-3 pointer-events-none" fill="currentColor" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 002 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 justify-end pt-4">
+                            <button class="px-6 py-2 bg-[var(--accent)] text-white rounded font-bold text-[14px] hover:brightness-110 transition-all">Search</button>
+                            <button class="px-6 py-2 bg-slate-200 text-slate-600 rounded font-bold text-[14px] hover:bg-slate-300 transition-all">Clear</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Button (Vertical Dots) -->
+            <div class="relative group/settings">
+                <button onclick="toggleActionMenu(event, 'settingsMenu')" class="w-10 h-10 flex items-center justify-center bg-slate-700 text-white hover:bg-slate-800 rounded-xl transition-all shadow-sm">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                </button>
+                <div id="settingsMenu" class="hidden absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-slate-100 p-4 z-[500]">
+                    <div class="absolute -top-1.5 right-4 w-3 h-3 bg-white border-t border-l border-slate-100 rotate-45"></div>
+                    <div class="space-y-3">
+                        <label class="flex items-center gap-3 cursor-pointer group/item">
+                            <div class="w-5 h-5 border-2 border-slate-200 rounded flex items-center justify-center transition-all">
+                                <input type="checkbox" class="hidden">
+                                <div class="w-2.5 h-2.5 bg-[#008f8f] rounded-sm opacity-0 transition-all"></div>
+                            </div>
+                            <span class="text-[13px] font-bold text-slate-700">Ref.No</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer group/item">
+                            <div class="w-5 h-5 border-2 border-slate-200 rounded flex items-center justify-center transition-all">
+                                <input type="checkbox" class="hidden">
+                                <div class="w-2.5 h-2.5 bg-[#008f8f] rounded-sm opacity-0 transition-all"></div>
+                            </div>
+                            <span class="text-[13px] font-bold text-slate-700">Due Days</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer group/item">
+                            <div class="w-5 h-5 border-2 border-[#008f8f] rounded flex items-center justify-center transition-all">
+                                <input type="checkbox" checked class="hidden">
+                                <div class="w-2.5 h-2.5 bg-[#008f8f] rounded-sm opacity-100 transition-all"></div>
+                            </div>
+                            <span class="text-[13px] font-bold text-slate-700">Status</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer group/item">
+                            <div class="w-5 h-5 border-2 border-[#008f8f] rounded flex items-center justify-center transition-all">
+                                <input type="checkbox" checked class="hidden">
+                                <div class="w-2.5 h-2.5 bg-[#008f8f] rounded-sm opacity-100 transition-all"></div>
+                            </div>
+                            <span class="text-[13px] font-bold text-slate-700">Due Amount</span>
+                        </label>
+                        
+                        <div class="h-px bg-slate-200 my-2"></div>
+                        
+                        <label class="flex items-center gap-3 cursor-pointer group/item">
+                            <div class="w-5 h-5 border-2 border-slate-200 rounded flex items-center justify-center transition-all">
+                                <input type="checkbox" class="hidden">
+                                <div class="w-2.5 h-2.5 bg-[#008f8f] rounded-sm opacity-0 transition-all"></div>
+                            </div>
+                            <span class="text-[13px] font-bold text-slate-700">Supplier Delivery Chalan No</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer group/item">
+                            <div class="w-5 h-5 border-2 border-slate-200 rounded flex items-center justify-center transition-all">
+                                <input type="checkbox" class="hidden">
+                                <div class="w-2.5 h-2.5 bg-[#008f8f] rounded-sm opacity-0 transition-all"></div>
+                            </div>
+                            <span class="text-[13px] font-bold text-slate-700">Supplier Delivery Chalan Date</span>
+                        </label>
+                        
+                        <button class="w-full mt-4 px-6 py-2 bg-[var(--accent)] text-white rounded font-bold text-[14px] hover:brightness-110 transition-all shadow-md shadow-[var(--accent)]/20">Apply</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="bg-white border border-slate-200 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead class="bg-white border-b border-slate-200 text-slate-800 text-[12px] font-bold">
+                    <tr>
+                        <th class="px-4 py-4 w-32">Date</th>
+                        <th class="px-4 py-4 w-40">Receipt No</th>
+                        <th class="px-4 py-4">Contact</th>
+                        <th class="px-4 py-4 w-32">Status</th>
+                        <th class="px-4 py-4 w-32">Amount</th>
+                        <th class="px-4 py-4 w-24 text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    <tr>
+                        <td colspan="6" class="px-4 py-4 text-center text-[13px] font-bold text-slate-800 bg-white">
+                            No Records Found
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+"""
+
+with open(html_file, "w", encoding="utf-8") as f:
+    f.write(html_content)
+print("goods_receipt.html generated and wired up.")

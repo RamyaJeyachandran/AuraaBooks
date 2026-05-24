@@ -1,0 +1,143 @@
+Match at index 17382:
+none">
+      <div class="nav-sub-item" id="sub-sales_quotes" onclick="go('sales_quotes','list')">Quotes</div>
+      <div class="nav-sub-item" id="sub-sales_order" onclick="go('sales_order','list')">Sales Order</div>
+      <div class="nav-sub-item" id="sub-sales_invoice" onclick="go('sales_invoice','list')">Inv
+------------------------------------------------------------
+Match at index 17408:
+av-sub-item" id="sub-sales_quotes" onclick="go('sales_quotes','list')">Quotes</div>
+      <div class="nav-sub-item" id="sub-sales_order" onclick="go('sales_order','list')">Sales Order</div>
+      <div class="nav-sub-item" id="sub-sales_invoice" onclick="go('sales_invoice','list')">Invoice</div>
+      <div clas
+------------------------------------------------------------
+Match at index 36752:
+-26', 'HARISH NAYAKA BANGALORE', 'Expired', '₹1,25,061.00', '₹1,25,061.00']
+    ],
+    cards: [{l: 'Expired', v: '2', c: 'orange', icon: '📅'}]
+  },
+  sales_order: {
+    label: 'Sales Order', icon: '📦',
+    cols: ['Date', 'Order No', 'Contact', 'Ref.No', 'Stock', 'Status', 'Amount', 'Action'],
+    rows: [
+     
+------------------------------------------------------------
+Match at index 45995:
+t.add('active');
+  } else if(S.mod === 'expense') {
+    document.getElementById('nav-expense').classList.add('active');
+  } else if(['sales_quotes', 'sales_order', 'sales_invoice', 'delivery_challan', 'sales_credit', 'sales_receipt'].includes(S.mod)) {
+    document.getElementById('nav-sales').classList.add('ac
+------------------------------------------------------------
+Match at index 47018:
+)) sec = 'Settings';
+  if(['quotes','po','pbill'].includes(S.mod)) sec = 'Purchase';
+  if(S.mod==='expense') sec = 'Expenses';
+  if(['sales_quotes', 'sales_order', 'sales_invoice', 'delivery_challan', 'sales_credit', 'sales_receipt'].includes(S.mod)) sec = 'Sales';
+  if(S.mod==='sales_rep') sec = 'Master';
+  h
+------------------------------------------------------------
+Match at index 47802:
+ bc.innerHTML=html;
+}
+
+function renderSalesBreadcrumb(currentMod) {
+    const mods = [
+        { id: 'sales_quotes', label: 'Quote' },
+        { id: 'sales_order', label: 'Sales Order' },
+        { id: 'sales_invoice', label: 'Invoice' },
+        { id: 'delivery_challan', label: 'Delivery Challan' },
+        {
+------------------------------------------------------------
+Match at index 58802:
+' : 'none';
+}
+function showOrderLinkModal() {
+    S.orderLinkModalActive = true;
+    renderModal();
+}
+function renderSalesOrder() {
+  const cfg = CFG.sales_order;
+  return `
+    <div style="padding:22px 30px; background:#f8fafc; min-height:100vh">
+      <!-- Header Area -->
+      <div style="display:flex; just
+------------------------------------------------------------
+Match at index 59133:
+tween; align-items:center; margin-bottom:25px">
+        <div style="display:flex; align-items:center; gap:12px">
+            ${renderSalesBreadcrumb('sales_order')}
+        </div>
+        
+        <!-- Status Bar -->
+        <div style="display:flex; background:#fff; border:1px solid #e2e8f0; border-radius:8px
+------------------------------------------------------------
+Match at index 61328:
+green" style="background:#22c55e; border:none; padding:10px 30px; color:#fff; font-weight:700; border-radius:4px; font-size:14px" onclick="showModal('sales_order')">New Sales Order</button>
+      </div>
+
+      <!-- Action Toolbar -->
+      <div style="display:flex; justify-content:flex-end; align-items:center;
+------------------------------------------------------------
+Match at index 100491:
+d === 'items' && subModId === 'brand') label = 'Brand';
+
+  const header = document.querySelector('.modal-header');
+  if(header) {
+      if(modId === 'sales_order' || modId === 'sales_quotes' || modId === 'sales_invoice' || modId === 'delivery_challan' || modId === 'sales_credit' || modId === 'sales_receipt') h
+------------------------------------------------------------
+Match at index 101875:
+al-content" style="max-width:980px;background:#fff">${getFormInnerHtml(modId, false, M.tab, true)}</div>`;
+    return;
+  } else if (['sales_quotes', 'sales_order', 'sales_invoice', 'delivery_challan', 'sales_credit', 'sales_receipt', 'purchase_credit'].includes(modId)) {
+    wrapEl.innerHTML = `<div class="mod
+------------------------------------------------------------
+Match at index 121316:
+== 'sales_rep') return renderSalesRepModal();
+    if (mod === 'bankcash') return renderBankDetailsModal();
+    if (mod === 'sales_quotes' || mod === 'sales_order' || mod === 'sales_invoice' || mod === 'delivery_challan' || mod === 'sales_credit' || mod === 'sales_receipt' || mod === 'purchase_credit') {
+      
+------------------------------------------------------------
+Match at index 133613:
+){el.innerHTML=renderExpense();return;}
+  if(S.mod==='sales_quotes' && S.screen==='list'){el.innerHTML=renderSalesQuotesList();return;}
+  if(S.mod==='sales_order' && S.screen==='list'){el.innerHTML=renderSalesOrder();return;}
+  if(S.mod==='sales_invoice' && S.screen==='list'){el.innerHTML=renderSalesInvoiceLis
+------------------------------------------------------------
+Match at index 135070:
+emDetailActive = false;
+    closeModal();
+    render();
+}
+function renderSoItemDetailModal() {
+    const ri = S.activeSoRow || 0;
+    const row = CFG.sales_order.rows[ri];
+    return `
+      <div style="background:#fff; height:100%; display:flex; flex-direction:column; overflow:hidden">
+        <div style="pad
+------------------------------------------------------------
+Match at index 440200:
+');
+    if(el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function renderSalesQuotesModal() {
+  const isOrder = M.mod === 'sales_order';
+  return `
+    <div style="background:#fff; height:100%; display:flex; flex-direction:column; overflow:hidden">
+      <!-- Modal Header -->
+      <
+------------------------------------------------------------
+Match at index 486785:
+= 'none' ? 'block' : 'none';
+}
+
+function renderSalesQuotesQuickModal() {
+  const field = M.quickEntryField || 'contact';
+  const isOrder = M.mod === 'sales_order';
+  
+  let label = "Customer";
+  let placeholder = "Search";
+  
+  if (field === 'invoice') label = "Invoice No";
+  if (field === 'date') label = "Dat
+------------------------------------------------------------

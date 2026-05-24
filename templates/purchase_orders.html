@@ -524,31 +524,7 @@
                     <div class="flex flex-col">
                         <div class="flex items-center gap-3">
                             <h3 id="modalTitle" class="text-[20px] font-black text-white leading-none">New Purchase Order</h3>
-                            <!-- Normal / Quick View Dropdown next to title, background white with primary color -->
-                            <div class="relative flex items-center select-none">
-                                <button type="button" onclick="toggleActionMenu(event, 'viewModeMenu')" id="viewModeBtn" class="px-2 h-8 rounded-lg border border-slate-200 flex items-center justify-center gap-1 transition-all focus:outline-none shadow-sm hover:bg-slate-100" style="background-color: white !important; color: var(--accent) !important;" title="Change View Mode">
-                                    <svg id="viewModeIcon" class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color: var(--accent) !important;">
-                                        <!-- Selected icon only -->
-                                        <rect x="3" y="3" width="7" height="7"/>
-                                        <rect x="14" y="3" width="7" height="7"/>
-                                        <rect x="3" y="14" width="7" height="7"/>
-                                        <rect x="14" y="14" width="7" height="7"/>
-                                    </svg>
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color: var(--accent) !important;">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-                                    </svg>
-                                </button>
-                                <div id="viewModeMenu" class="hidden absolute top-full left-0 mt-2 w-44 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-[600]">
-                                    <button type="button" onclick="selectViewMode('Normal View')" class="w-full text-left px-4 py-2.5 text-[13px] font-bold text-slate-700 hover:bg-[var(--accent)] hover:text-white transition-all flex items-center gap-2 group">
-                                        <svg class="w-4 h-4 text-[var(--accent)] group-hover:text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-                                        Normal View
-                                    </button>
-                                    <button type="button" onclick="selectViewMode('Quick View')" class="w-full text-left px-4 py-2.5 text-[13px] font-bold text-slate-700 hover:bg-[var(--accent)] hover:text-white transition-all flex items-center gap-2 group">
-                                        <svg class="w-4 h-4 text-slate-500 group-hover:text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                                        Quick View
-                                    </button>
-                                </div>
-                            </div>
+                            
                         </div>
                         <span class="text-[10px] font-bold text-white/70 mt-1">🏠 Main Branch</span>
                     </div>
@@ -1086,28 +1062,7 @@
                 <div class="flex flex-col">
                     <div class="flex items-center gap-3">
                         <h3 class="text-[20px] font-black text-white leading-none">New Purchase Order</h3>
-                        <!-- Quick View Dropdown -->
-                        <div class="relative flex items-center select-none">
-                            <button type="button" onclick="toggleActionMenu(event, 'qvViewModeMenu')" class="px-2 h-8 rounded-lg border border-slate-200 flex items-center justify-center gap-1 transition-all focus:outline-none shadow-sm hover:bg-slate-100" style="background-color: white !important; color: var(--accent) !important;" title="Change View Mode">
-                                <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color: var(--accent) !important;">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-                                </svg>
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color: var(--accent) !important;">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-                                </svg>
-                            </button>
-                            <div id="qvViewModeMenu" class="hidden absolute top-full left-0 mt-2 w-44 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-[600]">
-                                <button type="button" onclick="selectViewMode('Normal View')" class="w-full text-left px-4 py-2.5 text-[13px] font-bold text-slate-700 hover:bg-[var(--accent)] hover:text-white transition-all flex items-center gap-2 group">
-                                    <svg class="w-4 h-4 text-[var(--accent)] group-hover:text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-                                    Normal View
-                                </button>
-                                <button type="button" onclick="selectViewMode('Quick View')" class="w-full text-left px-4 py-2.5 text-[13px] font-bold text-slate-700 hover:bg-[var(--accent)] hover:text-white transition-all flex items-center gap-2 group">
-                                    <svg class="w-4 h-4 text-slate-500 group-hover:text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                                    Quick View
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                        
                 </div>
             </div>
             
