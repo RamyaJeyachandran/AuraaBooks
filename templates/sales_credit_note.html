@@ -6,45 +6,69 @@
 {% block content %}
 <div class="p-8 stagger-in max-w-[1600px] mx-auto">
     <!-- Header Section -->
-    <div class="flex items-center justify-between mb-8 relative z-[200]">
-        <div class="flex items-center gap-3">
+    <div class="flex items-center justify-between mb-6 relative z-[300]">
+        <div class="flex items-center gap-4 flex-1 mr-6">
             <h1 class="text-[32px] font-black text-slate-800 tracking-tight">Credit Note</h1>
-        </div>
-        <button type="button" onclick="openModal('Credit Note')" class="px-8 py-3.5 bg-[var(--accent)] text-white rounded-xl text-[14px] font-black flex items-center gap-2 shadow-xl shadow-[var(--accent)]/20 hover:brightness-110 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-widest">
-            New Credit Note
-        </button>
-    </div>
 
-    <!-- Summary Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm">
-            <span class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 block">Total Sales Returns</span>
-            <h2 class="text-[36px] font-black text-slate-800 leading-none">₹ 0.00</h2>
+            <!-- Compact Count Pills -->
+            <div class="flex-1 flex items-center justify-around bg-white border border-slate-200 rounded-2xl px-8 py-4 shadow-sm">
+                <div class="flex flex-col items-center">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-2">Total</span>
+                    <span class="text-[30px] font-black text-slate-700 leading-none">0</span>
+                </div>
+                <div class="w-px h-12 bg-slate-200"></div>
+                <div class="flex flex-col items-center">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-2">Open</span>
+                    <span class="text-[30px] font-black text-blue-500 leading-none">0</span>
+                </div>
+                <div class="w-px h-12 bg-slate-200"></div>
+                <div class="flex flex-col items-center">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-2">Draft</span>
+                    <span class="text-[30px] font-black text-rose-500 leading-none">0</span>
+                </div>
+            </div>
         </div>
-        <div class="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm">
-            <span class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 block">Unapplied Credit</span>
-            <h2 class="text-[36px] font-black text-blue-500 leading-none">₹ 0.00</h2>
-        </div>
-        <div class="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm">
-            <span class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 block">Refunded This Month</span>
-            <h2 class="text-[36px] font-black text-emerald-500 leading-none">₹ 0.00</h2>
+
+        <!-- Right side: Recent Navigator + New Credit Note Button -->
+        <div class="flex items-center gap-4">
+            <!-- Recent Navigator -->
+            <div class="relative">
+                <div class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-[var(--accent)] z-10 border-2 border-white"></div>
+                <div class="flex items-center bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden h-[52px]">
+                    <button type="button" class="px-3 h-full hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-all border-r border-slate-200">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+                    </button>
+                    <div class="px-5 flex flex-col items-center min-w-[80px]">
+                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Recent</span>
+                        <span class="text-[14px] font-black text-slate-700 leading-none">CN-001</span>
+                    </div>
+                    <button type="button" class="px-3 h-full hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-all border-l border-slate-200">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- New Credit Note Button -->
+            <button type="button" onclick="openModal('Credit Note')" class="px-8 h-[52px] bg-[var(--accent)] hover:brightness-110 active:scale-[0.98] text-white text-[14px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-[var(--accent)]/20 transition-all">
+                New Credit Note
+            </button>
         </div>
     </div>
 
     <!-- Tab Bar & Action Icons -->
-    <div class="flex items-center justify-between mb-6 bg-white rounded-[32px] px-8 shadow-sm h-20 relative z-[200]">
+    <div class="flex items-center justify-between mb-6 bg-white rounded-[32px] px-8 shadow-sm h-12 relative z-[200]">
         <div class="flex items-center h-full">
             <a href="#" class="px-8 h-full flex items-center text-[14px] font-black uppercase tracking-widest border-b-4 border-accent text-accent transition-all">All Credit Notes</a>
         </div>
         <div class="flex items-center gap-4">
             <!-- Export Split Button -->
             <div class="relative group/export">
-                <div class="flex items-center border border-slate-200 rounded-xl overflow-hidden shadow-sm h-10">
-                    <button class="px-4 h-full bg-slate-50 hover:bg-slate-100 transition-all border-r border-slate-200 flex items-center justify-center">
-                        <img src="https://img.icons8.com/material-outlined/24/64748b/export.png" class="w-4.5 h-4.5 opacity-60">
+                <div class="flex items-center rounded-xl overflow-hidden shadow-sm h-10">
+                    <button class="px-4 h-full bg-[var(--accent)] hover:brightness-110 transition-all border-r border-white/20 flex items-center justify-center">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                     </button>
-                    <button onclick="toggleActionMenu(event, 'exportMenu')" class="px-3 h-full bg-white hover:bg-slate-50 transition-all flex items-center justify-center">
-                        <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                    <button onclick="toggleActionMenu(event, 'exportMenu')" class="px-3 h-full bg-[var(--accent)] hover:brightness-110 transition-all flex items-center justify-center">
+                        <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
                     </button>
                 </div>
                 <!-- Export Dropdown -->
@@ -56,36 +80,36 @@
 
             <!-- Filter Button -->
             <div class="relative group/filter">
-                <button onclick="toggleActionMenu(event, 'filterMenu')" class="w-10 h-10 flex items-center justify-center bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition-all shadow-sm">
-                    <img src="https://img.icons8.com/material-outlined/24/64748b/filter.png" class="w-4.5 h-4.5 opacity-60">
+                <button onclick="toggleActionMenu(event, 'filterMenu')" class="w-10 h-10 flex items-center justify-center bg-[var(--accent)] hover:brightness-110 border border-[var(--accent)] rounded-xl transition-all shadow-sm">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
                 </button>
                 <!-- Filter Popup -->
-                <div id="filterMenu" class="hidden absolute top-full right-0 mt-2 w-[400px] bg-white rounded-[32px] shadow-2xl border border-slate-100 p-8 z-[500]">
-                    <div class="space-y-6">
-                        <div class="space-y-2">
-                            <h4 class="text-[16px] font-black text-slate-800">Search Credit Note</h4>
-                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Contacts / CN# / Ref# / Amount</p>
-                            <input type="text" class="w-full h-12 bg-white border border-slate-200 rounded-xl px-4 text-[13px] font-bold outline-none focus:border-accent">
+                <div id="filterMenu" class="hidden absolute top-full right-0 mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-slate-100 p-4 z-[500]">
+                    <div class="space-y-3">
+                        <div class="space-y-1.5">
+                            <h4 class="text-[13px] font-black text-slate-800">Search Credit Note</h4>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">CN# / Customer / Amount</p>
+                            <input type="text" class="w-full h-9 bg-white border border-slate-200 rounded-xl px-3 text-[12px] font-bold outline-none focus:border-[var(--accent)]">
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-1.5">
-                                <label class="text-[12px] font-black text-slate-800">Start Date</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="space-y-1">
+                                <label class="text-[11px] font-black text-slate-700">Start Date</label>
                                 <div class="relative">
-                                    <input type="text" placeholder="DD/MM/YYYY" class="w-full h-12 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none">
-                                    <span class="absolute right-4 top-1/2 -translate-y-1/2">📅</span>
+                                    <input type="text" placeholder="DD/MM/YYYY" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-3 text-[11px] font-bold outline-none">
+                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[12px]">📅</span>
                                 </div>
                             </div>
-                            <div class="space-y-1.5">
-                                <label class="text-[12px] font-black text-slate-800">End Date</label>
+                            <div class="space-y-1">
+                                <label class="text-[11px] font-black text-slate-700">End Date</label>
                                 <div class="relative">
-                                    <input type="text" placeholder="DD/MM/YYYY" class="w-full h-12 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none">
-                                    <span class="absolute right-4 top-1/2 -translate-y-1/2">📅</span>
+                                    <input type="text" placeholder="DD/MM/YYYY" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-3 text-[11px] font-bold outline-none">
+                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[12px]">📅</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="flex gap-3">
-                            <button class="flex-1 py-4 bg-accent text-white rounded-2xl text-[14px] font-black uppercase tracking-widest hover:brightness-110 transition-all">Search</button>
-                            <button class="px-8 py-4 bg-slate-100 text-slate-600 rounded-2xl text-[14px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all">Clear</button>
+                        <div class="flex gap-2">
+                            <button class="flex-1 py-2.5 bg-[var(--accent)] text-white rounded-xl text-[12px] font-black uppercase tracking-widest hover:brightness-110 transition-all">Search</button>
+                            <button class="px-5 py-2.5 bg-slate-100 text-slate-600 rounded-xl text-[12px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all">Clear</button>
                         </div>
                     </div>
                 </div>
@@ -93,8 +117,8 @@
 
             <!-- Settings Button -->
             <div class="relative group/settings">
-                <button onclick="toggleActionMenu(event, 'settingsMenu')" class="w-10 h-10 flex items-center justify-center bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition-all shadow-sm">
-                    <span class="text-[20px] text-slate-400 font-black">⋮</span>
+                <button onclick="toggleActionMenu(event, 'settingsMenu')" class="w-10 h-10 flex items-center justify-center bg-slate-800 hover:bg-slate-900 border border-slate-800 rounded-xl transition-all shadow-sm cursor-pointer">
+                    <span class="text-[20px] text-white font-black leading-none pb-1">⋮</span>
                 </button>
                 <div id="settingsMenu" class="hidden absolute top-full right-0 mt-2 w-64 bg-white rounded-[32px] shadow-2xl border border-slate-100 p-6 z-[500]">
                     <div class="space-y-4">
@@ -130,14 +154,14 @@
     <div class="bg-white rounded-[40px] border border-slate-100 shadow-sm overflow-hidden">
         <div class="overflow-x-auto custom-scrollbar">
             <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="bg-slate-50/50 border-b border-slate-100">
-                        <th class="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Date</th>
-                        <th class="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">CN Number</th>
-                        <th class="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Customer</th>
-                        <th class="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Amount</th>
-                        <th class="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Balance</th>
-                        <th class="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] text-right">Action</th>
+                <thead class="bg-[var(--accent)]">
+                    <tr class="border-b border-white/10">
+                        <th class="px-8 py-6 text-[11px] font-black text-white uppercase tracking-[0.2em]">Date</th>
+                        <th class="px-8 py-6 text-[11px] font-black text-white uppercase tracking-[0.2em]">CN Number</th>
+                        <th class="px-8 py-6 text-[11px] font-black text-white uppercase tracking-[0.2em]">Customer</th>
+                        <th class="px-8 py-6 text-[11px] font-black text-white uppercase tracking-[0.2em]">Amount</th>
+                        <th class="px-8 py-6 text-[11px] font-black text-white uppercase tracking-[0.2em]">Balance</th>
+                        <th class="px-8 py-6 text-[11px] font-black text-white uppercase tracking-[0.2em] text-right">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-50">
@@ -156,158 +180,362 @@
 </div>
 
 <!-- Modal Structure -->
-<div id="modalOverlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[1000] hidden items-center justify-center p-4">
-    <div class="bg-white w-full max-w-[1400px] h-fit rounded-[40px] shadow-2xl overflow-hidden flex flex-col relative mx-auto my-auto scale-in-center">
-        <!-- Modal Header -->
-        <div class="px-8 py-4 border-b border-slate-100 flex items-center justify-between bg-[var(--accent)] h-[72px] shrink-0">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-                </div>
-                <div class="flex items-center gap-2">
-                    <h3 id="modalTitle" class="text-[24px] font-black text-white">New Credit Note</h3>
-                    <svg class="w-4 h-4 text-white/50 mt-1" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
-                </div>
-                <div class="px-3 py-1 bg-white/10 rounded-lg text-[11px] font-black text-white/80 uppercase tracking-widest border border-white/10">
-                    🏠 Main Branch
-                </div>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="relative">
-                    <div class="flex items-stretch shadow-xl rounded-2xl overflow-hidden border-2 border-white/30">
-                        <button class="px-8 h-12 bg-white text-[var(--accent)] rounded-l-[14px] text-[13px] font-black uppercase tracking-widest border-r border-[var(--accent)]/10 hover:bg-slate-50 transition-all">SAVE</button>
-                        <button onclick="toggleActionMenu(event, 'saveSplitMenu')" class="px-4 h-12 bg-white text-[var(--accent)] rounded-r-[14px] border-l border-[var(--accent)]/10 flex items-center justify-center hover:bg-slate-50 transition-all">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
-                        </button>
+<!-- NEW CREDIT NOTE MODAL -->
+<div id="modalOverlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[1000] hidden items-center justify-center p-4 md:p-8 custom-scrollbar">
+    <div class="bg-slate-100 w-full max-w-[1400px] md:h-[90vh] rounded-[32px] shadow-2xl overflow-hidden flex flex-col relative mx-auto my-auto scale-in-center animate-erp-fade">
+        <div class="flex-1 flex flex-col h-full overflow-hidden">
+            <!-- Modal Header / Sticky Top Toolbar -->
+            <div class="px-8 py-4 border-b border-white/10 flex items-center justify-between bg-[var(--accent)] h-[72px] shrink-0">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
                     </div>
-                    <div id="saveSplitMenu" class="hidden absolute top-full right-0 mt-3 w-48 bg-white rounded-2xl shadow-2xl border border-slate-100 py-3 z-[500] scale-in-tr">
-                        <button class="w-full text-left px-6 py-3 text-[13px] font-bold text-slate-600 hover:bg-slate-50 transition-all">Save & New</button>
-                        <button class="w-full text-left px-6 py-3 text-[13px] font-bold text-slate-600 hover:bg-slate-50 transition-all">Save</button>
+                    <div class="flex flex-col">
+                        <h3 id="modalTitle" class="text-[20px] font-black text-white leading-none">New Credit Note</h3>
+                        <span class="text-[10px] font-bold text-white/70 mt-1">🏠 Main Branch</span>
                     </div>
                 </div>
-                <button onclick="closeModal()" class="px-8 h-12 bg-slate-700 text-white rounded-2xl text-[13px] font-black uppercase tracking-widest hover:bg-slate-800 shadow-lg">CANCEL</button>
-                <button onclick="closeModal()" class="w-12 h-12 flex items-center justify-center rounded-2xl bg-red-500 hover:bg-red-600 text-white shadow-lg border border-white/20 transition-all">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </div>
-        </div>
+                
+                <div class="flex items-center gap-3">
+                    <!-- Save Split Button -->
+                    <div class="relative flex items-center h-10 select-none">
+                        <div class="flex items-stretch rounded-lg overflow-hidden border-2 border-[var(--accent)] h-10 bg-white shadow-sm">
+                            <button type="button" onclick="saveCreditNote()" class="px-5 bg-white hover:bg-slate-50 text-[var(--accent)] text-[12px] font-black uppercase tracking-wider transition-all">
+                                Save
+                            </button>
+                            <button type="button" onclick="toggleActionMenu(event, 'saveSplitMenu')" class="px-3 bg-white hover:bg-slate-50 text-[var(--accent)] border-l border-[var(--accent)]/20 flex items-center justify-center transition-all">
+                                <svg class="w-3 h-3 text-[var(--accent)]" fill="none" stroke="currentColor" stroke-width="3.5" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                        </div>
+                        <div id="saveSplitMenu" class="hidden absolute top-full right-0 mt-2 w-40 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-[600] scale-in-tr">
+                            <button type="button" onclick="selectSaveOption('Save & New')" class="w-full text-left px-5 py-2 text-[12px] font-bold text-slate-700 hover:bg-slate-50 transition-all">Save & New</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Cancel Button -->
+                    <button type="button" onclick="closeModal()" class="h-10 px-5 bg-slate-800 hover:bg-slate-900 active:scale-95 text-white text-[12px] font-black uppercase tracking-wider rounded-lg border border-slate-700 shadow-sm transition-all">
+                        Cancel
+                    </button>
 
-        <!-- Modal Body -->
-        <div class="p-8 overflow-y-auto custom-scrollbar flex-1 bg-white max-h-[85vh]">
-            <div class="grid grid-cols-3 gap-8 mb-8 border-b border-slate-50 pb-8">
-                <div class="space-y-2">
-                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
-                        Credit Note No <span class="text-accent cursor-help">ⓘ</span>
-                    </label>
-                    <div class="text-[24px] font-black text-slate-800">CN-001</div>
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
-                        Credit Note Date <span class="text-accent cursor-help">ⓘ</span>
-                    </label>
-                    <div class="relative group">
-                        <input type="text" value="01/04/2026" class="w-full h-14 bg-slate-50 border border-slate-100 rounded-2xl px-6 text-[15px] font-bold outline-none focus:border-accent transition-all">
-                        <span class="absolute right-6 top-1/2 -translate-y-1/2 group-hover:scale-110 transition-all">📅</span>
-                    </div>
-                </div>
-                <div class="flex items-end justify-end pb-2">
-                    <button class="w-12 h-12 flex items-center justify-center bg-slate-50 rounded-xl text-slate-400 hover:text-accent hover:bg-slate-100 transition-all">
-                        <span class="text-[24px]">⚙</span>
+                    <!-- X Close Button (Red) -->
+                    <button type="button" onclick="closeModal()" class="w-10 h-10 bg-rose-500 hover:bg-rose-600 active:scale-95 border border-rose-400 rounded-xl flex items-center justify-center text-white transition-all" title="Close">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
                     </button>
                 </div>
             </div>
 
-            <div id="cnContent">
-                <!-- Row 1: Customer, Deposit A/C, Reference -->
-                <div class="grid grid-cols-3 gap-8 mb-8">
-                    <div class="space-y-3">
-                        <label class="text-[11px] font-black text-rose-500 uppercase tracking-[0.2em] block">
-                            Customer <span class="text-slate-300">ⓘ</span> <span class="text-rose-500">*</span>
+            <!-- TOP FORM SECTION - Single compact row: CN No | Date | Customer | Settings | Deposit A/C -->
+            <div class="px-8 py-3 bg-white border-b border-slate-200/80 shrink-0">
+                <div class="flex items-end gap-5">
+                    <!-- Credit Note No -->
+                    <div class="flex flex-col gap-1 shrink-0">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Credit Note No</span>
+                        <span class="text-[16px] font-black text-slate-800 h-9 flex items-center" id="creditNoteNumber">CN-001</span>
+                    </div>
+
+                    <!-- Credit Note Date -->
+                    <div class="flex flex-col gap-1 shrink-0 w-40">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Credit Note Date</span>
+                        <div class="relative flex items-center">
+                            <input type="text" value="18/05/2026" class="w-full h-9 bg-slate-50 border border-slate-200 rounded-lg px-3 text-[12px] font-bold text-slate-700 outline-none focus:border-[var(--accent)] focus:bg-white transition-all">
+                            <span class="absolute right-3 text-slate-400 text-[12px] pointer-events-none">📅</span>
+                        </div>
+                    </div>
+
+                    <!-- Customer (after Date) -->
+                    <div class="flex flex-col gap-1 relative flex-1">
+                        <label class="text-[10px] font-black text-rose-500 uppercase tracking-widest flex items-center gap-1">
+                            Customer <span class="text-rose-500 font-bold">*</span>
                         </label>
-                        <div class="relative group">
-                            <input type="text" placeholder="Select Contact" class="w-full h-14 bg-slate-50 border border-slate-100 rounded-2xl px-6 text-[15px] font-bold text-slate-800 outline-none focus:border-accent transition-all placeholder:text-slate-300">
-                            <span class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-300 group-hover:text-accent transition-all">▼</span>
+                        <div class="relative flex items-center">
+                            <input type="text" id="customerSearchInput" placeholder="Select Contact (F9)" class="w-full h-9 bg-slate-50 border border-slate-200 rounded-lg px-3 text-[12px] font-bold text-slate-700 outline-none focus:border-rose-300 focus:bg-white transition-all placeholder:text-slate-400" readonly onclick="toggleActionMenu(event, 'customerDropdownMenu')">
+                            <button type="button" onclick="toggleActionMenu(event, 'customerDropdownMenu')" class="absolute right-3 text-slate-400 text-[10px] hover:text-slate-600 transition-colors">▼</button>
+                            <!-- Customer Dropdown Menu -->
+                            <div id="customerDropdownMenu" class="hidden absolute top-full left-0 w-full bg-white border border-slate-200 rounded-xl shadow-xl mt-1.5 py-1 z-[600] scale-in-tr">
+                                <button type="button" onclick="selectCustomer('Auraa Clinic')" class="w-full text-left px-4 py-2 text-[12px] font-bold text-slate-700 hover:bg-slate-50 transition-colors">Auraa Clinic</button>
+                                <button type="button" onclick="selectCustomer('Zen Dental Care')" class="w-full text-left px-4 py-2 text-[12px] font-bold text-slate-700 hover:bg-slate-50 transition-colors">Zen Dental Care</button>
+                                <button type="button" onclick="selectCustomer('Surgicare Hospital')" class="w-full text-left px-4 py-2 text-[12px] font-bold text-slate-700 hover:bg-slate-50 transition-colors">Surgicare Hospital</button>
+                                <button type="button" onclick="selectCustomer('Auraa Dental')" class="w-full text-left px-4 py-2 text-[12px] font-bold text-slate-700 hover:bg-slate-50 transition-colors">Auraa Dental</button>
+                            </div>
                         </div>
                     </div>
-                    <div class="space-y-3">
-                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Deposit A/C</label>
+
+                    <!-- Settings Gear -->
+                    <div class="flex flex-col gap-1 shrink-0 relative">
+                        <span class="text-[10px] font-black text-transparent uppercase tracking-widest select-none">·</span>
+                        <button type="button" onclick="toggleActionMenu(event, 'creditSettingsPopover')" class="w-9 h-9 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-800 transition-all" title="Settings">
+                            <span class="text-[16px]">⚙</span>
+                        </button>
+                        <!-- Settings Popover -->
+                        <div id="creditSettingsPopover" class="hidden absolute top-full right-0 mt-2.5 w-64 bg-white rounded-2xl shadow-2xl border border-slate-200 py-3.5 px-4 z-[600] scale-in-tr">
+                            <div class="absolute -top-[6px] right-3.5 w-3 h-3 bg-white border-t border-l border-slate-200 transform rotate-45"></div>
+                            <div class="flex flex-col gap-4 relative">
+                                <span class="text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-1.5">Settings</span>
+                                <label class="flex items-center justify-between cursor-pointer select-none">
+                                    <span class="text-[12px] font-bold text-slate-700">Allow Other Branch Sales Items</span>
+                                    <div class="relative flex items-center">
+                                        <input type="checkbox" id="checkOtherBranch" class="sr-only peer" onchange="toggleSettingsCheck('checkOtherBranch')">
+                                        <div class="w-8 h-4 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-[#10b981]"></div>
+                                    </div>
+                                </label>
+                                <button type="button" onclick="closeSettingsPopover()" class="w-full h-8 bg-[#10b981] hover:brightness-110 active:scale-95 text-white text-[11px] font-black uppercase tracking-wider rounded-lg transition-all">
+                                    Save Settings
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+            <!-- ACCOUNT ROWS SECTION: one default row visible, + adds more rows -->
+            <div class="px-8 py-3 bg-white border-b border-slate-200/80 shrink-0" id="depositSection">
+                <!-- Column headers -->
+                <div class="flex items-center gap-4 mb-1.5">
+                    <div class="flex-1">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Deposit A/C</span>
+                    </div>
+                    <div class="flex-1">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Reference</span>
+                    </div>
+                    <div class="w-28 text-right">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Amount</span>
+                    </div>
+                    <div class="w-9 flex justify-end">
+                        <button type="button" onclick="addDepositRow()" class="w-8 h-8 bg-slate-100 hover:bg-[var(--accent)] hover:text-white border border-slate-200 hover:border-[var(--accent)] rounded-lg flex items-center justify-center text-slate-600 text-[18px] font-bold leading-none transition-all" title="Add row">+</button>
+                    </div>
+                </div>
+
+                <!-- Default first row -->
+                <div id="depositRowsBody">
+                    <div class="flex items-center gap-4 mb-1.5" id="depRow_1">
+                        <!-- Deposit A/C -->
+                        <div class="flex-1">
+                            <select class="w-full h-9 bg-white border border-slate-200 rounded-lg px-3 text-[12px] font-bold text-slate-700 outline-none focus:border-[var(--accent)] appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M19%209l-7%207-7-7%22/%3E%3C/svg%3E')] bg-no-repeat bg-[right_0.75rem_center] bg-[length:0.75rem_0.75rem]">
+                                <option value="Cash">Cash</option>
+                                <option value="HDFC Bank">HDFC Bank</option>
+                                <option value="SBI Bank">SBI Bank</option>
+                                <option value="Petty Cash">Petty Cash</option>
+                            </select>
+                        </div>
+                        <!-- Reference: type + number -->
+                        <div class="flex-1">
+                            <div class="flex items-stretch border border-slate-200 rounded-lg overflow-hidden h-9 bg-white">
+                                <select class="bg-slate-50 px-3 text-[11px] font-black text-slate-500 uppercase tracking-wider outline-none border-r border-slate-200 shrink-0">
+                                    <option>Cash</option>
+                                    <option>Cheque</option>
+                                    <option>NEFT</option>
+                                    <option>RTGS</option>
+                                    <option>UPI</option>
+                                </select>
+                                <input type="text" placeholder="" class="flex-1 bg-transparent px-3 text-[12px] font-bold text-slate-700 outline-none min-w-0">
+                            </div>
+                        </div>
+                        <!-- Amount -->
+                        <div class="w-28">
+                            <input type="number" placeholder="0.00" class="w-full h-9 text-right bg-white border border-slate-200 rounded-lg px-3 text-[12px] font-bold text-slate-700 outline-none focus:border-[var(--accent)]">
+                        </div>
+                        <!-- no remove button on default row -->
+                        <div class="w-9"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ITEM GRID SECTION -->
+            <div class="flex-1 overflow-hidden flex flex-col bg-white">
+                <!-- Table Viewport with Custom Scrollbar -->
+                <div class="flex-1 overflow-y-auto custom-scrollbar border-b border-slate-200">
+                    <table class="w-full text-left border-collapse" id="creditNoteItemsTable">
+                        <thead class="sticky top-0 bg-[var(--accent)] border-b border-white/20 z-[10]">
+                            <tr>
+                                <th class="px-4 py-2 text-[10px] font-black text-white uppercase tracking-widest w-12 text-center border-r border-white/20">S.No</th>
+                                <th class="px-4 py-2 text-[10px] font-black text-white uppercase tracking-widest border-r border-white/20">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <span>Item</span>
+                                        <div class="flex items-center gap-1.5">
+                                            <!-- Search Box -->
+                                            <div class="relative flex items-center">
+                                                <input type="text" id="gridItemSearch" onkeyup="filterGridItems()" placeholder="Search..." class="h-7 w-36 bg-white border border-transparent rounded-md px-2 pl-6 text-[11px] font-bold text-slate-700 placeholder:text-slate-400 outline-none focus:ring-1 focus:ring-white/50 transition-all">
+                                                <svg class="absolute left-1.5 w-3 h-3 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                                            </div>
+                                            <!-- Download Button -->
+                                            <button type="button" onclick="downloadGridXLS()" class="w-7 h-7 bg-white border border-transparent rounded-md flex items-center justify-center text-[var(--accent)] hover:bg-slate-50 transition-all" title="Download Excel">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th class="px-4 py-2 text-[10px] font-black text-white uppercase tracking-widest w-24 text-center border-r border-white/20">Qty</th>
+                                <th class="px-4 py-2 text-[10px] font-black text-white uppercase tracking-widest w-24 border-r border-white/20 text-center">Unit</th>
+                                <th class="px-4 py-2 text-[10px] font-black text-white uppercase tracking-widest w-36 text-right border-r border-white/20">Rate ₹</th>
+                                <th class="px-4 py-2 text-[10px] font-black text-white uppercase tracking-widest w-40 text-right border-r border-white/20">Amount</th>
+                                <th class="px-4 py-2 w-10 text-center">
+                                    <!-- Grid Settings Icon -->
+                                    <div class="relative flex justify-center">
+                                        <button type="button" onclick="toggleActionMenu(event, 'gridSettingsPopover')" class="w-7 h-7 bg-white border border-transparent rounded-md flex items-center justify-center text-[var(--accent)] hover:bg-slate-50 transition-all" title="Grid Columns">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                                        </button>
+                                        <!-- Grid Settings Popover -->
+                                        <div id="gridSettingsPopover" class="hidden absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-200 py-2 px-3 z-[600] scale-in-tr">
+                                            <div class="absolute -top-[5px] right-2.5 w-2 h-2 bg-white border-t border-l border-slate-200 transform rotate-45"></div>
+                                            <div class="flex flex-col gap-2 relative">
+                                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-1">Visible Columns</span>
+                                                <label class="flex items-center gap-2 cursor-pointer select-none py-1">
+                                                    <input type="checkbox" checked disabled class="accent-[var(--accent)]">
+                                                    <span class="text-[11px] font-bold text-slate-600">Item</span>
+                                                </label>
+                                                <label class="flex items-center gap-2 cursor-pointer select-none py-1">
+                                                    <input type="checkbox" checked class="accent-[var(--accent)]" onchange="toggleGridColumn(2)">
+                                                    <span class="text-[11px] font-bold text-slate-600">Qty</span>
+                                                </label>
+                                                <label class="flex items-center gap-2 cursor-pointer select-none py-1">
+                                                    <input type="checkbox" checked class="accent-[var(--accent)]" onchange="toggleGridColumn(3)">
+                                                    <span class="text-[11px] font-bold text-slate-600">Unit</span>
+                                                </label>
+                                                <label class="flex items-center gap-2 cursor-pointer select-none py-1">
+                                                    <input type="checkbox" checked class="accent-[var(--accent)]" onchange="toggleGridColumn(4)">
+                                                    <span class="text-[11px] font-bold text-slate-600">Rate</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100" id="creditNoteGridBody">
+                            <tr class="hover:bg-slate-50/50 transition-colors">
+                                <td class="px-6 py-1.5 text-center font-bold text-slate-400 border-r border-slate-200 text-[11px]">1</td>
+                                <td class="px-6 py-1.5 border-r border-slate-200">
+                                    <div class="relative flex items-center">
+                                        <input type="text" id="itemName_1" value="Dental Chair Deluxe" onclick="toggleActionMenu(event, 'itemSelectMenu_1')" class="w-full bg-transparent border-none p-0 outline-none text-[12px] font-bold text-slate-700 cursor-pointer focus:bg-slate-50 px-2 py-0.5 rounded" readonly>
+                                        <span class="absolute right-2 text-slate-300 text-[9px] pointer-events-none">▼</span>
+                                        
+                                        <!-- Item Option Dropdown -->
+                                        <div id="itemSelectMenu_1" class="hidden absolute top-full left-0 w-full bg-white border border-slate-200 rounded-xl shadow-xl mt-1 py-1 z-[600] scale-in-tr">
+                                            <button type="button" onclick="selectGridItem(1, 'Dental Chair Deluxe', 'pcs', 12300.00)" class="w-full text-left px-4 py-2 text-[11px] font-bold text-slate-700 hover:bg-slate-50 transition-colors">Dental Chair Deluxe</button>
+                                            <button type="button" onclick="selectGridItem(1, 'Syringe Pump A1', 'pcs', 2250.00)" class="w-full text-left px-4 py-2 text-[11px] font-bold text-slate-700 hover:bg-slate-50 transition-colors">Syringe Pump A1</button>
+                                            <button type="button" onclick="selectGridItem(1, 'Operation Theater Light', 'pcs', 8900.00)" class="w-full text-left px-4 py-2 text-[11px] font-bold text-slate-700 hover:bg-slate-50 transition-colors">Operation Theater Light</button>
+                                            <button type="button" onclick="selectGridItem(1, 'Micro Motor Set', 'pcs', 1200.00)" class="w-full text-left px-4 py-2 text-[11px] font-bold text-slate-700 hover:bg-slate-50 transition-colors">Micro Motor Set</button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-1.5 border-r border-slate-200">
+                                    <input type="number" id="itemQty_1" value="1" oninput="updateCreditTotals()" class="w-full text-center bg-transparent border-none p-0 outline-none text-[12px] font-bold text-slate-700 focus:bg-slate-50 py-0.5 rounded">
+                                </td>
+                                <td class="px-6 py-1.5 border-r border-slate-200 text-[12px] font-bold text-slate-500 text-center" id="itemUnit_1">
+                                    pcs
+                                </td>
+                                <td class="px-6 py-1.5 text-right border-r border-slate-200">
+                                    <input type="number" id="itemRate_1" value="12300.00" oninput="updateCreditTotals()" class="w-28 text-right bg-transparent border-none p-0 outline-none text-[12px] font-bold text-slate-700 focus:bg-slate-50 px-2 py-0.5 rounded">
+                                </td>
+                                <td class="px-6 py-1.5 text-right text-[12px] font-black text-slate-800" id="itemAmount_1">
+                                    ₹ 12,300.00
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-slate-50/50 transition-colors">
+                                <td class="px-6 py-1.5 text-center font-bold text-slate-400 border-r border-slate-200 text-[11px]">2</td>
+                                <td class="px-6 py-1.5 border-r border-slate-200">
+                                    <div class="relative flex items-center">
+                                        <input type="text" id="itemName_2" value="Syringe Pump A1" onclick="toggleActionMenu(event, 'itemSelectMenu_2')" class="w-full bg-transparent border-none p-0 outline-none text-[12px] font-bold text-slate-700 cursor-pointer focus:bg-slate-50 px-2 py-0.5 rounded" readonly>
+                                        <span class="absolute right-2 text-slate-300 text-[9px] pointer-events-none">▼</span>
+                                        
+                                        <!-- Item Option Dropdown -->
+                                        <div id="itemSelectMenu_2" class="hidden absolute top-full left-0 w-full bg-white border border-slate-200 rounded-xl shadow-xl mt-1 py-1 z-[600] scale-in-tr">
+                                            <button type="button" onclick="selectGridItem(2, 'Dental Chair Deluxe', 'pcs', 12300.00)" class="w-full text-left px-4 py-2 text-[11px] font-bold text-slate-700 hover:bg-slate-50 transition-colors">Dental Chair Deluxe</button>
+                                            <button type="button" onclick="selectGridItem(2, 'Syringe Pump A1', 'pcs', 2250.00)" class="w-full text-left px-4 py-2 text-[11px] font-bold text-slate-700 hover:bg-slate-50 transition-colors">Syringe Pump A1</button>
+                                            <button type="button" onclick="selectGridItem(2, 'Operation Theater Light', 'pcs', 8900.00)" class="w-full text-left px-4 py-2 text-[11px] font-bold text-slate-700 hover:bg-slate-50 transition-colors">Operation Theater Light</button>
+                                            <button type="button" onclick="selectGridItem(2, 'Micro Motor Set', 'pcs', 1200.00)" class="w-full text-left px-4 py-2 text-[11px] font-bold text-slate-700 hover:bg-slate-50 transition-colors">Micro Motor Set</button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-1.5 border-r border-slate-200">
+                                    <input type="number" id="itemQty_2" value="2" oninput="updateCreditTotals()" class="w-full text-center bg-transparent border-none p-0 outline-none text-[12px] font-bold text-slate-700 focus:bg-slate-50 py-0.5 rounded">
+                                </td>
+                                <td class="px-6 py-1.5 border-r border-slate-200 text-[12px] font-bold text-slate-500 text-center" id="itemUnit_2">
+                                    pcs
+                                </td>
+                                <td class="px-6 py-1.5 text-right border-r border-slate-200">
+                                    <input type="number" id="itemRate_2" value="2250.00" oninput="updateCreditTotals()" class="w-28 text-right bg-transparent border-none p-0 outline-none text-[12px] font-bold text-slate-700 focus:bg-slate-50 px-2 py-0.5 rounded">
+                                </td>
+                                <td class="px-6 py-1.5 text-right text-[12px] font-black text-slate-800" id="itemAmount_2">
+                                    ₹ 4,500.00
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- BOTTOM SECTION -->
+            <div class="px-8 py-4 bg-white border-t border-slate-200/80 grid grid-cols-12 gap-8 shrink-0">
+                <!-- Left Side: Bottom Fields & Attachment Link -->
+                <div class="col-span-7 grid grid-cols-2 gap-4">
+                    <div class="flex flex-col gap-1.5">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Notes</span>
+                        <textarea id="creditNotes" placeholder="Enter notes..." class="w-full h-[38px] min-h-[38px] max-h-[38px] bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-[11px] font-bold text-slate-700 outline-none focus:border-[var(--accent)] resize-none transition-all"></textarea>
+                    </div>
+                    
+                    <div class="flex flex-col gap-1.5">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Terms & Conditions</span>
+                        <textarea id="creditTerms" placeholder="Enter terms..." class="w-full h-[38px] min-h-[38px] max-h-[38px] bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-[11px] font-bold text-slate-700 outline-none focus:border-[var(--accent)] resize-none transition-all"></textarea>
+                    </div>
+                    
+                    <div class="flex flex-col gap-1.5">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Project</span>
                         <div class="relative">
-                            <select class="w-full h-14 bg-slate-50 border border-slate-100 rounded-2xl px-6 text-[15px] font-bold outline-none appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M19%209l-7%207-7-7%22/%3E%3C/svg%3E')] bg-no-repeat bg-[right_1.5rem_center] bg-[length:1rem_1rem]">
-                                <option>Cash</option>
-                                <option>HDFC Bank</option>
+                            <select id="creditProjectSelect" class="w-full h-8 bg-slate-50 border border-slate-200 rounded-lg px-3 text-[11px] font-bold text-slate-700 outline-none appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M19%209l-7%207-7-7%22/%3E%3C/svg%3E')] bg-no-repeat bg-[right_0.6rem_center] bg-[length:0.6rem_0.6rem]">
+                                <option value="" disabled selected hidden>Select Project</option>
+                                <option value="Project Auraa">Project Auraa</option>
+                                <option value="Project Zen">Project Zen</option>
                             </select>
                         </div>
                     </div>
-                    <div class="space-y-3">
-                        <label class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Reference</label>
-                        <div class="flex items-center bg-slate-50 border border-slate-100 rounded-2xl overflow-hidden h-14">
-                            <select class="bg-slate-100 h-full px-4 text-[13px] font-bold text-slate-600 outline-none border-r border-slate-200">
-                                <option>Cash</option>
-                                <option>Cheque</option>
-                                <option>Transfer</option>
+                    
+                    <div class="flex flex-col gap-1.5">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sales Rep</span>
+                        <div class="relative">
+                            <select id="creditSalesRepSelect" class="w-full h-8 bg-slate-50 border border-slate-200 rounded-lg px-3 text-[11px] font-bold text-slate-700 outline-none appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M19%209l-7%207-7-7%22/%3E%3C/svg%3E')] bg-no-repeat bg-[right_0.6rem_center] bg-[length:0.6rem_0.6rem]">
+                                <option value="" disabled selected hidden>Select Sales.Rep</option>
+                                <option value="Sarah Jenkins">Sarah Jenkins</option>
+                                <option value="John Doe">John Doe</option>
                             </select>
-                            <input type="text" class="flex-1 bg-transparent px-6 text-[15px] font-bold outline-none">
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Item Table Placeholder -->
-            <div class="rounded-[32px] border border-slate-100 overflow-hidden mb-12">
-                <div class="bg-slate-50/50 p-4 border-b border-slate-100 flex justify-end gap-3">
-                    <div class="relative">
-                        <input type="text" placeholder="Search items..." class="h-10 w-64 bg-white border border-slate-200 rounded-xl px-4 pl-10 text-[12px] font-bold outline-none focus:border-accent">
-                        <span class="absolute left-4 top-1/2 -translate-y-1/2 opacity-30">🔍</span>
+                    
+                    <!-- Attach File Section -->
+                    <div class="col-span-2 flex items-center mt-1">
+                        <label class="flex items-center gap-1.5 text-[11px] font-black text-slate-400 hover:text-slate-600 cursor-pointer select-none transition-colors">
+                            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                            <span>Attach File</span>
+                            <input type="file" class="hidden">
+                        </label>
                     </div>
-                    <button class="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center hover:bg-slate-50 transition-all">
-                        <span class="text-[18px]">📥</span>
-                    </button>
                 </div>
-                <table class="w-full">
-                    <thead class="bg-slate-50/30">
-                        <tr class="border-b border-slate-50">
-                            <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] w-16">S.No</th>
-                            <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Item</th>
-                            <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-center w-32">Qty</th>
-                            <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] w-32">Unit</th>
-                            <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-center w-40">Rate ₹</th>
-                            <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-right w-48">Amount</th>
-                            <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] w-16 text-center">⚙</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-50">
-                        <tr class="h-16">
-                            <td class="px-8 font-bold text-slate-400">1</td>
-                            <td class="px-8">
-                                <div class="h-10 bg-slate-50 border border-slate-100 rounded-xl flex items-center px-4 text-slate-300 font-bold text-[13px]">Select...</div>
-                            </td>
-                            <td colspan="5"></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Footer Section -->
-            <div class="flex justify-end border-t border-slate-100 pt-10">
-                <div class="w-[400px] space-y-6">
-                    <div class="flex justify-between items-center text-slate-400 font-black text-[14px] uppercase tracking-widest">
+                
+                <!-- Right Side: Totals Panel -->
+                <div class="col-span-5 flex flex-col justify-end gap-2.5 pl-6 border-l border-slate-200">
+                    <div class="flex justify-between items-center text-slate-400 font-black text-[11px] uppercase tracking-widest">
                         <span>Sub Total</span>
-                        <span class="text-slate-800">₹ 0.00</span>
+                        <span class="text-slate-800 font-black" id="creditSubTotal">₹ 16,800.00</span>
                     </div>
-                    <div class="flex justify-between items-center text-slate-400 font-black text-[14px] uppercase tracking-widest">
-                        <div class="flex items-center gap-4 text-accent font-black">
-                            <span class="cursor-pointer">✖</span>
+                    
+                    <div class="flex justify-between items-center text-slate-400 font-black text-[11px] uppercase tracking-widest">
+                        <div class="flex items-center gap-2 text-[var(--accent)] font-black">
+                            <button type="button" onclick="removeCouponCode()" class="text-rose-500 hover:text-rose-600 transition-colors" title="Remove Coupon">✖</button>
                             <span>less Coupon Discount</span>
                         </div>
-                        <input type="text" placeholder="Coupon Code..." class="w-40 h-10 border border-slate-200 rounded-xl px-4 text-[12px] font-bold">
+                        <input type="text" id="couponCodeInput" onkeyup="updateCreditTotals()" placeholder="Coupon Code..." class="w-28 h-7 border border-slate-200 rounded-lg px-2.5 text-[10px] font-bold text-slate-700 outline-none focus:border-[var(--accent)]">
                     </div>
-                    <div class="flex justify-between items-center text-slate-400 font-black text-[14px] uppercase tracking-widest">
+                    
+                    <div class="flex justify-between items-center text-slate-400 font-black text-[11px] uppercase tracking-widest">
                         <span>Round Off</span>
-                        <span class="text-slate-800">0.00</span>
+                        <span class="text-slate-800 font-black" id="creditRoundOff">0.00</span>
                     </div>
-                    <div class="flex justify-between items-center pt-6 border-t border-slate-100">
-                        <span class="text-[18px] font-black text-slate-800 uppercase tracking-tighter">Total Credit</span>
-                        <span class="text-[32px] font-black text-accent tracking-tighter">₹ 0.00</span>
+                    
+                    <div class="flex justify-between items-center pt-2 border-t border-slate-100">
+                        <span class="text-[13px] font-black text-slate-800 uppercase tracking-widest">Total Credit</span>
+                        <span class="text-[20px] font-black text-[var(--accent)] tracking-tight" id="creditTotalAmount">₹ 16,800.00</span>
                     </div>
                 </div>
             </div>
@@ -333,29 +561,33 @@
         to { opacity: 1; transform: translateY(0); }
     }
 
+    /* AuraaBooks custom scrollbar: Thin, Rounded, Soft gray track, Dark thumb */
     .custom-scrollbar::-webkit-scrollbar {
         width: 6px;
         height: 6px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
-        background: var(--accent);
+        background: #f1f5f9;
         border-radius: 10px;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #e2e8f0;
+        background: #94a3b8;
         border-radius: 10px;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: #cbd5e1;
+        background: #64748b;
     }
+
     .scale-in-center { animation: scale-in-center 0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) both; }
     @keyframes scale-in-center {
-      0% { transform: scale(0.9); opacity: 0; }
+      0% { transform: scale(0.95); opacity: 0; }
       100% { transform: scale(1); opacity: 1; }
     }
-    .scale-in-tr { animation: scale-in-tr 0.2s cubic-bezier(0.250, 0.460, 0.450, 0.940) both; }
+    
+    /* 150ms-180ms subtle popover/dropdown fade animation */
+    .scale-in-tr { animation: scale-in-tr 160ms cubic-bezier(0.250, 0.460, 0.450, 0.940) both; }
     @keyframes scale-in-tr {
-      0% { transform: scale(0); transform-origin: 100% 0%; opacity: 0; }
+      0% { transform: scale(0.95); transform-origin: 100% 0%; opacity: 0; }
       100% { transform: scale(1); transform-origin: 100% 0%; opacity: 1; }
     }
 </style>
@@ -364,20 +596,30 @@
     function toggleActionMenu(event, menuId) {
         event.stopPropagation();
         const menu = document.getElementById(menuId);
-        const allMenus = ['exportMenu', 'filterMenu', 'settingsMenu', 'saveSplitMenu'];
+        const allMenus = [
+            'exportMenu', 'filterMenu', 'settingsMenu', 'saveSplitMenu', 
+            'customerDropdownMenu', 'creditSettingsPopover', 'addAccountMenu', 
+            'gridSettingsPopover', 'itemSelectMenu_1', 'itemSelectMenu_2'
+        ];
         
         allMenus.forEach(id => {
             const m = document.getElementById(id);
             if (m && id !== menuId) m.classList.add('hidden');
         });
         
-        menu.classList.toggle('hidden');
+        if (menu) menu.classList.toggle('hidden');
     }
 
     function openModal(title) {
         document.getElementById('modalTitle').innerText = 'New ' + title;
         document.getElementById('modalOverlay').classList.remove('hidden');
         document.getElementById('modalOverlay').classList.add('flex');
+        
+        // Focus the customer search field immediately for convenient keyboard navigation
+        setTimeout(() => {
+            const customerInput = document.getElementById('customerSearchInput');
+            if (customerInput) customerInput.focus();
+        }, 100);
     }
 
     function closeModal() {
@@ -385,11 +627,193 @@
         document.getElementById('modalOverlay').classList.remove('flex');
     }
 
+    function selectSaveOption(opt) {
+        alert(opt + ' successful!');
+        closeModal();
+    }
+
+    function saveCreditNote() {
+        alert('Credit Note Saved successfully!');
+        closeModal();
+    }
+
+    function selectCustomer(name) {
+        const input = document.getElementById('customerSearchInput');
+        if (input) input.value = name;
+        const menu = document.getElementById('customerDropdownMenu');
+        if (menu) menu.classList.add('hidden');
+    }
+
+    function toggleSettingsCheck(id) {
+        // Handled via standard checkbox states
+    }
+
+    function closeSettingsPopover() {
+        const popover = document.getElementById('creditSettingsPopover');
+        if (popover) popover.classList.add('hidden');
+    }
+
+    function addAccountAction(type) {
+        alert('Add ' + type + ' triggered!');
+    }
+
+    function addAccountOption(opt) {
+        alert('Option selected: Add ' + opt);
+        const menu = document.getElementById('addAccountMenu');
+        if (menu) menu.classList.add('hidden');
+    }
+
+    function filterGridItems() {
+        const query = document.getElementById('gridItemSearch').value.toLowerCase();
+        const table = document.getElementById('creditNoteGridBody');
+        if (!table) return;
+        const rows = table.getElementsByTagName('tr');
+        for (let row of rows) {
+            const itemNameInput = row.querySelector('input[id^="itemName_"]');
+            if (itemNameInput) {
+                const name = itemNameInput.value.toLowerCase();
+                if (name.includes(query)) {
+                    row.classList.remove('hidden');
+                } else {
+                    row.classList.add('hidden');
+                }
+            }
+        }
+    }
+
+    function downloadGridXLS() {
+        alert('Excel Export triggered successfully!');
+    }
+
+    function toggleGridColumn(index) {
+        const table = document.getElementById('creditNoteItemsTable');
+        if (!table) return;
+        const rows = table.rows;
+        for (let i = 0; i < rows.length; i++) {
+            const cell = rows[i].cells[index];
+            if (cell) {
+                cell.classList.toggle('hidden');
+            }
+        }
+    }
+
+    function selectGridItem(rowId, name, unit, rate) {
+        const nameInput = document.getElementById('itemName_' + rowId);
+        const unitCell = document.getElementById('itemUnit_' + rowId);
+        const rateInput = document.getElementById('itemRate_' + rowId);
+        
+        if (nameInput) nameInput.value = name;
+        if (unitCell) unitCell.textContent = unit;
+        if (rateInput) rateInput.value = rate.toFixed(2);
+        
+        const menu = document.getElementById('itemSelectMenu_' + rowId);
+        if (menu) menu.classList.add('hidden');
+        
+        updateCreditTotals();
+    }
+
+    function removeCouponCode() {
+        const input = document.getElementById('couponCodeInput');
+        if (input) input.value = '';
+        updateCreditTotals();
+    }
+
+    function updateCreditTotals() {
+        let subtotal = 0;
+        
+        for (let i = 1; i <= 2; i++) {
+            const qtyInput = document.getElementById('itemQty_' + i);
+            const rateInput = document.getElementById('itemRate_' + i);
+            const amountCell = document.getElementById('itemAmount_' + i);
+            
+            if (qtyInput && rateInput) {
+                const qty = parseFloat(qtyInput.value) || 0;
+                const rate = parseFloat(rateInput.value) || 0;
+                const amount = qty * rate;
+                
+                if (amountCell) {
+                    amountCell.textContent = '₹ ' + amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                }
+                subtotal += amount;
+            }
+        }
+        
+        const couponInput = document.getElementById('couponCodeInput');
+        let discount = 0;
+        if (couponInput && couponInput.value.trim() !== '') {
+            // Apply a simple 10% coupon discount for interactive realism
+            discount = subtotal * 0.1;
+        }
+        
+        const total = subtotal - discount;
+        
+        const subTotalSpan = document.getElementById('creditSubTotal');
+        const totalSpan = document.getElementById('creditTotalAmount');
+        
+        if (subTotalSpan) subTotalSpan.textContent = '₹ ' + subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        if (totalSpan) totalSpan.textContent = '₹ ' + total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    let depositRowCount = 1; // first row already exists in HTML
+
+    function addDepositRow() {
+        depositRowCount++;
+        const body = document.getElementById('depositRowsBody');
+        if (!body) return;
+
+        const rowId = 'depRow_' + depositRowCount;
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'flex items-center gap-4 mb-1.5';
+        rowDiv.id = rowId;
+        rowDiv.innerHTML = `
+            <div class="flex-1">
+                <select class="w-full h-9 bg-white border border-slate-200 rounded-lg px-3 text-[12px] font-bold text-slate-700 outline-none focus:border-[var(--accent)] appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M19%209l-7%207-7-7%22/%3E%3C/svg%3E')] bg-no-repeat bg-[right_0.75rem_center] bg-[length:0.75rem_0.75rem]">
+                    <option value="Cash">Cash</option>
+                    <option value="HDFC Bank">HDFC Bank</option>
+                    <option value="SBI Bank">SBI Bank</option>
+                    <option value="Petty Cash">Petty Cash</option>
+                </select>
+            </div>
+            <div class="flex-1">
+                <div class="flex items-stretch border border-slate-200 rounded-lg overflow-hidden h-9 bg-white">
+                    <select class="bg-slate-50 px-3 text-[11px] font-black text-slate-500 uppercase tracking-wider outline-none border-r border-slate-200 shrink-0">
+                        <option>Cash</option>
+                        <option>Cheque</option>
+                        <option>NEFT</option>
+                        <option>RTGS</option>
+                        <option>UPI</option>
+                    </select>
+                    <input type="text" placeholder="" class="flex-1 bg-transparent px-3 text-[12px] font-bold text-slate-700 outline-none min-w-0">
+                </div>
+            </div>
+            <div class="w-28">
+                <input type="number" placeholder="0.00" class="w-full h-9 text-right bg-white border border-slate-200 rounded-lg px-3 text-[12px] font-bold text-slate-700 outline-none focus:border-[var(--accent)]">
+            </div>
+            <div class="w-9 flex items-center justify-end">
+                <button type="button" onclick="removeDepositRow('${rowId}')" class="w-8 h-8 flex items-center justify-center text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all text-[16px] font-bold" title="Remove row">&times;</button>
+            </div>
+        `;
+        body.appendChild(rowDiv);
+    }
+
+    function removeDepositRow(rowId) {
+        const row = document.getElementById(rowId);
+        if (row) row.remove();
+    }
+
     window.onclick = function(event) {
-        const allMenus = ['exportMenu', 'filterMenu', 'settingsMenu', 'saveSplitMenu'];
+        const allMenus = [
+            'exportMenu', 'filterMenu', 'settingsMenu', 'saveSplitMenu', 
+            'customerDropdownMenu', 'creditSettingsPopover',
+            'gridSettingsPopover', 'itemSelectMenu_1', 'itemSelectMenu_2'
+        ];
         allMenus.forEach(id => {
             const menu = document.getElementById(id);
             if (menu && !menu.contains(event.target)) {
+                // If clicking setting toggle buttons themselves, avoid immediate toggling collision
+                if (event.target.closest('button') && event.target.closest('button').getAttribute('onclick') && event.target.closest('button').getAttribute('onclick').includes(id)) {
+                    return;
+                }
                 menu.classList.add('hidden');
             }
         });
@@ -398,5 +822,16 @@
             closeModal();
         }
     }
+    
+    // Bind Keyboard Shortcuts for F9 (Select Customer Contact)
+    window.addEventListener('keydown', function(e) {
+        if (e.key === 'F9') {
+            const overlay = document.getElementById('modalOverlay');
+            if (overlay && !overlay.classList.contains('hidden')) {
+                e.preventDefault();
+                toggleActionMenu(e, 'customerDropdownMenu');
+            }
+        }
+    });
 </script>
 {% endblock %}

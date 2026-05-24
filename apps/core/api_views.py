@@ -1,6 +1,9 @@
 from rest_framework import viewsets
-from .models import Customer, Supplier, Item, Referrer
-from .serializers import CustomerSerializer, SupplierSerializer, ItemSerializer, ReferrerSerializer
+from .models import Customer, Supplier, Item, Referrer, PremiumQuote
+from .serializers import (
+    CustomerSerializer, SupplierSerializer, ItemSerializer, ReferrerSerializer,
+    PremiumQuoteSerializer
+)
 
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
@@ -17,3 +20,7 @@ class ItemViewSet(viewsets.ModelViewSet):
 class ReferrerViewSet(viewsets.ModelViewSet):
     queryset = Referrer.objects.all()
     serializer_class = ReferrerSerializer
+
+class PremiumQuoteViewSet(viewsets.ModelViewSet):
+    queryset = PremiumQuote.objects.all().order_by('-id')
+    serializer_class = PremiumQuoteSerializer

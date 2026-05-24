@@ -106,3 +106,51 @@ class Franchisee(BaseModel):
 
     def __str__(self):
         return self.name
+
+
+class PremiumQuote(BaseModel):
+    estimate_no = models.CharField(max_length=50, unique=True)
+    estimate_type = models.CharField(max_length=50, default='Estimates')
+    estimate_date = models.DateField()
+    valid_till = models.DateField()
+    reference_no = models.CharField(max_length=100, blank=True, null=True)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='premium_quotes')
+    buyer_order_no = models.CharField(max_length=100, blank=True, null=True)
+    buyer_order_date = models.DateField(blank=True, null=True)
+    section_name = models.CharField(max_length=100, blank=True, null=True)
+    
+    sub_total = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    freight = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    packing = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    insurance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    tcs = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    round_off = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+
+    notes = models.TextField(blank=True, null=True)
+    terms = models.TextField(blank=True, null=True)
+    bank = models.CharField(max_length=100, blank=True, null=True)
+    sales_rep = models.CharField(max_length=100, blank=True, null=True)
+    project = models.CharField(max_length=100, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.estimate_no} - {self.customer.name}"
+
+
+class PremiumQuoteItem(BaseModel):
+    quote = models.ForeignKey(PremiumQuote, on_delete=models.CASCADE, related_name='items')
+    item_name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    sku = models.CharField(max_length=100, blank=True, null=True)
+    hsn = models.CharField(max_length=50, blank=True, null=True)
+    qty = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    unit = models.CharField(max_length=50, default='PCS')
+    rate = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    discount_type = models.CharField(max_length=10, default='%')
+    discount_value = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    mrp = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    cost_price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+
+    def __str__(self):
+        return f"{self.item_name} for {self.quote.estimate_no}"

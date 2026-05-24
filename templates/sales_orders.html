@@ -27,15 +27,15 @@
 </style>
 {% endblock %}
 
-{% block title %}Delivery Challans - Auraa Books{% endblock %}
-{% block breadcrumb_active %}Delivery Challans{% endblock %}
+{% block title %}Sales Orders - Auraa Books{% endblock %}
+{% block breadcrumb_active %}Sales Orders{% endblock %}
 
 {% block content %}
 <div class="p-8 stagger-in max-w-[1600px] mx-auto">
     <!-- Header Section -->
     <div class="flex items-center justify-between mb-6 relative z-[300]">
         <div class="flex items-center gap-4 flex-1 mr-6">
-            <h1 class="text-[32px] font-black text-slate-800 tracking-tight">Delivery Challans</h1>
+            <h1 class="text-[32px] font-black text-slate-800 tracking-tight">Sales Orders</h1>
 
             <!-- Compact Count Pills -->
             <div class="flex-1 flex items-center justify-around bg-white border border-slate-200 rounded-2xl px-6 py-3 shadow-sm max-w-[750px]">
@@ -61,7 +61,7 @@
             </div>
         </div>
 
-        <!-- Right side: Recent Navigator + New Delivery Challan Button -->
+        <!-- Right side: Recent Navigator + New Sales Order Button -->
         <div class="flex items-center gap-4">
             <!-- Recent Navigator -->
             <div class="relative">
@@ -72,7 +72,7 @@
                     </button>
                     <div class="px-5 flex flex-col items-center min-w-[100px] justify-center">
                         <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Recent</span>
-                        <span class="text-[14px] font-black text-slate-700 leading-none">DC-010</span>
+                        <span class="text-[14px] font-black text-slate-700 leading-none">ORD-010</span>
                     </div>
                     <button type="button" class="px-3 h-full hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-all border-l border-slate-200">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
@@ -80,28 +80,16 @@
                 </div>
             </div>
 
-            <div class="relative group/new z-[50]">
-                <div class="flex items-center bg-[var(--accent)] text-white rounded-2xl shadow-xl shadow-[var(--accent)]/20 overflow-hidden h-[52px]">
-                    <button type="button" onclick="openModal('Delivery Challan')" class="px-8 h-full text-[14px] font-black uppercase tracking-widest hover:brightness-110 transition-all border-r border-white/20">
-                        New Delivery Challan
-                    </button>
-                    <button onclick="toggleActionMenu(event, 'newSplitMenu')" class="px-4 h-full hover:brightness-110 transition-all flex items-center justify-center">
-                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
-                    </button>
-                </div>
-                <!-- New Split Dropdown -->
-                <div id="newSplitMenu" class="hidden absolute top-full right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 z-[500]">
-                    <button onclick="openModal('Delivery Challan')" class="w-full text-left px-6 py-3 text-[13px] font-bold text-slate-600 hover:bg-slate-50 transition-all cursor-pointer border-none bg-transparent">New Delivery Challan</button>
-                    <button onclick="openModal('Counter Delivery')" class="w-full text-left px-6 py-3 text-[13px] font-bold text-slate-600 hover:bg-slate-50 transition-all cursor-pointer border-none bg-transparent">Counter Delivery Challan</button>
-                </div>
-            </div>
+            <button type="button" onclick="openModal('Sales Order')" class="px-8 h-[52px] bg-[var(--accent)] text-white rounded-2xl shadow-xl shadow-[var(--accent)]/20 text-[14px] font-black uppercase tracking-widest hover:brightness-110 transition-all cursor-pointer">
+                New Sales Order
+            </button>
         </div>
     </div>
 
     <!-- Tab Bar & Action Icons -->
     <div class="flex items-center justify-between mb-6 bg-white rounded-[32px] px-8 shadow-sm h-12 relative z-[200]">
         <div class="flex items-center h-full">
-            <a href="#" class="px-8 h-full flex items-center text-[14px] font-black uppercase tracking-widest border-b-4 border-accent text-accent transition-all">All Delivery Challans</a>
+            <a href="#" class="px-8 h-full flex items-center text-[14px] font-black uppercase tracking-widest border-b-4 border-accent text-accent transition-all">All Sales Orders</a>
             <a href="#" class="px-8 h-full flex items-center text-[14px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all border-b-4 border-transparent">REG</a>
             <a href="#" class="px-8 h-full flex items-center text-[14px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all border-b-4 border-transparent">Estimate</a>
         </div>
@@ -268,7 +256,7 @@
                             <span class="text-[14px] font-bold text-slate-700">Buyer's Order No#</span>
                         </label>
 
-                        <!-- Buyer's Challan Date -->
+                        <!-- Buyer's Order Date -->
                         <label class="flex items-center gap-3 cursor-pointer group select-none">
                             <input type="checkbox" id="checkbox_BuyersOrderDate" class="sr-only peer">
                             <div class="w-5 h-5 border border-slate-300 rounded flex items-center justify-center peer-checked:bg-[#208085] peer-checked:border-[#208085] transition-all">
@@ -276,7 +264,7 @@
                                     <polyline points="20 6 9 17 4 12"></polyline>
                                 </svg>
                             </div>
-                            <span class="text-[14px] font-bold text-slate-700">Buyer's Challan Date</span>
+                            <span class="text-[14px] font-bold text-slate-700">Buyer's Order Date</span>
                         </label>
 
                         <!-- Apply Button -->
@@ -317,12 +305,12 @@
                         </td>
                         <td class="px-8 py-6 text-[14px] font-black text-slate-800 text-right whitespace-nowrap">₹ 1,080.00</td>
                         <td class="px-8 py-6 text-center action-cell" style="position: relative;">
-                            <button type="button" id="actionBtn_ORD1" onclick="toggleRowActionMenu(event, 'rowActionMenu_DC1')" class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--accent)] text-white rounded-xl text-[11px] font-black uppercase tracking-widest hover:brightness-110 cursor-pointer border-none shadow-sm transition-all">
+                            <button type="button" id="actionBtn_ORD1" onclick="toggleRowActionMenu(event, 'rowActionMenu_ORD1')" class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--accent)] text-white rounded-xl text-[11px] font-black uppercase tracking-widest hover:brightness-110 cursor-pointer border-none shadow-sm transition-all">
                                 <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
                                 <span id="actionLabel_ORD1">Delete</span> <span style="font-size:9px;">▼</span>
                             </button>
                             <!-- Action Dropdown Menu -->
-                            <div id="rowActionMenu_DC1" class="hidden absolute right-8 top-full mt-1.5 w-[360px] bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.12)] border border-slate-200/80 p-2 z-[500] text-left animate-erp-fade">
+                            <div id="rowActionMenu_ORD1" class="hidden absolute right-8 top-full mt-1.5 w-[360px] bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.12)] border border-slate-200/80 p-2 z-[500] text-left animate-erp-fade">
                                 <div class="grid grid-cols-2 gap-2">
                                     <!-- Column 1: Actions -->
                                     <div class="flex flex-col gap-0.5">
@@ -388,12 +376,12 @@
                         </td>
                         <td class="px-8 py-6 text-[14px] font-black text-slate-800 text-right whitespace-nowrap">₹ 433.00</td>
                         <td class="px-8 py-6 text-center action-cell" style="position: relative;">
-                            <button type="button" id="actionBtn_ORD2" onclick="toggleRowActionMenu(event, 'rowActionMenu_DC2')" class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--accent)] text-white rounded-xl text-[11px] font-black uppercase tracking-widest hover:brightness-110 cursor-pointer border-none shadow-sm transition-all">
+                            <button type="button" id="actionBtn_ORD2" onclick="toggleRowActionMenu(event, 'rowActionMenu_ORD2')" class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--accent)] text-white rounded-xl text-[11px] font-black uppercase tracking-widest hover:brightness-110 cursor-pointer border-none shadow-sm transition-all">
                                 <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
                                 <span id="actionLabel_ORD2">Delete</span> <span style="font-size:9px;">▼</span>
                             </button>
                             <!-- Action Dropdown Menu -->
-                            <div id="rowActionMenu_DC2" class="hidden absolute right-8 top-full mt-1.5 w-[360px] bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.12)] border border-slate-200/80 p-2 z-[500] text-left animate-erp-fade">
+                            <div id="rowActionMenu_ORD2" class="hidden absolute right-8 top-full mt-1.5 w-[360px] bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.12)] border border-slate-200/80 p-2 z-[500] text-left animate-erp-fade">
                                 <div class="grid grid-cols-2 gap-2">
                                     <!-- Column 1: Actions -->
                                     <div class="flex flex-col gap-0.5">
@@ -459,12 +447,12 @@
                         </td>
                         <td class="px-8 py-6 text-[14px] font-black text-slate-800 text-right whitespace-nowrap">₹ 3,012.00</td>
                         <td class="px-8 py-6 text-center action-cell" style="position: relative;">
-                            <button type="button" id="actionBtn_ORD3" onclick="toggleRowActionMenu(event, 'rowActionMenu_DC3')" class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--accent)] text-white rounded-xl text-[11px] font-black uppercase tracking-widest hover:brightness-110 cursor-pointer border-none shadow-sm transition-all">
+                            <button type="button" id="actionBtn_ORD3" onclick="toggleRowActionMenu(event, 'rowActionMenu_ORD3')" class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--accent)] text-white rounded-xl text-[11px] font-black uppercase tracking-widest hover:brightness-110 cursor-pointer border-none shadow-sm transition-all">
                                 <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
                                 <span id="actionLabel_ORD3">Delete</span> <span style="font-size:9px;">▼</span>
                             </button>
                             <!-- Action Dropdown Menu -->
-                            <div id="rowActionMenu_DC3" class="hidden absolute right-8 bottom-full mb-1.5 w-[360px] bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.12)] border border-slate-200/80 p-2 z-[500] text-left animate-erp-fade">
+                            <div id="rowActionMenu_ORD3" class="hidden absolute right-8 bottom-full mb-1.5 w-[360px] bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.12)] border border-slate-200/80 p-2 z-[500] text-left animate-erp-fade">
                                 <div class="grid grid-cols-2 gap-2">
                                     <!-- Column 1: Actions -->
                                     <div class="flex flex-col gap-0.5">
@@ -535,7 +523,7 @@
                     </div>
                     <div class="flex flex-col">
                         <div class="flex items-center gap-3">
-                            <h3 id="modalTitle" class="text-[20px] font-black text-white leading-none">New Delivery Challan</h3>
+                            <h3 id="modalTitle" class="text-[20px] font-black text-white leading-none">New Sales Order</h3>
                             <!-- Normal / Quick View Dropdown next to title, background white with primary color -->
                             <div class="relative flex items-center select-none">
                                 <button type="button" onclick="toggleActionMenu(event, 'viewModeMenu')" id="viewModeBtn" class="px-2 h-8 rounded-lg border border-slate-200 flex items-center justify-center gap-1 transition-all focus:outline-none shadow-sm hover:bg-slate-100" style="background-color: white !important; color: var(--accent) !important;" title="Change View Mode">
@@ -570,7 +558,7 @@
                     <!-- Save Split Button -->
                     <div class="relative flex items-center h-10 select-none">
                         <div class="flex items-stretch rounded-lg overflow-hidden border-2 border-white h-10 bg-white shadow-sm">
-                            <button type="button" onclick="saveDeliveryChallan()" class="px-5 bg-white hover:bg-slate-50 text-[var(--accent)] text-[12px] font-black uppercase tracking-wider transition-all">
+                            <button type="button" onclick="saveOrder()" class="px-5 bg-white hover:bg-slate-50 text-[var(--accent)] text-[12px] font-black uppercase tracking-wider transition-all">
                                 Save
                             </button>
                             <button type="button" onclick="toggleActionMenu(event, 'saveSplitMenu')" class="px-3 bg-white hover:bg-slate-50 text-[var(--accent)] border-l border-[var(--accent)]/20 flex items-center justify-center transition-all">
@@ -613,13 +601,13 @@
                                     </div>
                                 </div>
                             </label>
-                            <span class="text-[13px] font-black text-slate-800 h-9 flex items-center border border-slate-200 rounded-lg px-3 bg-slate-50" id="orderNumber">DC-003</span>
+                            <span class="text-[13px] font-black text-slate-800 h-9 flex items-center border border-slate-200 rounded-lg px-3 bg-slate-50" id="orderNumber">ORD-003</span>
                         </div>
 
-                        <!-- Challan Date -->
+                        <!-- Order Date -->
                         <div class="flex flex-col gap-1">
                             <label class="text-[14px] text-slate-800 flex items-center gap-1">
-                                Challan Date
+                                Order Date
                                 <div class="relative group flex items-center">
                                     <svg class="w-4 h-4 text-slate-500 cursor-help" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                     <div class="hidden group-hover:block absolute top-full left-1/2 -translate-x-1/4 mt-2 w-max max-w-[250px] bg-white border border-slate-200 shadow-xl p-2.5 text-[13px] text-slate-800 z-[1200] leading-snug rounded shadow-sm font-normal whitespace-normal text-left">
@@ -706,9 +694,9 @@
                             <input type="text" class="w-full h-9 bg-slate-50 border border-slate-200 rounded-lg px-3 text-[12px] font-bold text-slate-700 outline-none focus:border-[var(--accent)] focus:bg-white transition-all">
                         </div>
 
-                        <!-- Buyer's Challan Date -->
+                        <!-- Buyer's Order Date -->
                         <div class="flex flex-col gap-1">
-                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Buyer's Challan Date</span>
+                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Buyer's Order Date</span>
                             <div class="relative flex items-center">
                                 <input type="text" placeholder="DD/MM/YYYY" class="w-full h-9 bg-slate-50 border border-slate-200 rounded-lg px-3 pr-9 text-[12px] font-bold text-slate-700 outline-none focus:border-[var(--accent)] focus:bg-white transition-all">
                                 <span class="absolute right-3 text-slate-400 text-[12px] pointer-events-none">📅</span>
@@ -1097,7 +1085,7 @@
                 </div>
                 <div class="flex flex-col">
                     <div class="flex items-center gap-3">
-                        <h3 class="text-[20px] font-black text-white leading-none">New Delivery Challan</h3>
+                        <h3 class="text-[20px] font-black text-white leading-none">New Sales Order</h3>
                         <!-- Quick View Dropdown -->
                         <div class="relative flex items-center select-none">
                             <button type="button" onclick="toggleActionMenu(event, 'qvViewModeMenu')" class="px-2 h-8 rounded-lg border border-slate-200 flex items-center justify-center gap-1 transition-all focus:outline-none shadow-sm hover:bg-slate-100" style="background-color: white !important; color: var(--accent) !important;" title="Change View Mode">
@@ -1201,7 +1189,7 @@
                                 <div class="px-4 py-2.5 text-[14px] text-slate-700 hover:bg-slate-50 cursor-pointer">Date</div>
                                 <div class="px-4 py-2.5 text-[14px] text-white bg-[#1e73be] font-bold cursor-pointer">Contact/Item</div>
                                 <div class="px-4 py-2.5 text-[14px] text-slate-700 hover:bg-slate-50 cursor-pointer">Buyer's Order No#</div>
-                                <div class="px-4 py-2.5 text-[14px] text-slate-700 hover:bg-slate-50 cursor-pointer">Buyer's Challan Date</div>
+                                <div class="px-4 py-2.5 text-[14px] text-slate-700 hover:bg-slate-50 cursor-pointer">Buyer's Order Date</div>
                                 <div class="px-4 py-2.5 text-[14px] text-slate-700 hover:bg-slate-50 cursor-pointer">Item</div>
                             </div>
                         </div>
@@ -1307,7 +1295,7 @@
             'exportMenu', 'filterMenu', 'settingsMenu', 'saveSplitMenu', 'saveFooterSplitMenu',
             'customerDropdownMenu', 'validTillMenu', 'orderSettingsPopover', 'branchStockMenu',
             'itemSelectMenu_1', 'newSplitMenu', 'orderLinkContactDropdown', 'orderLinkCategoryDropdown',
-            'rowActionMenu_DC1', 'rowActionMenu_DC2', 'rowActionMenu_DC3', 'tableColMenu', 'viewModeMenu',
+            'rowActionMenu_ORD1', 'rowActionMenu_ORD2', 'rowActionMenu_ORD3', 'tableColMenu', 'viewModeMenu',
             'qvTopDropdown', 'qvSaveMenu', 'qvSettingsMenu', 'qvCustomerTypeMenu'
         ];
         allMenus.forEach(id => {
@@ -1390,7 +1378,7 @@
         document.getElementById('orderTotalAmount').textContent = '₹ ' + subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
-    function saveDeliveryChallan() {
+    function saveOrder() {
         alert('Order saved successfully!');
         closeModal();
     }
@@ -1428,10 +1416,10 @@
                 icon.innerHTML = `<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>`;
                 if (!skipModal) {
                     const qvModal = document.getElementById('quickViewModal');
-                    const posModal = document.getElementById('posViewModal');
-                    if (qvModal) { qvModal.classList.add('hidden'); qvModal.classList.remove('flex'); }
-                    if (posModal) { posModal.classList.add('hidden'); posModal.classList.remove('flex'); }
-                    
+                    if (qvModal) {
+                        qvModal.classList.add('hidden');
+                        qvModal.classList.remove('flex');
+                    }
                     const normalModal = document.getElementById('modalOverlay');
                     if (normalModal) {
                         normalModal.classList.remove('hidden');
@@ -1441,49 +1429,18 @@
             } else if (mode === 'Quick View') {
                 icon.innerHTML = `<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>`;
                 if (!skipModal) {
-                    const normalModal = document.getElementById('modalOverlay');
-                    const posModal = document.getElementById('posViewModal');
-                    if (normalModal) { normalModal.classList.add('hidden'); normalModal.classList.remove('flex'); }
-                    if (posModal) { posModal.classList.add('hidden'); posModal.classList.remove('flex'); }
-                    
-                    const qvModal = document.getElementById('quickViewModal');
-                    if (qvModal) {
-                        qvModal.classList.remove('hidden');
-                        qvModal.classList.add('flex');
-                    }
-                }
-            } else if (mode === 'POS View') {
-                icon.innerHTML = `<rect x="2" y="3" width="20" height="18" rx="2" ry="2"/><line x1="2" y1="8" x2="22" y2="8"/><line x1="8" y1="18" x2="8" y2="8"/>`;
-                if (!skipModal) {
-                    const normalModal = document.getElementById('modalOverlay');
-                    const qvModal = document.getElementById('quickViewModal');
-                    if (normalModal) { normalModal.classList.add('hidden'); normalModal.classList.remove('flex'); }
-                    if (qvModal) { qvModal.classList.add('hidden'); qvModal.classList.remove('flex'); }
-                    
-                    const posModal = document.getElementById('posViewModal');
-                    if (posModal) {
-                        posModal.classList.remove('hidden');
-                        posModal.classList.add('flex');
-                    }
+                    openQuickViewModal();
                 }
             }
         }
-        
-        // Hide all view mode menus
-        ['viewModeMenu', 'qvViewModeMenu', 'posViewModeMenu'].forEach(id => {
-            const menu = document.getElementById(id);
-            if (menu) menu.classList.add('hidden');
-        });
+        const menu = document.getElementById('viewModeMenu');
+        if (menu) menu.classList.add('hidden');
+        const qvMenu = document.getElementById('qvViewModeMenu');
+        if (qvMenu) qvMenu.classList.add('hidden');
     }
 
-    function closePosViewModal() {
-        const posModal = document.getElementById('posViewModal');
-        if (posModal) {
-            posModal.classList.add('hidden');
-            posModal.classList.remove('flex');
-        }
-    }
-function filterByStatus(status) {
+    /* Status Filter */
+    function filterByStatus(status) {
         const tbody = document.querySelector('tbody.divide-y');
         if (!tbody) return;
         const rows = tbody.querySelectorAll('tr');
@@ -1595,7 +1552,7 @@ function filterByStatus(status) {
             'exportMenu', 'filterMenu', 'settingsMenu', 'saveSplitMenu', 'saveFooterSplitMenu',
             'customerDropdownMenu', 'validTillMenu', 'orderSettingsPopover', 'branchStockMenu',
             'itemSelectMenu_1', 'newSplitMenu', 'orderLinkContactDropdown', 'orderLinkCategoryDropdown',
-            'rowActionMenu_DC1', 'rowActionMenu_DC2', 'rowActionMenu_DC3'
+            'rowActionMenu_ORD1', 'rowActionMenu_ORD2', 'rowActionMenu_ORD3'
         ];
         allDropdowns.forEach(id => {
             const el = document.getElementById(id);
@@ -1639,7 +1596,7 @@ function filterByStatus(status) {
             label.textContent = actionLabels[action] || action;
         }
         // Hide all action menus
-        ['rowActionMenu_DC1', 'rowActionMenu_DC2', 'rowActionMenu_DC3'].forEach(id => {
+        ['rowActionMenu_ORD1', 'rowActionMenu_ORD2', 'rowActionMenu_ORD3'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.classList.add('hidden');
         });
@@ -1651,7 +1608,7 @@ function filterByStatus(status) {
             'exportMenu', 'filterMenu', 'settingsMenu', 'saveSplitMenu', 'saveFooterSplitMenu',
             'customerDropdownMenu', 'validTillMenu', 'orderSettingsPopover', 'branchStockMenu',
             'itemSelectMenu_1', 'newSplitMenu', 'orderLinkContactDropdown', 'orderLinkCategoryDropdown',
-            'rowActionMenu_DC1', 'rowActionMenu_DC2', 'rowActionMenu_DC3'
+            'rowActionMenu_ORD1', 'rowActionMenu_ORD2', 'rowActionMenu_ORD3'
         ];
         allMenus.forEach(id => {
             const menu = document.getElementById(id);
@@ -1662,7 +1619,7 @@ function filterByStatus(status) {
 
         // Clean up inline z-index styles if no row action dropdown is visible
         setTimeout(() => {
-            const anyRowMenuOpen = ['rowActionMenu_DC1', 'rowActionMenu_DC2', 'rowActionMenu_DC3']
+            const anyRowMenuOpen = ['rowActionMenu_ORD1', 'rowActionMenu_ORD2', 'rowActionMenu_ORD3']
                 .some(id => {
                     const el = document.getElementById(id);
                     return el && !el.classList.contains('hidden');

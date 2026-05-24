@@ -19,20 +19,20 @@ urlpatterns = [
     path('stock-journal/', views.StockJournalListView.as_view(), name='stock-journal-list'), # FORCE RELOAD 2026-05-12
 
     # Sales
-    path('sales/quotes/', views.GenericMasterView.as_view(title='Sales Quotes', parent_name='Sales'), name='sales-quotes'),
-    path('sales/orders/', views.GenericMasterView.as_view(title='Sales Orders', parent_name='Sales'), name='sales-orders'),
-    path('sales/invoices/', views.GenericMasterView.as_view(title='Invoices', parent_name='Sales'), name='sales-invoices'),
+    path('sales/quotes/', views.SalesQuotesListView.as_view(), name='sales-quotes'),
+    path('sales/orders/', views.SalesOrdersListView.as_view(), name='sales-orders'),
+    path('sales/invoices/', views.SalesInvoicesListView.as_view(), name='sales-invoices'),
     path('sales/delivery-challan/', views.DeliveryChallanListView.as_view(), name='delivery-challan'),
     path('sales/credit-note/', views.CreditNoteListView.as_view(), name='sales-credit-note'),
     path('sales/receipt/', views.ReceiptListView.as_view(), name='sales-receipt'),
 
     # Purchase
-    path('purchase/quotes/', views.GenericMasterView.as_view(title='Purchase Quotes', parent_name='Purchase'), name='purchase-quotes'),
-    path('purchase/orders/', views.GenericMasterView.as_view(title='Purchase Orders', parent_name='Purchase'), name='purchase-orders'),
-    path('purchase/goods-receipt/', views.GenericMasterView.as_view(title='Goods Receipt', parent_name='Purchase'), name='goods-receipt'),
-    path('purchase/bills/', views.GenericMasterView.as_view(title='Purchase Bills', parent_name='Purchase'), name='purchase-bills'),
-    path('purchase/payments/', views.GenericMasterView.as_view(title='Payments', parent_name='Purchase'), name='purchase-payments'),
-    path('purchase/credit-note/', views.GenericMasterView.as_view(title='Supplier Credit Note', parent_name='Purchase'), name='supplier-credit-note'),
+    path('purchase/quotes/', views.PurchaseQuotesListView.as_view(), name='purchase-quotes'),
+    path('purchase/orders/', views.PurchaseOrdersListView.as_view(), name='purchase-orders'),
+    path('purchase/goods-receipt/', views.GoodsReceiptListView.as_view(), name='goods-receipt'),
+    path('purchase/bills/', views.PurchaseBillView.as_view(), name='purchase-bills'),
+    path('purchase/payments/', views.PurchasePaymentView.as_view(), name='purchase-payments'),
+    path('purchase/credit-note/', views.SupplierCreditNoteListView.as_view(), name='supplier-credit-note'),
 
     # Expenses
     path('expenses/credit/', views.CreditExpenseListView.as_view(), name='credit-expenses'),

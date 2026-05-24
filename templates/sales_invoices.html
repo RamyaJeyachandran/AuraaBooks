@@ -27,15 +27,15 @@
 </style>
 {% endblock %}
 
-{% block title %}Delivery Challans - Auraa Books{% endblock %}
-{% block breadcrumb_active %}Delivery Challans{% endblock %}
+{% block title %}Invoices - Auraa Books{% endblock %}
+{% block breadcrumb_active %}Invoices{% endblock %}
 
 {% block content %}
 <div class="p-8 stagger-in max-w-[1600px] mx-auto">
     <!-- Header Section -->
     <div class="flex items-center justify-between mb-6 relative z-[300]">
         <div class="flex items-center gap-4 flex-1 mr-6">
-            <h1 class="text-[32px] font-black text-slate-800 tracking-tight">Delivery Challans</h1>
+            <h1 class="text-[32px] font-black text-slate-800 tracking-tight">Invoices</h1>
 
             <!-- Compact Count Pills -->
             <div class="flex-1 flex items-center justify-around bg-white border border-slate-200 rounded-2xl px-6 py-3 shadow-sm max-w-[750px]">
@@ -61,7 +61,7 @@
             </div>
         </div>
 
-        <!-- Right side: Recent Navigator + New Delivery Challan Button -->
+        <!-- Right side: Recent Navigator + New Invoice Button -->
         <div class="flex items-center gap-4">
             <!-- Recent Navigator -->
             <div class="relative">
@@ -72,7 +72,7 @@
                     </button>
                     <div class="px-5 flex flex-col items-center min-w-[100px] justify-center">
                         <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Recent</span>
-                        <span class="text-[14px] font-black text-slate-700 leading-none">DC-010</span>
+                        <span class="text-[14px] font-black text-slate-700 leading-none">INV-010</span>
                     </div>
                     <button type="button" class="px-3 h-full hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-all border-l border-slate-200">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
@@ -80,28 +80,16 @@
                 </div>
             </div>
 
-            <div class="relative group/new z-[50]">
-                <div class="flex items-center bg-[var(--accent)] text-white rounded-2xl shadow-xl shadow-[var(--accent)]/20 overflow-hidden h-[52px]">
-                    <button type="button" onclick="openModal('Delivery Challan')" class="px-8 h-full text-[14px] font-black uppercase tracking-widest hover:brightness-110 transition-all border-r border-white/20">
-                        New Delivery Challan
-                    </button>
-                    <button onclick="toggleActionMenu(event, 'newSplitMenu')" class="px-4 h-full hover:brightness-110 transition-all flex items-center justify-center">
-                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
-                    </button>
-                </div>
-                <!-- New Split Dropdown -->
-                <div id="newSplitMenu" class="hidden absolute top-full right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 z-[500]">
-                    <button onclick="openModal('Delivery Challan')" class="w-full text-left px-6 py-3 text-[13px] font-bold text-slate-600 hover:bg-slate-50 transition-all cursor-pointer border-none bg-transparent">New Delivery Challan</button>
-                    <button onclick="openModal('Counter Delivery')" class="w-full text-left px-6 py-3 text-[13px] font-bold text-slate-600 hover:bg-slate-50 transition-all cursor-pointer border-none bg-transparent">Counter Delivery Challan</button>
-                </div>
-            </div>
+            <button type="button" onclick="openModal('Invoice')" class="px-8 h-[52px] bg-[var(--accent)] text-white rounded-2xl shadow-xl shadow-[var(--accent)]/20 text-[14px] font-black uppercase tracking-widest hover:brightness-110 transition-all cursor-pointer">
+                New Invoice
+            </button>
         </div>
     </div>
 
     <!-- Tab Bar & Action Icons -->
     <div class="flex items-center justify-between mb-6 bg-white rounded-[32px] px-8 shadow-sm h-12 relative z-[200]">
         <div class="flex items-center h-full">
-            <a href="#" class="px-8 h-full flex items-center text-[14px] font-black uppercase tracking-widest border-b-4 border-accent text-accent transition-all">All Delivery Challans</a>
+            <a href="#" class="px-8 h-full flex items-center text-[14px] font-black uppercase tracking-widest border-b-4 border-accent text-accent transition-all">All Invoices</a>
             <a href="#" class="px-8 h-full flex items-center text-[14px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all border-b-4 border-transparent">REG</a>
             <a href="#" class="px-8 h-full flex items-center text-[14px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all border-b-4 border-transparent">Estimate</a>
         </div>
@@ -148,7 +136,7 @@
             </div>
 
             <!-- Link Icon Button (Image 1 style) -->
-            <button onclick="openOrderLinkModal()" class="w-10 h-10 flex items-center justify-center bg-[var(--accent)] hover:brightness-110 border border-[var(--accent)] rounded-xl transition-all shadow-sm cursor-pointer" title="Order Link">
+            <button onclick="openOrderLinkModal()" class="w-10 h-10 flex items-center justify-center bg-[var(--accent)] hover:brightness-110 border border-[var(--accent)] rounded-xl transition-all shadow-sm cursor-pointer" title="Invoice Link">
                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                     <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
                     <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
@@ -163,8 +151,8 @@
                 <div id="filterMenu" class="hidden absolute top-full right-0 mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-slate-100 p-4 z-[500]">
                     <div class="space-y-3">
                         <div class="space-y-1.5">
-                            <h4 class="text-[13px] font-black text-slate-800">Search Order</h4>
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Contacts / Order# / Ref# / Amount</p>
+                            <h4 class="text-[13px] font-black text-slate-800">Search Invoice</h4>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Contacts / Invoice# / Ref# / Amount</p>
                             <input type="text" class="w-full h-9 bg-white border border-slate-200 rounded-xl px-3 text-[12px] font-bold outline-none focus:border-[var(--accent)]">
                         </div>
                         <div class="space-y-1.5">
@@ -257,7 +245,7 @@
                         <!-- Divider Line -->
                         <div class="border-t border-slate-100 my-2"></div>
 
-                        <!-- Buyer's Order No# -->
+                        <!-- Buyer's Invoice No# -->
                         <label class="flex items-center gap-3 cursor-pointer group select-none">
                             <input type="checkbox" id="checkbox_BuyersOrderNo" class="sr-only peer">
                             <div class="w-5 h-5 border border-slate-300 rounded flex items-center justify-center peer-checked:bg-[#208085] peer-checked:border-[#208085] transition-all">
@@ -265,10 +253,10 @@
                                     <polyline points="20 6 9 17 4 12"></polyline>
                                 </svg>
                             </div>
-                            <span class="text-[14px] font-bold text-slate-700">Buyer's Order No#</span>
+                            <span class="text-[14px] font-bold text-slate-700">Buyer's Invoice No#</span>
                         </label>
 
-                        <!-- Buyer's Challan Date -->
+                        <!-- Buyer's Invoice Date -->
                         <label class="flex items-center gap-3 cursor-pointer group select-none">
                             <input type="checkbox" id="checkbox_BuyersOrderDate" class="sr-only peer">
                             <div class="w-5 h-5 border border-slate-300 rounded flex items-center justify-center peer-checked:bg-[#208085] peer-checked:border-[#208085] transition-all">
@@ -276,7 +264,7 @@
                                     <polyline points="20 6 9 17 4 12"></polyline>
                                 </svg>
                             </div>
-                            <span class="text-[14px] font-bold text-slate-700">Buyer's Challan Date</span>
+                            <span class="text-[14px] font-bold text-slate-700">Buyer's Invoice Date</span>
                         </label>
 
                         <!-- Apply Button -->
@@ -294,7 +282,7 @@
                 <thead class="bg-[var(--accent)]">
                     <tr class="border-b border-white/10">
                         <th class="px-8 py-6 text-[11px] font-black text-white uppercase tracking-[0.2em]">Date</th>
-                        <th class="px-8 py-6 text-[11px] font-black text-white uppercase tracking-[0.2em]">Order No</th>
+                        <th class="px-8 py-6 text-[11px] font-black text-white uppercase tracking-[0.2em]">Invoice No</th>
                         <th class="px-8 py-6 text-[11px] font-black text-white uppercase tracking-[0.2em]">Contact</th>
                         <th class="px-8 py-6 text-[11px] font-black text-white uppercase tracking-[0.2em]">Ref.No</th>
                         <th class="px-8 py-6 text-[11px] font-black text-white uppercase tracking-[0.2em]">Stock</th>
@@ -306,7 +294,7 @@
                 <tbody class="divide-y divide-slate-50">
                     <tr data-status="Confirmed" class="hover:bg-slate-50/50 transition-all group">
                         <td class="px-8 py-6 text-[14px] font-bold text-slate-600 whitespace-nowrap">25 Aug 2025</td>
-                        <td class="px-8 py-6 text-[14px] font-black text-slate-800">ORD1</td>
+                        <td class="px-8 py-6 text-[14px] font-black text-slate-800">INV1</td>
                         <td class="px-8 py-6 text-[14px] font-bold text-slate-600">test</td>
                         <td class="px-8 py-6 text-[14px] font-bold text-slate-400">-</td>
                         <td class="px-8 py-6">
@@ -317,25 +305,25 @@
                         </td>
                         <td class="px-8 py-6 text-[14px] font-black text-slate-800 text-right whitespace-nowrap">₹ 1,080.00</td>
                         <td class="px-8 py-6 text-center action-cell" style="position: relative;">
-                            <button type="button" id="actionBtn_ORD1" onclick="toggleRowActionMenu(event, 'rowActionMenu_DC1')" class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--accent)] text-white rounded-xl text-[11px] font-black uppercase tracking-widest hover:brightness-110 cursor-pointer border-none shadow-sm transition-all">
+                            <button type="button" id="actionBtn_INV1" onclick="toggleRowActionMenu(event, 'rowActionMenu_INV1')" class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--accent)] text-white rounded-xl text-[11px] font-black uppercase tracking-widest hover:brightness-110 cursor-pointer border-none shadow-sm transition-all">
                                 <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
-                                <span id="actionLabel_ORD1">Delete</span> <span style="font-size:9px;">▼</span>
+                                <span id="actionLabel_INV1">Delete</span> <span style="font-size:9px;">▼</span>
                             </button>
                             <!-- Action Dropdown Menu -->
-                            <div id="rowActionMenu_DC1" class="hidden absolute right-8 top-full mt-1.5 w-[360px] bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.12)] border border-slate-200/80 p-2 z-[500] text-left animate-erp-fade">
+                            <div id="rowActionMenu_INV1" class="hidden absolute right-8 top-full mt-1.5 w-[360px] bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.12)] border border-slate-200/80 p-2 z-[500] text-left animate-erp-fade">
                                 <div class="grid grid-cols-2 gap-2">
                                     <!-- Column 1: Actions -->
                                     <div class="flex flex-col gap-0.5">
                                         <div class="px-3 py-1 text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Actions</div>
-                                        <button type="button" onclick="handleRowAction('create_invoice', 'ORD1')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
+                                        <button type="button" onclick="handleRowAction('create_invoice', 'INV1')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
                                             <svg class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
                                             Create Invoice
                                         </button>
-                                        <button type="button" onclick="handleRowAction('create_delivery_challan', 'ORD1')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
+                                        <button type="button" onclick="handleRowAction('create_delivery_challan', 'INV1')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
                                             <svg class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124l-.847-13.56a1.125 1.125 0 00-1.12-1.056H16.5m-3 15.75h-1.5m1.5-1.5v-1.5A3.375 3.375 0 0010.5 13.5h-3a3.375 3.375 0 00-3.375 3.375v1.5m16.5 0V13.5a3.375 3.375 0 00-3.375-3.375H13.5m0-4.5V3.375c0-.621-.504-1.125-1.125-1.125h-3a1.125 1.125 0 00-1.125 1.125V5.25" /></svg>
                                             Delivery Challan
                                         </button>
-                                        <button type="button" onclick="handleRowAction('receipt', 'ORD1')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
+                                        <button type="button" onclick="handleRowAction('receipt', 'INV1')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
                                             <svg class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5h16.5M5.25 7.5h13.5m-13.5 3h13.5m-13.5 3h13.5m-13.5 3h13.5" /></svg>
                                             Receipt
                                         </button>
@@ -343,30 +331,30 @@
                                     <!-- Column 2: Share & Output -->
                                     <div class="flex flex-col gap-0.5">
                                         <div class="px-3 py-1 text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Output & Share</div>
-                                        <button type="button" onclick="handleRowAction('print', 'ORD1')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
+                                        <button type="button" onclick="handleRowAction('print', 'INV1')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
                                             <svg class="w-3.5 h-3.5 text-sky-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-14.326 0C3.768 7.44 3 8.375 3 9.456V15.75a2.25 2.25 0 002.25 2.25h1.091M9 3.5h6" /></svg>
                                             Print
                                         </button>
-                                        <button type="button" onclick="handleRowAction('send', 'ORD1')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
+                                        <button type="button" onclick="handleRowAction('send', 'INV1')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
                                             <svg class="w-3.5 h-3.5 text-sky-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" /></svg>
                                             Send Email
                                         </button>
-                                        <button type="button" onclick="handleRowAction('send_sms', 'ORD1')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
+                                        <button type="button" onclick="handleRowAction('send_sms', 'INV1')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
                                             <svg class="w-3.5 h-3.5 text-sky-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" /></svg>
                                             SMS
                                         </button>
-                                        <button type="button" onclick="handleRowAction('send_whatsapp', 'ORD1')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
+                                        <button type="button" onclick="handleRowAction('send_whatsapp', 'INV1')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
                                             <svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.43.047-.877-.168-1.25A7.986 7.986 0 013 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" /></svg>
                                             WhatsApp
                                         </button>
-                                        <button type="button" onclick="handleRowAction('copy', 'ORD1')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
+                                        <button type="button" onclick="handleRowAction('copy', 'INV1')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
                                             <svg class="w-3.5 h-3.5 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H5.25m11.9-3.664A2.251 2.251 0 0015 2.25h-3a2.251 2.251 0 00-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5m-2.25-9h1.5a1.125 1.125 0 011.125 1.125v7.5a1.125 1.125 0 01-1.125 1.125h-7.5a1.125 1.125 0 01-1.125-1.125v-7.5a1.125 1.125 0 011.125-1.125h1.5m3.75-3h.008v.008H12v-.008z" /></svg>
                                             Copy
                                         </button>
                                     </div>
                                     <!-- Full Width Delete -->
                                     <div class="col-span-2 border-t border-slate-100 pt-1.5 mt-0.5">
-                                        <button type="button" onclick="handleRowAction('delete', 'ORD1')" class="w-full px-2.5 py-1.5 flex items-center justify-center gap-2 text-[12px] font-bold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-all border-none bg-transparent cursor-pointer rounded-lg">
+                                        <button type="button" onclick="handleRowAction('delete', 'INV1')" class="w-full px-2.5 py-1.5 flex items-center justify-center gap-2 text-[12px] font-bold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-all border-none bg-transparent cursor-pointer rounded-lg">
                                             <svg class="w-3.5 h-3.5 text-rose-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
                                             Delete
                                         </button>
@@ -377,7 +365,7 @@
                     </tr>
                     <tr data-status="Open" class="hover:bg-slate-50/50 transition-all group bg-slate-50/30">
                         <td class="px-8 py-6 text-[14px] font-bold text-slate-600 whitespace-nowrap">29 Aug 2025</td>
-                        <td class="px-8 py-6 text-[14px] font-black text-slate-800">ORD2</td>
+                        <td class="px-8 py-6 text-[14px] font-black text-slate-800">INV2</td>
                         <td class="px-8 py-6 text-[14px] font-bold text-slate-600">DHILIP</td>
                         <td class="px-8 py-6 text-[14px] font-bold text-slate-400">-</td>
                         <td class="px-8 py-6">
@@ -388,25 +376,25 @@
                         </td>
                         <td class="px-8 py-6 text-[14px] font-black text-slate-800 text-right whitespace-nowrap">₹ 433.00</td>
                         <td class="px-8 py-6 text-center action-cell" style="position: relative;">
-                            <button type="button" id="actionBtn_ORD2" onclick="toggleRowActionMenu(event, 'rowActionMenu_DC2')" class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--accent)] text-white rounded-xl text-[11px] font-black uppercase tracking-widest hover:brightness-110 cursor-pointer border-none shadow-sm transition-all">
+                            <button type="button" id="actionBtn_INV2" onclick="toggleRowActionMenu(event, 'rowActionMenu_INV2')" class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--accent)] text-white rounded-xl text-[11px] font-black uppercase tracking-widest hover:brightness-110 cursor-pointer border-none shadow-sm transition-all">
                                 <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
-                                <span id="actionLabel_ORD2">Delete</span> <span style="font-size:9px;">▼</span>
+                                <span id="actionLabel_INV2">Delete</span> <span style="font-size:9px;">▼</span>
                             </button>
                             <!-- Action Dropdown Menu -->
-                            <div id="rowActionMenu_DC2" class="hidden absolute right-8 top-full mt-1.5 w-[360px] bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.12)] border border-slate-200/80 p-2 z-[500] text-left animate-erp-fade">
+                            <div id="rowActionMenu_INV2" class="hidden absolute right-8 top-full mt-1.5 w-[360px] bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.12)] border border-slate-200/80 p-2 z-[500] text-left animate-erp-fade">
                                 <div class="grid grid-cols-2 gap-2">
                                     <!-- Column 1: Actions -->
                                     <div class="flex flex-col gap-0.5">
                                         <div class="px-3 py-1 text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Actions</div>
-                                        <button type="button" onclick="handleRowAction('create_invoice', 'ORD2')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
+                                        <button type="button" onclick="handleRowAction('create_invoice', 'INV2')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
                                             <svg class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
                                             Create Invoice
                                         </button>
-                                        <button type="button" onclick="handleRowAction('create_delivery_challan', 'ORD2')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
+                                        <button type="button" onclick="handleRowAction('create_delivery_challan', 'INV2')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
                                             <svg class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124l-.847-13.56a1.125 1.125 0 00-1.12-1.056H16.5m-3 15.75h-1.5m1.5-1.5v-1.5A3.375 3.375 0 0010.5 13.5h-3a3.375 3.375 0 00-3.375 3.375v1.5m16.5 0V13.5a3.375 3.375 0 00-3.375-3.375H13.5m0-4.5V3.375c0-.621-.504-1.125-1.125-1.125h-3a1.125 1.125 0 00-1.125 1.125V5.25" /></svg>
                                             Delivery Challan
                                         </button>
-                                        <button type="button" onclick="handleRowAction('receipt', 'ORD2')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
+                                        <button type="button" onclick="handleRowAction('receipt', 'INV2')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
                                             <svg class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5h16.5M5.25 7.5h13.5m-13.5 3h13.5m-13.5 3h13.5m-13.5 3h13.5" /></svg>
                                             Receipt
                                         </button>
@@ -414,30 +402,30 @@
                                     <!-- Column 2: Share & Output -->
                                     <div class="flex flex-col gap-0.5">
                                         <div class="px-3 py-1 text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Output & Share</div>
-                                        <button type="button" onclick="handleRowAction('print', 'ORD2')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
+                                        <button type="button" onclick="handleRowAction('print', 'INV2')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
                                             <svg class="w-3.5 h-3.5 text-sky-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-14.326 0C3.768 7.44 3 8.375 3 9.456V15.75a2.25 2.25 0 002.25 2.25h1.091M9 3.5h6" /></svg>
                                             Print
                                         </button>
-                                        <button type="button" onclick="handleRowAction('send', 'ORD2')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
+                                        <button type="button" onclick="handleRowAction('send', 'INV2')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
                                             <svg class="w-3.5 h-3.5 text-sky-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" /></svg>
                                             Send Email
                                         </button>
-                                        <button type="button" onclick="handleRowAction('send_sms', 'ORD2')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
+                                        <button type="button" onclick="handleRowAction('send_sms', 'INV2')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
                                             <svg class="w-3.5 h-3.5 text-sky-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" /></svg>
                                             SMS
                                         </button>
-                                        <button type="button" onclick="handleRowAction('send_whatsapp', 'ORD2')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
+                                        <button type="button" onclick="handleRowAction('send_whatsapp', 'INV2')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
                                             <svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.43.047-.877-.168-1.25A7.986 7.986 0 013 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" /></svg>
                                             WhatsApp
                                         </button>
-                                        <button type="button" onclick="handleRowAction('copy', 'ORD2')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
+                                        <button type="button" onclick="handleRowAction('copy', 'INV2')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
                                             <svg class="w-3.5 h-3.5 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H5.25m11.9-3.664A2.251 2.251 0 0015 2.25h-3a2.251 2.251 0 00-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5m-2.25-9h1.5a1.125 1.125 0 011.125 1.125v7.5a1.125 1.125 0 01-1.125 1.125h-7.5a1.125 1.125 0 01-1.125-1.125v-7.5a1.125 1.125 0 011.125-1.125h1.5m3.75-3h.008v.008H12v-.008z" /></svg>
                                             Copy
                                         </button>
                                     </div>
                                     <!-- Full Width Delete -->
                                     <div class="col-span-2 border-t border-slate-100 pt-1.5 mt-0.5">
-                                        <button type="button" onclick="handleRowAction('delete', 'ORD2')" class="w-full px-2.5 py-1.5 flex items-center justify-center gap-2 text-[12px] font-bold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-all border-none bg-transparent cursor-pointer rounded-lg">
+                                        <button type="button" onclick="handleRowAction('delete', 'INV2')" class="w-full px-2.5 py-1.5 flex items-center justify-center gap-2 text-[12px] font-bold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-all border-none bg-transparent cursor-pointer rounded-lg">
                                             <svg class="w-3.5 h-3.5 text-rose-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
                                             Delete
                                         </button>
@@ -459,25 +447,25 @@
                         </td>
                         <td class="px-8 py-6 text-[14px] font-black text-slate-800 text-right whitespace-nowrap">₹ 3,012.00</td>
                         <td class="px-8 py-6 text-center action-cell" style="position: relative;">
-                            <button type="button" id="actionBtn_ORD3" onclick="toggleRowActionMenu(event, 'rowActionMenu_DC3')" class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--accent)] text-white rounded-xl text-[11px] font-black uppercase tracking-widest hover:brightness-110 cursor-pointer border-none shadow-sm transition-all">
+                            <button type="button" id="actionBtn_INV3" onclick="toggleRowActionMenu(event, 'rowActionMenu_INV3')" class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--accent)] text-white rounded-xl text-[11px] font-black uppercase tracking-widest hover:brightness-110 cursor-pointer border-none shadow-sm transition-all">
                                 <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
-                                <span id="actionLabel_ORD3">Delete</span> <span style="font-size:9px;">▼</span>
+                                <span id="actionLabel_INV3">Delete</span> <span style="font-size:9px;">▼</span>
                             </button>
                             <!-- Action Dropdown Menu -->
-                            <div id="rowActionMenu_DC3" class="hidden absolute right-8 bottom-full mb-1.5 w-[360px] bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.12)] border border-slate-200/80 p-2 z-[500] text-left animate-erp-fade">
+                            <div id="rowActionMenu_INV3" class="hidden absolute right-8 bottom-full mb-1.5 w-[360px] bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.12)] border border-slate-200/80 p-2 z-[500] text-left animate-erp-fade">
                                 <div class="grid grid-cols-2 gap-2">
                                     <!-- Column 1: Actions -->
                                     <div class="flex flex-col gap-0.5">
                                         <div class="px-3 py-1 text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Actions</div>
-                                        <button type="button" onclick="handleRowAction('create_invoice', 'ORD3')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
+                                        <button type="button" onclick="handleRowAction('create_invoice', 'INV3')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
                                             <svg class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
                                             Create Invoice
                                         </button>
-                                        <button type="button" onclick="handleRowAction('create_delivery_challan', 'ORD3')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
+                                        <button type="button" onclick="handleRowAction('create_delivery_challan', 'INV3')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
                                             <svg class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124l-.847-13.56a1.125 1.125 0 00-1.12-1.056H16.5m-3 15.75h-1.5m1.5-1.5v-1.5A3.375 3.375 0 0010.5 13.5h-3a3.375 3.375 0 00-3.375 3.375v1.5m16.5 0V13.5a3.375 3.375 0 00-3.375-3.375H13.5m0-4.5V3.375c0-.621-.504-1.125-1.125-1.125h-3a1.125 1.125 0 00-1.125 1.125V5.25" /></svg>
                                             Delivery Challan
                                         </button>
-                                        <button type="button" onclick="handleRowAction('receipt', 'ORD3')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
+                                        <button type="button" onclick="handleRowAction('receipt', 'INV3')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
                                             <svg class="w-3.5 h-3.5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5h16.5M5.25 7.5h13.5m-13.5 3h13.5m-13.5 3h13.5m-13.5 3h13.5" /></svg>
                                             Receipt
                                         </button>
@@ -485,30 +473,30 @@
                                     <!-- Column 2: Share & Output -->
                                     <div class="flex flex-col gap-0.5">
                                         <div class="px-3 py-1 text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Output & Share</div>
-                                        <button type="button" onclick="handleRowAction('print', 'ORD3')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
+                                        <button type="button" onclick="handleRowAction('print', 'INV3')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
                                             <svg class="w-3.5 h-3.5 text-sky-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-14.326 0C3.768 7.44 3 8.375 3 9.456V15.75a2.25 2.25 0 002.25 2.25h1.091M9 3.5h6" /></svg>
                                             Print
                                         </button>
-                                        <button type="button" onclick="handleRowAction('send', 'ORD3')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
+                                        <button type="button" onclick="handleRowAction('send', 'INV3')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
                                             <svg class="w-3.5 h-3.5 text-sky-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" /></svg>
                                             Send Email
                                         </button>
-                                        <button type="button" onclick="handleRowAction('send_sms', 'ORD3')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
+                                        <button type="button" onclick="handleRowAction('send_sms', 'INV3')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
                                             <svg class="w-3.5 h-3.5 text-sky-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" /></svg>
                                             SMS
                                         </button>
-                                        <button type="button" onclick="handleRowAction('send_whatsapp', 'ORD3')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
+                                        <button type="button" onclick="handleRowAction('send_whatsapp', 'INV3')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
                                             <svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.43.047-.877-.168-1.25A7.986 7.986 0 013 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" /></svg>
                                             WhatsApp
                                         </button>
-                                        <button type="button" onclick="handleRowAction('copy', 'ORD3')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
+                                        <button type="button" onclick="handleRowAction('copy', 'INV3')" class="w-full px-2.5 py-1.5 flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:text-accent rounded-lg transition-all border-none bg-transparent cursor-pointer">
                                             <svg class="w-3.5 h-3.5 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H5.25m11.9-3.664A2.251 2.251 0 0015 2.25h-3a2.251 2.251 0 00-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5m-2.25-9h1.5a1.125 1.125 0 011.125 1.125v7.5a1.125 1.125 0 01-1.125 1.125h-7.5a1.125 1.125 0 01-1.125-1.125v-7.5a1.125 1.125 0 011.125-1.125h1.5m3.75-3h.008v.008H12v-.008z" /></svg>
                                             Copy
                                         </button>
                                     </div>
                                     <!-- Full Width Delete -->
                                     <div class="col-span-2 border-t border-slate-100 pt-1.5 mt-0.5">
-                                        <button type="button" onclick="handleRowAction('delete', 'ORD3')" class="w-full px-2.5 py-1.5 flex items-center justify-center gap-2 text-[12px] font-bold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-all border-none bg-transparent cursor-pointer rounded-lg">
+                                        <button type="button" onclick="handleRowAction('delete', 'INV3')" class="w-full px-2.5 py-1.5 flex items-center justify-center gap-2 text-[12px] font-bold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-all border-none bg-transparent cursor-pointer rounded-lg">
                                             <svg class="w-3.5 h-3.5 text-rose-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
                                             Delete
                                         </button>
@@ -523,7 +511,7 @@
     </div>
 </div>
 
-<!-- NEW SALES ORDER MODAL -->
+<!-- NEW SALES INVER MODAL -->
 <div id="modalOverlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[1000] hidden items-center justify-center p-4 md:p-8">
     <div class="bg-slate-100 w-full max-w-[1400px] md:h-[90vh] rounded-[32px] shadow-2xl overflow-hidden flex flex-col relative mx-auto my-auto scale-in-center animate-erp-fade">
         <div class="flex-1 flex flex-col h-full overflow-hidden">
@@ -535,7 +523,7 @@
                     </div>
                     <div class="flex flex-col">
                         <div class="flex items-center gap-3">
-                            <h3 id="modalTitle" class="text-[20px] font-black text-white leading-none">New Delivery Challan</h3>
+                            <h3 id="modalTitle" class="text-[20px] font-black text-white leading-none">New Invoice</h3>
                             <!-- Normal / Quick View Dropdown next to title, background white with primary color -->
                             <div class="relative flex items-center select-none">
                                 <button type="button" onclick="toggleActionMenu(event, 'viewModeMenu')" id="viewModeBtn" class="px-2 h-8 rounded-lg border border-slate-200 flex items-center justify-center gap-1 transition-all focus:outline-none shadow-sm hover:bg-slate-100" style="background-color: white !important; color: var(--accent) !important;" title="Change View Mode">
@@ -570,7 +558,7 @@
                     <!-- Save Split Button -->
                     <div class="relative flex items-center h-10 select-none">
                         <div class="flex items-stretch rounded-lg overflow-hidden border-2 border-white h-10 bg-white shadow-sm">
-                            <button type="button" onclick="saveDeliveryChallan()" class="px-5 bg-white hover:bg-slate-50 text-[var(--accent)] text-[12px] font-black uppercase tracking-wider transition-all">
+                            <button type="button" onclick="saveOrder()" class="px-5 bg-white hover:bg-slate-50 text-[var(--accent)] text-[12px] font-black uppercase tracking-wider transition-all">
                                 Save
                             </button>
                             <button type="button" onclick="toggleActionMenu(event, 'saveSplitMenu')" class="px-3 bg-white hover:bg-slate-50 text-[var(--accent)] border-l border-[var(--accent)]/20 flex items-center justify-center transition-all">
@@ -601,10 +589,10 @@
                 <div class="px-8 py-3 bg-white border-b border-slate-200/80 shrink-0">
                     <div class="grid grid-cols-4 gap-4">
                         <!-- Row 1 -->
-                        <!-- Order No -->
+                        <!-- Invoice No -->
                         <div class="flex flex-col gap-1">
                             <label class="text-[14px] text-slate-800 flex items-center gap-1">
-                                Order No
+                                Invoice No
                                 <div class="relative group flex items-center">
                                     <svg class="w-4 h-4 text-slate-500 cursor-help" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                     <div class="hidden group-hover:block absolute top-full left-1/2 -translate-x-1/4 mt-2 w-max max-w-[250px] bg-white border border-slate-200 shadow-xl p-2.5 text-[13px] text-slate-800 z-[1200] leading-snug rounded shadow-sm font-normal whitespace-normal text-left">
@@ -613,13 +601,13 @@
                                     </div>
                                 </div>
                             </label>
-                            <span class="text-[13px] font-black text-slate-800 h-9 flex items-center border border-slate-200 rounded-lg px-3 bg-slate-50" id="orderNumber">DC-003</span>
+                            <span class="text-[13px] font-black text-slate-800 h-9 flex items-center border border-slate-200 rounded-lg px-3 bg-slate-50" id="orderNumber">INV-003</span>
                         </div>
 
-                        <!-- Challan Date -->
+                        <!-- Invoice Date -->
                         <div class="flex flex-col gap-1">
                             <label class="text-[14px] text-slate-800 flex items-center gap-1">
-                                Challan Date
+                                Invoice Date
                                 <div class="relative group flex items-center">
                                     <svg class="w-4 h-4 text-slate-500 cursor-help" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                     <div class="hidden group-hover:block absolute top-full left-1/2 -translate-x-1/4 mt-2 w-max max-w-[250px] bg-white border border-slate-200 shadow-xl p-2.5 text-[13px] text-slate-800 z-[1200] leading-snug rounded shadow-sm font-normal whitespace-normal text-left">
@@ -700,15 +688,15 @@
                             <input type="text" placeholder="Ref No" class="w-full h-9 bg-slate-50 border border-slate-200 rounded-lg px-3 text-[12px] font-bold text-slate-700 outline-none focus:border-[var(--accent)] focus:bg-white transition-all">
                         </div>
 
-                        <!-- Buyer's Order No# -->
+                        <!-- Buyer's Invoice No# -->
                         <div class="flex flex-col gap-1">
-                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Buyer's Order No#</span>
+                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Buyer's Invoice No#</span>
                             <input type="text" class="w-full h-9 bg-slate-50 border border-slate-200 rounded-lg px-3 text-[12px] font-bold text-slate-700 outline-none focus:border-[var(--accent)] focus:bg-white transition-all">
                         </div>
 
-                        <!-- Buyer's Challan Date -->
+                        <!-- Buyer's Invoice Date -->
                         <div class="flex flex-col gap-1">
-                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Buyer's Challan Date</span>
+                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Buyer's Invoice Date</span>
                             <div class="relative flex items-center">
                                 <input type="text" placeholder="DD/MM/YYYY" class="w-full h-9 bg-slate-50 border border-slate-200 rounded-lg px-3 pr-9 text-[12px] font-bold text-slate-700 outline-none focus:border-[var(--accent)] focus:bg-white transition-all">
                                 <span class="absolute right-3 text-slate-400 text-[12px] pointer-events-none">📅</span>
@@ -731,7 +719,7 @@
                                         </label>
                                         <label class="flex items-center gap-2.5 cursor-pointer select-none">
                                             <input type="checkbox" checked class="w-4 h-4 rounded border-slate-300 accent-[var(--accent)]">
-                                            <span class="text-[13px] text-slate-700">Buyer Order No/Date</span>
+                                            <span class="text-[13px] text-slate-700">Buyer Invoice No/Date</span>
                                         </label>
                                         <label class="flex items-center gap-2.5 cursor-pointer select-none">
                                             <input type="checkbox" class="w-4 h-4 rounded border-slate-300 accent-[var(--accent)]">
@@ -1008,12 +996,12 @@
     </div>
 </div>
 
-<!-- ORDER LINK MODAL -->
+<!-- INVER LINK MODAL -->
 <div id="orderLinkModalOverlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[1000] hidden items-center justify-center p-4">
     <div class="bg-white w-full max-w-[850px] rounded-[32px] shadow-2xl overflow-hidden flex flex-col scale-in-center animate-erp-fade">
         <!-- Modal Header -->
         <div class="px-8 py-5 border-b border-white/10 flex items-center justify-between bg-[var(--accent)]">
-            <h3 class="text-[18px] font-black text-white">Order Link</h3>
+            <h3 class="text-[18px] font-black text-white">Invoice Link</h3>
             <button type="button" onclick="closeOrderLinkModal()" class="text-white bg-red-500 hover:bg-red-600 transition-all font-black text-[22px] leading-none cursor-pointer border-none w-8 h-8 rounded flex items-center justify-center">&times;</button>
         </div>
         
@@ -1097,7 +1085,7 @@
                 </div>
                 <div class="flex flex-col">
                     <div class="flex items-center gap-3">
-                        <h3 class="text-[20px] font-black text-white leading-none">New Delivery Challan</h3>
+                        <h3 class="text-[20px] font-black text-white leading-none">New Invoice</h3>
                         <!-- Quick View Dropdown -->
                         <div class="relative flex items-center select-none">
                             <button type="button" onclick="toggleActionMenu(event, 'qvViewModeMenu')" class="px-2 h-8 rounded-lg border border-slate-200 flex items-center justify-center gap-1 transition-all focus:outline-none shadow-sm hover:bg-slate-100" style="background-color: white !important; color: var(--accent) !important;" title="Change View Mode">
@@ -1164,7 +1152,7 @@
                 <!-- Header Info -->
                 <div class="flex justify-between items-start mb-6">
                     <div>
-                        <h2 class="text-2xl font-black text-slate-800">ORD1</h2>
+                        <h2 class="text-2xl font-black text-slate-800">INV1</h2>
                         <div class="text-[13px] font-medium text-slate-600 mt-1">21/05/2026</div>
                     </div>
                     <div class="flex items-center gap-4">
@@ -1200,8 +1188,8 @@
                                 <div class="px-4 py-2.5 text-[14px] text-slate-700 hover:bg-slate-50 cursor-pointer">Invoice No</div>
                                 <div class="px-4 py-2.5 text-[14px] text-slate-700 hover:bg-slate-50 cursor-pointer">Date</div>
                                 <div class="px-4 py-2.5 text-[14px] text-white bg-[#1e73be] font-bold cursor-pointer">Contact/Item</div>
-                                <div class="px-4 py-2.5 text-[14px] text-slate-700 hover:bg-slate-50 cursor-pointer">Buyer's Order No#</div>
-                                <div class="px-4 py-2.5 text-[14px] text-slate-700 hover:bg-slate-50 cursor-pointer">Buyer's Challan Date</div>
+                                <div class="px-4 py-2.5 text-[14px] text-slate-700 hover:bg-slate-50 cursor-pointer">Buyer's Invoice No#</div>
+                                <div class="px-4 py-2.5 text-[14px] text-slate-700 hover:bg-slate-50 cursor-pointer">Buyer's Invoice Date</div>
                                 <div class="px-4 py-2.5 text-[14px] text-slate-700 hover:bg-slate-50 cursor-pointer">Item</div>
                             </div>
                         </div>
@@ -1307,7 +1295,7 @@
             'exportMenu', 'filterMenu', 'settingsMenu', 'saveSplitMenu', 'saveFooterSplitMenu',
             'customerDropdownMenu', 'validTillMenu', 'orderSettingsPopover', 'branchStockMenu',
             'itemSelectMenu_1', 'newSplitMenu', 'orderLinkContactDropdown', 'orderLinkCategoryDropdown',
-            'rowActionMenu_DC1', 'rowActionMenu_DC2', 'rowActionMenu_DC3', 'tableColMenu', 'viewModeMenu',
+            'rowActionMenu_INV1', 'rowActionMenu_INV2', 'rowActionMenu_INV3', 'tableColMenu', 'viewModeMenu',
             'qvTopDropdown', 'qvSaveMenu', 'qvSettingsMenu', 'qvCustomerTypeMenu'
         ];
         allMenus.forEach(id => {
@@ -1390,8 +1378,8 @@
         document.getElementById('orderTotalAmount').textContent = '₹ ' + subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
-    function saveDeliveryChallan() {
-        alert('Order saved successfully!');
+    function saveOrder() {
+        alert('Invoice saved successfully!');
         closeModal();
     }
 
@@ -1428,10 +1416,10 @@
                 icon.innerHTML = `<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>`;
                 if (!skipModal) {
                     const qvModal = document.getElementById('quickViewModal');
-                    const posModal = document.getElementById('posViewModal');
-                    if (qvModal) { qvModal.classList.add('hidden'); qvModal.classList.remove('flex'); }
-                    if (posModal) { posModal.classList.add('hidden'); posModal.classList.remove('flex'); }
-                    
+                    if (qvModal) {
+                        qvModal.classList.add('hidden');
+                        qvModal.classList.remove('flex');
+                    }
                     const normalModal = document.getElementById('modalOverlay');
                     if (normalModal) {
                         normalModal.classList.remove('hidden');
@@ -1441,49 +1429,18 @@
             } else if (mode === 'Quick View') {
                 icon.innerHTML = `<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>`;
                 if (!skipModal) {
-                    const normalModal = document.getElementById('modalOverlay');
-                    const posModal = document.getElementById('posViewModal');
-                    if (normalModal) { normalModal.classList.add('hidden'); normalModal.classList.remove('flex'); }
-                    if (posModal) { posModal.classList.add('hidden'); posModal.classList.remove('flex'); }
-                    
-                    const qvModal = document.getElementById('quickViewModal');
-                    if (qvModal) {
-                        qvModal.classList.remove('hidden');
-                        qvModal.classList.add('flex');
-                    }
-                }
-            } else if (mode === 'POS View') {
-                icon.innerHTML = `<rect x="2" y="3" width="20" height="18" rx="2" ry="2"/><line x1="2" y1="8" x2="22" y2="8"/><line x1="8" y1="18" x2="8" y2="8"/>`;
-                if (!skipModal) {
-                    const normalModal = document.getElementById('modalOverlay');
-                    const qvModal = document.getElementById('quickViewModal');
-                    if (normalModal) { normalModal.classList.add('hidden'); normalModal.classList.remove('flex'); }
-                    if (qvModal) { qvModal.classList.add('hidden'); qvModal.classList.remove('flex'); }
-                    
-                    const posModal = document.getElementById('posViewModal');
-                    if (posModal) {
-                        posModal.classList.remove('hidden');
-                        posModal.classList.add('flex');
-                    }
+                    openQuickViewModal();
                 }
             }
         }
-        
-        // Hide all view mode menus
-        ['viewModeMenu', 'qvViewModeMenu', 'posViewModeMenu'].forEach(id => {
-            const menu = document.getElementById(id);
-            if (menu) menu.classList.add('hidden');
-        });
+        const menu = document.getElementById('viewModeMenu');
+        if (menu) menu.classList.add('hidden');
+        const qvMenu = document.getElementById('qvViewModeMenu');
+        if (qvMenu) qvMenu.classList.add('hidden');
     }
 
-    function closePosViewModal() {
-        const posModal = document.getElementById('posViewModal');
-        if (posModal) {
-            posModal.classList.add('hidden');
-            posModal.classList.remove('flex');
-        }
-    }
-function filterByStatus(status) {
+    /* Status Filter */
+    function filterByStatus(status) {
         const tbody = document.querySelector('tbody.divide-y');
         if (!tbody) return;
         const rows = tbody.querySelectorAll('tr');
@@ -1497,7 +1454,7 @@ function filterByStatus(status) {
         });
     }
 
-    /* Order Link Modal Functions */
+    /* Invoice Link Modal Functions */
     function openOrderLinkModal() {
         const overlay = document.getElementById('orderLinkModalOverlay');
         if (overlay) {
@@ -1534,7 +1491,7 @@ function filterByStatus(status) {
             return;
         }
         
-        alert('Order Link saved successfully!\nName: ' + name + '\nContact: ' + contact + '\nCategory: ' + category);
+        alert('Invoice Link saved successfully!\nName: ' + name + '\nContact: ' + contact + '\nCategory: ' + category);
         closeOrderLinkModal();
     }
 
@@ -1595,7 +1552,7 @@ function filterByStatus(status) {
             'exportMenu', 'filterMenu', 'settingsMenu', 'saveSplitMenu', 'saveFooterSplitMenu',
             'customerDropdownMenu', 'validTillMenu', 'orderSettingsPopover', 'branchStockMenu',
             'itemSelectMenu_1', 'newSplitMenu', 'orderLinkContactDropdown', 'orderLinkCategoryDropdown',
-            'rowActionMenu_DC1', 'rowActionMenu_DC2', 'rowActionMenu_DC3'
+            'rowActionMenu_INV1', 'rowActionMenu_INV2', 'rowActionMenu_INV3'
         ];
         allDropdowns.forEach(id => {
             const el = document.getElementById(id);
@@ -1639,7 +1596,7 @@ function filterByStatus(status) {
             label.textContent = actionLabels[action] || action;
         }
         // Hide all action menus
-        ['rowActionMenu_DC1', 'rowActionMenu_DC2', 'rowActionMenu_DC3'].forEach(id => {
+        ['rowActionMenu_INV1', 'rowActionMenu_INV2', 'rowActionMenu_INV3'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.classList.add('hidden');
         });
@@ -1651,7 +1608,7 @@ function filterByStatus(status) {
             'exportMenu', 'filterMenu', 'settingsMenu', 'saveSplitMenu', 'saveFooterSplitMenu',
             'customerDropdownMenu', 'validTillMenu', 'orderSettingsPopover', 'branchStockMenu',
             'itemSelectMenu_1', 'newSplitMenu', 'orderLinkContactDropdown', 'orderLinkCategoryDropdown',
-            'rowActionMenu_DC1', 'rowActionMenu_DC2', 'rowActionMenu_DC3'
+            'rowActionMenu_INV1', 'rowActionMenu_INV2', 'rowActionMenu_INV3'
         ];
         allMenus.forEach(id => {
             const menu = document.getElementById(id);
@@ -1662,7 +1619,7 @@ function filterByStatus(status) {
 
         // Clean up inline z-index styles if no row action dropdown is visible
         setTimeout(() => {
-            const anyRowMenuOpen = ['rowActionMenu_DC1', 'rowActionMenu_DC2', 'rowActionMenu_DC3']
+            const anyRowMenuOpen = ['rowActionMenu_INV1', 'rowActionMenu_INV2', 'rowActionMenu_INV3']
                 .some(id => {
                     const el = document.getElementById(id);
                     return el && !el.classList.contains('hidden');

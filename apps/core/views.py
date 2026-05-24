@@ -85,3 +85,42 @@ class CreditNoteListView(TemplateView):
 
 class ReceiptListView(TemplateView):
     template_name = 'sales_receipt.html'
+
+
+class SalesQuotesListView(TemplateView):
+    template_name = 'sales_quotes.html'
+
+    def get_context_data(self, **kwargs):
+        from .models import PremiumQuote, Customer
+        context = super().get_context_data(**kwargs)
+        context['premium_quotes'] = PremiumQuote.objects.all().order_by('-id')
+        context['customers'] = Customer.objects.all()
+        return context
+
+
+class SalesOrdersListView(TemplateView):
+    template_name = 'sales_orders.html'
+
+
+class SalesInvoicesListView(TemplateView):
+    template_name = 'sales_invoices.html'
+
+
+class PurchaseQuotesListView(TemplateView):
+    template_name = 'purchase_quotes.html'
+
+class PurchaseOrdersListView(TemplateView):
+    template_name = 'purchase_orders.html'
+
+class SupplierCreditNoteListView(TemplateView):
+    template_name = 'supplier_credit_note.html'
+
+class GoodsReceiptListView(TemplateView):
+    template_name = 'goods_receipt.html'
+
+class PurchaseBillView(TemplateView):
+    template_name = 'purchase_bill.html'
+
+class PurchasePaymentView(TemplateView):
+    template_name = 'purchase_payment.html'
+

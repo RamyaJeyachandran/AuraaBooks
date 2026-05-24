@@ -1,0 +1,24 @@
+{
+  "dependencies": {
+    "eslint": "^8.57.0",
+    "parse5": "^8.0.1"
+  },
+  "name": "abproject",
+  "version": "1.0.0",
+  "description": "",
+  "main": "temp_script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RamyaJeyachandran/AuraaBooks.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RamyaJeyachandran/AuraaBooks/issues"
+  },
+  "homepage": "https://github.com/RamyaJeyachandran/AuraaBooks#readme"
+}
