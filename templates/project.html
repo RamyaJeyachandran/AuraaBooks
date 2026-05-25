@@ -8,60 +8,64 @@
 <div class="p-8 stagger-in max-w-[1600px] mx-auto">
     <!-- Header Section -->
     <!-- Header Section -->
-    <div class="flex items-center justify-between mb-10">
-        <div>
+    <div class="flex items-center justify-between mb-6 relative z-[300]">
+        <div class="flex items-center gap-4 flex-1 mr-6">
             <h1 class="text-[32px] font-black text-slate-800 tracking-tight">Projects</h1>
-            <p class="text-slate-400 font-bold text-[14px]">Manage your projects details and transactions.</p>
+
+            <!-- Compact Count Pills -->
+            <div class="flex-1 flex items-center justify-around bg-white border border-slate-200 rounded-2xl px-6 py-3 shadow-sm max-w-[550px]">
+                <div onclick="filterByStatus('All')" class="flex flex-col items-center cursor-pointer hover:bg-slate-50 px-8 py-2 rounded-xl transition-all active:scale-95 min-w-[120px]" title="Total Projects">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-2">Total</span>
+                    <span class="text-[30px] font-black text-slate-700 leading-none">124</span>
+                </div>
+                <div class="w-px h-12 bg-slate-200"></div>
+                <div onclick="filterByStatus('Active')" class="flex flex-col items-center cursor-pointer hover:bg-slate-50 px-6 py-2 rounded-xl transition-all active:scale-95 min-w-[100px]" title="Filter Active">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-2">Active</span>
+                    <span class="text-[30px] font-black text-emerald-500 leading-none">118</span>
+                </div>
+                <div class="w-px h-12 bg-slate-200"></div>
+                <div onclick="filterByStatus('Inactive')" class="flex flex-col items-center cursor-pointer hover:bg-slate-50 px-6 py-2 rounded-xl transition-all active:scale-95 min-w-[100px]" title="Filter Inactive">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-2">In-Active</span>
+                    <span class="text-[30px] font-black text-rose-500 leading-none">6</span>
+                </div>
+            </div>
         </div>
-        <button onclick="openModal()" class="h-12 px-8 bg-[var(--accent)] text-white rounded-2xl flex items-center gap-3 shadow-lg shadow-[var(--accent)]/20 hover:brightness-110 transition-all group">
-            <span class="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center group-hover:rotate-90 transition-transform">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-            </span>
-            <span class="text-[14px] font-black uppercase tracking-widest">Add Project</span>
-        </button>
+        <div class="flex items-center gap-4">
+            <!-- Recent Navigator -->
+            <div class="relative">
+                <div class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-[var(--accent)] z-10 border-2 border-white box-content"></div>
+                <div class="flex items-center bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden h-[52px]">
+                    <button type="button" class="px-3 h-full hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-all border-r border-slate-200">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+                    </button>
+                    <div class="px-5 flex flex-col items-center min-w-[100px] justify-center">
+                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Recent</span>
+                        <span class="text-[14px] font-black text-slate-700 leading-none">PRJ-001</span>
+                    </div>
+                    <button type="button" class="px-3 h-full hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-all border-l border-slate-200">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+                    </button>
+                </div>
+            </div>
+            <button onclick="openModal()" class="px-8 h-[52px] bg-[var(--accent)] text-white rounded-2xl text-[14px] font-black flex items-center gap-2 shadow-xl shadow-[var(--accent)]/20 hover:brightness-110 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-widest">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+                Add Project
+            </button>
+        </div>
     </div>
 
-    <!-- Dashboard Summary Cards -->
-    <div class="grid grid-cols-3 gap-8 mb-10">
-        <div class="bg-white p-8 rounded-[40px] shadow-sm border border-slate-100 flex items-center justify-between group hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-            <div>
-                <p class="text-[11px] font-black text-[var(--accent)] uppercase tracking-widest mb-2">Total Projects</p>
-                <h3 class="text-[42px] font-black text-slate-800 leading-none">124</h3>
-            </div>
-            <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-[var(--accent)] group-hover:scale-110 transition-transform">
-                <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-            </div>
-        </div>
-        <div class="bg-white p-8 rounded-[40px] shadow-sm border border-slate-100 flex items-center justify-between group hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-            <div>
-                <p class="text-[11px] font-black text-green-500 uppercase tracking-widest mb-2">Active Projects</p>
-                <h3 class="text-[42px] font-black text-slate-800 leading-none">118</h3>
-            </div>
-            <div class="w-14 h-14 rounded-2xl bg-green-50 flex items-center justify-center text-green-500 group-hover:scale-110 transition-transform">
-                <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            </div>
-        </div>
-        <div class="bg-white p-8 rounded-[40px] shadow-sm border border-slate-100 flex items-center justify-between group hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-            <div>
-                <p class="text-[11px] font-black text-rose-500 uppercase tracking-widest mb-2">In-Active Projects</p>
-                <h3 class="text-[42px] font-black text-slate-800 leading-none">6</h3>
-            </div>
-            <div class="w-14 h-14 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-500 group-hover:scale-110 transition-transform">
-                <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Filter & Actions Section -->
     <div class="mb-4 relative z-[110]">
-        <div class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm flex items-center justify-between gap-6">
+        <div class="bg-white px-6 py-2 rounded-[24px] border border-slate-100 shadow-sm flex items-center justify-between gap-6">
             <div class="flex items-center gap-4 flex-1">
                 <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Filter</label>
                 <div class="relative min-w-[300px]">
-                    <select class="w-full h-12 bg-slate-50 border border-slate-100 rounded-2xl px-6 text-[14px] font-bold text-slate-700 appearance-none focus:bg-white focus:ring-4 focus:ring-[var(--accent)]/10 transition-all outline-none shadow-inner">
+                    <select class="w-full h-8 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold text-slate-700 appearance-none focus:bg-white focus:ring-4 focus:ring-[var(--accent)]/10 transition-all outline-none shadow-inner">
                         <option>Select Project</option>
                     </select>
-                    <svg class="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                    <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
                 </div>
             </div>
 
@@ -69,8 +73,8 @@
             <div class="flex items-center gap-3">
                 <!-- Export / Import -->
                 <div class="relative group">
-                    <button onclick="toggleToolbarMenu('exportDropdown')" class="w-10 h-10 flex items-center justify-center rounded-xl bg-[var(--accent)] text-white hover:brightness-110 transition-all shadow-lg shadow-[var(--accent)]/20">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <button onclick="toggleToolbarMenu('exportDropdown')" class="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--accent)] text-white hover:brightness-110 transition-all shadow-lg shadow-[var(--accent)]/20">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     </button>
                     <div id="exportDropdown" class="hidden absolute top-full right-0 mt-3 w-56 bg-white rounded-3xl shadow-2xl border border-slate-100 py-3 z-50 overflow-hidden scale-in-tr">
                         <div class="px-5 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50 mb-2">Export</div>
@@ -82,8 +86,8 @@
 
                 <!-- Column Settings -->
                 <div class="relative">
-                    <button onclick="toggleToolbarMenu('columnSettings')" class="w-10 h-10 flex items-center justify-center rounded-xl bg-[var(--accent)] text-white hover:brightness-110 transition-all shadow-lg shadow-[var(--accent)]/20">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                    <button onclick="toggleToolbarMenu('columnSettings')" class="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--accent)] text-white hover:brightness-110 transition-all shadow-lg shadow-[var(--accent)]/20">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
                     </button>
                     <div id="columnSettings" class="hidden absolute top-full right-0 mt-3 w-64 bg-white rounded-[32px] shadow-2xl border border-slate-100 p-6 z-50 scale-in-tr">
                         <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Column Settings</div>

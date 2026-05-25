@@ -7,31 +7,69 @@
 {% block content %}
 <div class="p-8 stagger-in max-w-[1600px] mx-auto">
     <!-- Header Section -->
-    <div class="flex items-center justify-between mb-4">
-        <h1 class="text-[32px] font-black text-slate-800 tracking-tight">Referred</h1>
-        <button type="button" onclick="openModal('Referrers')" class="px-8 py-3.5 bg-accent text-white rounded-2xl text-[14px] font-black flex items-center gap-2 shadow-xl shadow-accent/20 hover:brightness-110 transition-all uppercase tracking-widest">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
-            Add Referred By
-        </button>
+    <div class="flex items-center justify-between mb-6 relative z-[300]">
+        <div class="flex items-center gap-4 flex-1 mr-6">
+            <h1 class="text-[32px] font-black text-slate-800 tracking-tight">Referred</h1>
+
+            <!-- Compact Count Pills -->
+            <div class="flex-1 flex items-center justify-around bg-white border border-slate-200 rounded-2xl px-6 py-3 shadow-sm max-w-[550px]">
+                <div onclick="filterByStatus('All')" class="flex flex-col items-center cursor-pointer hover:bg-slate-50 px-8 py-2 rounded-xl transition-all active:scale-95 min-w-[120px]" title="Total Referrers">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-2">Total</span>
+                    <span class="text-[30px] font-black text-slate-700 leading-none">124</span>
+                </div>
+                <div class="w-px h-12 bg-slate-200"></div>
+                <div onclick="filterByStatus('Active')" class="flex flex-col items-center cursor-pointer hover:bg-slate-50 px-6 py-2 rounded-xl transition-all active:scale-95 min-w-[100px]" title="Filter Active">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-2">Active</span>
+                    <span class="text-[30px] font-black text-emerald-500 leading-none">118</span>
+                </div>
+                <div class="w-px h-12 bg-slate-200"></div>
+                <div onclick="filterByStatus('Inactive')" class="flex flex-col items-center cursor-pointer hover:bg-slate-50 px-6 py-2 rounded-xl transition-all active:scale-95 min-w-[100px]" title="Filter Inactive">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-2">In-Active</span>
+                    <span class="text-[30px] font-black text-rose-500 leading-none">6</span>
+                </div>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <!-- Recent Navigator -->
+            <div class="relative">
+                <div class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-[var(--accent)] z-10 border-2 border-white box-content"></div>
+                <div class="flex items-center bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden h-[52px]">
+                    <button type="button" class="px-3 h-full hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-all border-r border-slate-200">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+                    </button>
+                    <div class="px-5 flex flex-col items-center min-w-[100px] justify-center">
+                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Recent</span>
+                        <span class="text-[14px] font-black text-slate-700 leading-none">REF-001</span>
+                    </div>
+                    <button type="button" class="px-3 h-full hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-all border-l border-slate-200">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+                    </button>
+                </div>
+            </div>
+            <button type="button" onclick="openModal('Referrers')" class="px-8 h-[52px] bg-accent text-white rounded-2xl text-[14px] font-black flex items-center gap-2 shadow-xl shadow-accent/20 hover:brightness-110 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-widest">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+                Add Referred By
+            </button>
+        </div>
     </div>
 
     <!-- Filter Section -->
-    <div class="bg-white p-5 rounded-[32px] shadow-sm border border-slate-100 mb-6 flex items-end justify-between relative z-20">
-        <div class="w-72 space-y-1.5">
+    <div class="bg-white px-6 py-2 rounded-[24px] shadow-sm border border-slate-100 mb-6 flex items-center justify-between relative z-20">
+        <div class="flex items-center gap-4 flex-1">
             <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Filter</label>
-            <div class="relative">
-                <select class="w-full h-11 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold text-slate-700 outline-none appearance-none focus:border-accent focus:bg-white transition-all shadow-inner">
+            <div class="relative w-72">
+                <select class="w-full h-8 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold text-slate-700 outline-none appearance-none focus:border-accent focus:bg-white transition-all shadow-inner">
                     <option>Select Referred By</option>
                 </select>
-                <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 pointer-events-none rotate-90" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+                <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 pointer-events-none rotate-90" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
             </div>
         </div>
 
         <div class="flex items-center gap-3">
             <!-- Export/Import Dropdown -->
             <div class="relative">
-                <button type="button" onclick="toggleToolbarMenu('exportDropdown')" class="w-12 h-12 flex items-center justify-center bg-accent text-white border border-white/20 rounded-2xl shadow-lg shadow-accent/20 hover:brightness-110 transition-all">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                <button type="button" onclick="toggleToolbarMenu('exportDropdown')" class="w-8 h-8 flex items-center justify-center bg-accent text-white border border-white/20 rounded-lg shadow-lg shadow-accent/20 hover:brightness-110 transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
                 </button>
                 <div id="exportDropdown" class="hidden absolute top-full right-0 mt-3 w-64 bg-white rounded-[24px] shadow-2xl border border-slate-100 py-3 z-[500] scale-in-tr">
                     <div class="px-5 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50 mb-2">Export Data</div>
@@ -49,8 +87,8 @@
 
             <!-- Settings Dropdown -->
             <div class="relative">
-                <button type="button" onclick="toggleToolbarMenu('columnSettings')" class="w-12 h-12 flex items-center justify-center bg-accent text-white border border-white/20 rounded-2xl shadow-lg shadow-accent/20 hover:brightness-110 transition-all">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                <button type="button" onclick="toggleToolbarMenu('columnSettings')" class="w-8 h-8 flex items-center justify-center bg-accent text-white border border-white/20 rounded-lg shadow-lg shadow-accent/20 hover:brightness-110 transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
                 </button>
                 <div id="columnSettings" class="hidden absolute top-full right-0 mt-3 w-64 bg-white rounded-[32px] shadow-2xl border border-slate-100 p-6 z-[500] scale-in-tr">
                     <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Column Settings</div>

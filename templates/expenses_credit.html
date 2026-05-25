@@ -6,28 +6,52 @@
 {% block content %}
 <div class="p-8 stagger-in max-w-[1600px] mx-auto">
     <!-- Header Section -->
-    <div class="flex items-center justify-between mb-8">
-        <div class="flex items-center gap-3">
+    <div class="flex items-center justify-between mb-6 relative z-[300]">
+        <div class="flex items-center gap-4 flex-1 mr-6">
             <h1 class="text-[32px] font-black text-slate-800 tracking-tight">Expense</h1>
-        </div>
-        <button type="button" onclick="openModal('Credit Expense')" class="px-8 py-3.5 bg-[var(--accent)] text-white rounded-xl text-[14px] font-black flex items-center gap-2 shadow-xl shadow-[var(--accent)]/20 hover:brightness-110 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-widest">
-            Add Credit Expense
-        </button>
-    </div>
 
-    <!-- Summary Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm">
-            <span class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 block">Total Credit Pending</span>
-            <h2 class="text-[36px] font-black text-accent leading-none">₹ 12,45,000</h2>
+            <!-- Compact Count Pills -->
+            <div class="flex-1 flex items-center justify-around bg-white border border-slate-200 rounded-2xl px-6 py-3 shadow-sm max-w-[650px]">
+                <div class="flex flex-col items-center px-6 py-2 rounded-xl min-w-[140px]">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-2">Total Credit Pending</span>
+                    <span class="text-[20px] font-black text-slate-700 leading-none">₹ 12,45,000</span>
+                </div>
+                <div class="w-px h-12 bg-slate-200"></div>
+                <div class="flex flex-col items-center px-6 py-2 rounded-xl min-w-[140px]">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-2">Total Asset</span>
+                    <span class="text-[20px] font-black text-slate-700 leading-none">₹ 8,50,000</span>
+                </div>
+                <div class="w-px h-12 bg-slate-200"></div>
+                <div class="flex flex-col items-center px-6 py-2 rounded-xl min-w-[140px]">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-2">Total Reclaim Pending</span>
+                    <span class="text-[20px] font-black text-rose-500 leading-none">₹ 54,200</span>
+                </div>
+            </div>
         </div>
-        <div class="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm">
-            <span class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 block">Total Asset</span>
-            <h2 class="text-[36px] font-black text-slate-800 leading-none">₹ 8,50,000</h2>
-        </div>
-        <div class="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm">
-            <span class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 block">Total Reclaim Pending</span>
-            <h2 class="text-[36px] font-black text-rose-500 leading-none">₹ 54,200</h2>
+
+        <!-- Right side: Recent Navigator + New Button -->
+        <div class="flex items-center gap-4">
+            <!-- Recent Navigator -->
+            <div class="relative">
+                <div class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-[var(--accent)] z-10 border-2 border-white box-content"></div>
+                <div class="flex items-center bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden h-[52px]">
+                    <button type="button" class="px-3 h-full hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-all border-r border-slate-200">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+                    </button>
+                    <div class="px-5 flex flex-col items-center min-w-[100px] justify-center">
+                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Recent</span>
+                        <span class="text-[14px] font-black text-slate-700 leading-none">EXP-001</span>
+                    </div>
+                    <button type="button" class="px-3 h-full hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-all border-l border-slate-200">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <button type="button" onclick="openModal('Credit Expense')" class="px-8 h-[52px] bg-[var(--accent)] text-white rounded-2xl shadow-xl shadow-[var(--accent)]/20 text-[14px] font-black flex items-center gap-2 hover:brightness-110 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-widest whitespace-nowrap">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+                Add Credit
+            </button>
         </div>
     </div>
 
