@@ -1,0 +1,452 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Opening Balances - Auraa Books{% endblock %}
+
+{% block breadcrumb_parent %}
+    <span class="hover:text-accent cursor-pointer">Accounting</span>
+    <span class="opacity-50">/</span>
+{% endblock %}
+
+{% block breadcrumb_active %}Opening Balances{% endblock %}
+
+{% block content %}
+<div class="p-8 stagger-in max-w-[1600px] mx-auto space-y-6">
+    <!-- Header Section -->
+    <div class="flex items-center justify-between mb-6 flex-wrap gap-4 relative z-[300]">
+        <!-- Title and Tooltip -->
+        <div class="flex items-center gap-4 flex-1 min-w-[250px]">
+            <div class="flex items-center gap-2 relative">
+                <h1 class="text-[32px] font-black text-slate-800 tracking-tight">Opening Balances</h1>
+                
+                <!-- Help Icon & Tooltip -->
+                <div class="relative flex items-center">
+                    <svg onclick="toggleHelpTooltip(this)" class="w-6 h-6 text-slate-400 hover:text-slate-600 cursor-pointer hover:scale-110 active:scale-95 transition-all" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <!-- Tooltip -->
+                    <div onclick="event.stopPropagation()" class="help-tooltip absolute left-1/2 -translate-x-1/2 md:left-full md:translate-x-0 ml-2 top-full mt-2 md:top-1/2 md:-translate-y-1/2 w-72 bg-white border border-slate-100 shadow-2xl rounded-2xl p-4 hidden z-[400] animate-in fade-in zoom-in-95">
+                        <div class="absolute -top-2 left-1/2 -translate-x-1/2 md:top-1/2 md:-left-2 md:left-auto md:-translate-y-1/2 w-4 h-4 bg-white border-t border-l md:border-t-0 md:border-b md:border-l border-slate-100 rotate-45"></div>
+                        <p class="text-[13px] font-bold text-slate-600 leading-relaxed normal-case tracking-normal relative z-10">Balance brought forward from end of an financial year to the start of an financial year</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters and Top Actions -->
+        <div class="flex items-center gap-4 flex-wrap">
+            <!-- Financial Year Dropdown -->
+            <div class="relative">
+                <select id="financialYearSelect" class="h-10 bg-white border border-slate-200 rounded-xl px-4 pr-10 text-[13px] font-bold text-slate-700 outline-none appearance-none cursor-pointer focus:border-accent focus:ring-4 focus:ring-[var(--accent)]/10 transition-all">
+                    <option value="2026 - 2027">2026 - 2027</option>
+                    <option value="2025 - 2026">2025 - 2026</option>
+                    <option value="2024 - 2025">2024 - 2025</option>
+                </select>
+                <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+            </div>
+
+            <!-- Branch Select Button (Primary background) -->
+            <div class="relative">
+                <button class="h-10 bg-[var(--accent)] text-white hover:brightness-110 px-4 rounded-xl flex items-center gap-2 text-[13px] font-bold transition-all shadow-md shadow-[var(--accent)]/10">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                    </svg>
+                    <span>Main Branch</span>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                </button>
+            </div>
+
+            <!-- Op.Bal Report link (Primary color) -->
+            <a onclick="alert('Generating Opening Balance Report...')" class="text-[var(--accent)] hover:underline font-bold text-[13px] cursor-pointer mr-2">Op.Bal Report</a>
+
+            <!-- Export Icon button (Dark Gray background) -->
+            <button onclick="alert('Exporting data...')" class="w-8 h-8 rounded-lg bg-slate-700 hover:bg-slate-800 text-white flex items-center justify-center transition-all shadow-md" title="Export Excel">
+                <svg class="w-4.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+            </button>
+
+            <!-- Reimport button (Primary color background) -->
+            <button onclick="alert('Triggering reimport workflow...')" class="px-6 h-10 bg-[var(--accent)] text-white hover:brightness-110 rounded-xl text-[13px] font-black uppercase tracking-wider transition-all shadow-md shadow-[var(--accent)]/10">Reimport</button>
+        </div>
+    </div>
+
+    <!-- Main Navigation Card with integrated tab search filters -->
+    <div class="bg-white rounded-[24px] border border-slate-100 shadow-sm p-4 relative z-[110]">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+            <!-- Tabs -->
+            <div class="flex items-center gap-6 border-b border-slate-100 flex-1 min-w-[200px]">
+                <button onclick="switchTab('Accounts')" id="tabBtn-Accounts" class="px-4 py-3 text-[14px] font-black uppercase tracking-widest border-b-2 border-[var(--accent)] text-[var(--accent)] transition-all">Accounts</button>
+                <button onclick="switchTab('OpeningStock')" id="tabBtn-OpeningStock" class="px-4 py-3 text-[14px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition-all">Opening Stock</button>
+            </div>
+
+            <!-- Dynamic Search/Dropdown panel -->
+            <div class="flex items-center gap-4">
+                <!-- Search bar for Accounts -->
+                <div id="searchContainer-Accounts" class="relative min-w-[300px]">
+                    <input type="text" id="accountsSearchInput" oninput="filterAccounts()" placeholder="Search..." class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 pr-10 text-[13px] font-bold text-slate-700 outline-none focus:bg-white focus:border-accent focus:ring-4 focus:ring-[var(--accent)]/10 transition-all shadow-inner">
+                    <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+                </div>
+
+                <!-- Select Item Dropdown for Opening Stock -->
+                <div id="filterContainer-OpeningStock" class="relative min-w-[300px] hidden">
+                    <select id="stockItemFilter" onchange="filterStock()" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 pr-10 text-[13px] font-bold text-slate-700 outline-none appearance-none cursor-pointer focus:bg-white focus:border-accent transition-all shadow-inner">
+                        <!-- Populated dynamically -->
+                    </select>
+                    <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Tables -->
+    <!-- PANEL 1: ACCOUNTS -->
+    <div id="panel-Accounts" class="bg-white rounded-[40px] shadow-sm border border-slate-100 overflow-hidden">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-[var(--accent)] text-white">
+                    <th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest">Accounts</th>
+                    <th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-right">Debit (₹)</th>
+                    <th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-right">Credit (₹)</th>
+                </tr>
+            </thead>
+            <tbody id="accountsTableBody" class="divide-y divide-slate-100">
+                <!-- Loaded dynamically -->
+            </tbody>
+            <tfoot>
+                <tr class="bg-slate-50 font-black text-slate-800 border-t border-slate-200">
+                    <td class="px-8 py-5 text-[14px]">Total</td>
+                    <td id="accountsTotalDebit" class="px-8 py-5 text-right text-[14px]">₹0.00</td>
+                    <td id="accountsTotalCredit" class="px-8 py-5 text-right text-[14px]">₹0.00</td>
+                </tr>
+            </tfoot>
+        </table>
+        <!-- Empty State -->
+        <div id="empty-Accounts" class="hidden py-16 flex flex-col items-center justify-center text-center space-y-4">
+            <svg class="w-12 h-12 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <p class="text-[14px] font-bold text-slate-500">No accounts match your criteria.</p>
+        </div>
+    </div>
+
+    <!-- PANEL 2: OPENING STOCK -->
+    <div id="panel-OpeningStock" class="bg-white rounded-[40px] shadow-sm border border-slate-100 overflow-hidden hidden">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-[var(--accent)] text-white">
+                    <th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest">Name</th>
+                    <th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest">Type</th>
+                    <th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-right">Qty</th>
+                    <th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-right">Rate</th>
+                    <th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-right">Amount</th>
+                    <th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody id="stockTableBody" class="divide-y divide-slate-100">
+                <!-- Loaded dynamically -->
+            </tbody>
+            <tfoot>
+                <tr class="bg-slate-50 font-black text-slate-800 border-t border-slate-200">
+                    <td class="px-8 py-5 text-[14px]" colspan="2">Total</td>
+                    <td id="stockTotalQty" class="px-8 py-5 text-right text-[14px]">0</td>
+                    <td class="px-8 py-5"></td>
+                    <td id="stockTotalAmount" class="px-8 py-5 text-right text-[14px]">₹0.00</td>
+                    <td class="px-8 py-5"></td>
+                </tr>
+            </tfoot>
+        </table>
+        <!-- Empty State -->
+        <div id="empty-Stock" class="hidden py-16 flex flex-col items-center justify-center text-center space-y-4">
+            <svg class="w-12 h-12 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <p class="text-[14px] font-bold text-slate-500">No stock items match your criteria.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Stock Item Popover Modal -->
+<div id="editStockModal" class="fixed inset-0 z-[1200] flex items-center justify-center p-6 hidden">
+    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity" onclick="closeEditStockModal()"></div>
+    <div class="w-full max-w-[450px] bg-white rounded-[24px] shadow-2xl overflow-hidden relative z-10 scale-in-center">
+        <!-- Header -->
+        <div class="px-6 py-4 bg-[var(--accent)] text-white flex items-center justify-between">
+            <h3 class="text-[15px] font-black uppercase tracking-wider">Edit Stock Details</h3>
+            <button onclick="closeEditStockModal()" class="w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center text-white transition-all shadow-md" title="Close">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <!-- Body -->
+        <div class="p-6 space-y-4">
+            <input type="hidden" id="editStockIndex">
+            
+            <div class="space-y-1">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Item Name</label>
+                <input type="text" id="editStockName" disabled class="w-full h-10 bg-slate-100 border border-slate-100 rounded-xl px-4 text-[13px] font-bold text-slate-500 outline-none select-none">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-rose-500 uppercase tracking-widest">Quantity *</label>
+                    <input type="number" id="editStockQty" required class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-accent shadow-inner transition-all">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-rose-500 uppercase tracking-widest">Rate (₹) *</label>
+                    <input type="number" id="editStockRate" step="0.001" required class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-accent shadow-inner transition-all">
+                </div>
+            </div>
+
+            <div class="flex gap-3 justify-end pt-4 border-t border-slate-50">
+                <button onclick="closeEditStockModal()" class="px-5 h-10 bg-slate-700 text-white rounded-xl text-[12px] font-black uppercase tracking-wider hover:bg-slate-800 transition-all shadow-md">Cancel</button>
+                <button onclick="saveStockEdit()" class="px-5 h-10 bg-[var(--accent)] text-white rounded-xl text-[12px] font-black uppercase tracking-wider hover:brightness-110 shadow-md transition-all">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Mock data matching Image 1
+let accountsData = [
+    { name: "Stock Value (Main Branch)", debit: 2733889.15, credit: 0 },
+    { name: "Cash", debit: 0, credit: 1571009.45 },
+    { name: "Profit and Loss", debit: 0, credit: 665406.31 },
+    { name: "Celebrity Fireworks (Sundry Creditors)", debit: 43230.00, credit: 0 },
+    { name: "Dinesh Wala Rohini (Sundry Creditors)", debit: 3000.00, credit: 0 },
+    { name: "Sri Maha Sparklers (Sundry Creditors)", debit: 0, credit: 42322.00 },
+    { name: "Aasai (Sundry Debtors)", debit: 3600.00, credit: 0 },
+    { name: "Antony (Sundry Debtors)", debit: 1950.00, credit: 0 },
+    { name: "Arun Abilash (Sundry Debtors)", debit: 834.00, credit: 0 },
+    { name: "Arun Salvarpatti CUST (Sundry Debtors)", debit: 23979.00, credit: 0 }
+];
+
+// Mock data matching Image 2
+let stockData = [
+    { name: "1 1/4 CHOTA FANCY", code: "146", type: "Brought Forward", qty: 1294, unit: "Pcs", rate: 22.000 },
+    { name: "1.5 TWINKLING STAR", code: "51", type: "Brought Forward", qty: 4283, unit: "Box", rate: 11.200 },
+    { name: "10 CM COLOUR SPARKLER", code: "6", type: "Brought Forward", qty: 77, unit: "Box", rate: 8.550 },
+    { name: "10 CM ELECTRIC SPARKLER", code: "5", type: "Brought Forward", qty: 273, unit: "Box", rate: 7.650 },
+    { name: "10 CM GREEN SPARKLER", code: "7", type: "Brought Forward", qty: 659, unit: "Box", rate: 10.800 },
+    { name: "10 CM RED SPARKLER", code: "8", type: "Brought Forward", qty: 736, unit: "Box", rate: 10.900 },
+    { name: "100 Wala", code: "98", type: "Brought Forward", qty: 735, unit: "Box", rate: 21.000 },
+    { name: "1000 Wala", code: "100", type: "Brought Forward", qty: 74, unit: "Box", rate: 99.680 },
+    { name: "10000 Wala", code: "103", type: "Brought Forward", qty: 26, unit: "Box", rate: 875.000 },
+    { name: "12 CM COLOR SPARKLER", code: "10", type: "Brought Forward", qty: 119, unit: "Box", rate: 11.500 }
+];
+
+document.addEventListener('DOMContentLoaded', () => {
+    renderAccountsTable();
+    renderStockTable();
+    populateStockFilters();
+});
+
+// Format Currency
+function formatCurrency(val) {
+    return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 2
+    }).format(val);
+}
+
+// Tab Switching logic
+function switchTab(tabId) {
+    // Buttons toggling
+    const accountsBtn = document.getElementById('tabBtn-Accounts');
+    const stockBtn = document.getElementById('tabBtn-OpeningStock');
+    
+    // Panels toggling
+    const accountsPanel = document.getElementById('panel-Accounts');
+    const stockPanel = document.getElementById('panel-OpeningStock');
+    
+    // Search/Dropdown filters toggling
+    const accountsSearch = document.getElementById('searchContainer-Accounts');
+    const stockFilter = document.getElementById('filterContainer-OpeningStock');
+
+    if (tabId === 'Accounts') {
+        accountsBtn.className = 'px-4 py-3 text-[14px] font-black uppercase tracking-widest border-b-2 border-[var(--accent)] text-[var(--accent)] transition-all';
+        stockBtn.className = 'px-4 py-3 text-[14px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition-all';
+        
+        accountsPanel.classList.remove('hidden');
+        stockPanel.classList.add('hidden');
+        
+        accountsSearch.classList.remove('hidden');
+        stockFilter.classList.add('hidden');
+    } else {
+        stockBtn.className = 'px-4 py-3 text-[14px] font-black uppercase tracking-widest border-b-2 border-[var(--accent)] text-[var(--accent)] transition-all';
+        accountsBtn.className = 'px-4 py-3 text-[14px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition-all';
+        
+        stockPanel.classList.remove('hidden');
+        accountsPanel.classList.add('hidden');
+        
+        stockFilter.classList.remove('hidden');
+        accountsSearch.classList.add('hidden');
+    }
+}
+
+// Populate dropdown filters
+function populateStockFilters() {
+    const filter = document.getElementById('stockItemFilter');
+    filter.innerHTML = '<option value="All">Select Item...</option>';
+    
+    stockData.forEach((item, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.innerText = `${item.name} (${item.code})`;
+        filter.appendChild(opt);
+    });
+}
+
+// Render Accounts table
+function renderAccountsTable() {
+    const tbody = document.getElementById('accountsTableBody');
+    const emptyState = document.getElementById('empty-Accounts');
+    const searchVal = document.getElementById('accountsSearchInput').value.toLowerCase().trim();
+    tbody.innerHTML = '';
+    
+    let filtered = accountsData.filter(acc => acc.name.toLowerCase().includes(searchVal));
+    
+    if (filtered.length === 0) {
+        emptyState.classList.remove('hidden');
+    } else {
+        emptyState.classList.add('hidden');
+        
+        let totalDebit = 0;
+        let totalCredit = 0;
+        
+        filtered.forEach(acc => {
+            totalDebit += acc.debit;
+            totalCredit += acc.credit;
+            
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-slate-50/50 transition-all duration-150';
+            tr.innerHTML = `
+                <td class="px-8 py-5 text-[13.5px] font-bold text-slate-700">${acc.name}</td>
+                <td class="px-8 py-5 text-right text-[13.5px] font-semibold text-slate-600">${acc.debit > 0 ? formatCurrency(acc.debit) : ''}</td>
+                <td class="px-8 py-5 text-right text-[13.5px] font-semibold text-slate-600">${acc.credit > 0 ? formatCurrency(acc.credit) : ''}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+        
+        document.getElementById('accountsTotalDebit').innerText = formatCurrency(totalDebit);
+        document.getElementById('accountsTotalCredit').innerText = formatCurrency(totalCredit);
+    }
+}
+
+function filterAccounts() {
+    renderAccountsTable();
+}
+
+// Render Stock table
+function renderStockTable() {
+    const tbody = document.getElementById('stockTableBody');
+    const emptyState = document.getElementById('empty-Stock');
+    const selectedIdx = document.getElementById('stockItemFilter').value;
+    tbody.innerHTML = '';
+    
+    let filtered = stockData;
+    if (selectedIdx !== 'All') {
+        filtered = [stockData[parseInt(selectedIdx)]];
+    }
+    
+    if (filtered.length === 0) {
+        emptyState.classList.remove('hidden');
+    } else {
+        emptyState.classList.add('hidden');
+        
+        let totalQty = 0;
+        let totalAmount = 0;
+        
+        filtered.forEach((item, index) => {
+            const amount = item.qty * item.rate;
+            totalQty += item.qty;
+            totalAmount += amount;
+            
+            const originalIndex = stockData.findIndex(s => s.name === item.name);
+            
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-slate-50/50 transition-all duration-150';
+            tr.innerHTML = `
+                <td class="px-8 py-5">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[13.5px] font-bold text-slate-700">${item.name}</span>
+                        <span class="px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] font-black rounded-full">${item.code}</span>
+                    </div>
+                </td>
+                <td class="px-8 py-5 text-[13.5px] text-slate-500 font-medium">${item.type}</td>
+                <td class="px-8 py-5 text-right text-[13.5px] font-semibold text-slate-600">${item.qty} ${item.unit}</td>
+                <td class="px-8 py-5 text-right text-[13.5px] font-semibold text-blue-600 hover:underline cursor-pointer" onclick="openEditStockModal(${originalIndex})">${item.rate.toFixed(3)}</td>
+                <td class="px-8 py-5 text-right text-[13.5px] font-semibold text-slate-700">${formatCurrency(amount)}</td>
+                <td class="px-8 py-5 text-center">
+                    <button onclick="openEditStockModal(${originalIndex})" class="text-blue-600 hover:text-blue-700 hover:scale-110 active:scale-95 transition-all" title="Edit Item">
+                        <svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+        
+        document.getElementById('stockTotalQty').innerText = totalQty;
+        document.getElementById('stockTotalAmount').innerText = formatCurrency(totalAmount);
+    }
+}
+
+function filterStock() {
+    renderStockTable();
+}
+
+// Edit Stock Modal Controls
+function openEditStockModal(index) {
+    const item = stockData[index];
+    if (!item) return;
+    
+    document.getElementById('editStockIndex').value = index;
+    document.getElementById('editStockName').value = item.name;
+    document.getElementById('editStockQty').value = item.qty;
+    document.getElementById('editStockRate').value = item.rate;
+    
+    document.getElementById('editStockModal').classList.remove('hidden');
+}
+
+function closeEditStockModal() {
+    document.getElementById('editStockModal').classList.add('hidden');
+}
+
+function saveStockEdit() {
+    const index = parseInt(document.getElementById('editStockIndex').value);
+    const qty = parseInt(document.getElementById('editStockQty').value);
+    const rate = parseFloat(document.getElementById('editStockRate').value);
+    
+    if (isNaN(qty) || qty <= 0) {
+        alert("Please enter a valid quantity");
+        return;
+    }
+    if (isNaN(rate) || rate < 0) {
+        alert("Please enter a valid rate");
+        return;
+    }
+    
+    const item = stockData[index];
+    if (item) {
+        item.qty = qty;
+        item.rate = rate;
+    }
+    
+    renderStockTable();
+    closeEditStockModal();
+}
+</script>
+
+<style>
+.stagger-in { animation: staggerIn 0.5s ease-out forwards; }
+@keyframes staggerIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.scale-in-center { animation: scale-in-center 0.25s cubic-bezier(0.250, 0.460, 0.450, 0.940) both; }
+@keyframes scale-in-center {
+  0% { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+</style>
+{% endblock %}

@@ -1,0 +1,371 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Settings - Serial Numbers - Auraa Books{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Tooltip popover styling */
+    .serial-tooltip-icon {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+    }
+    .serial-tooltip-box {
+        display: none;
+        position: absolute;
+        bottom: 125%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--surface);
+        border: 1px solid var(--border);
+        padding: 10px 14px;
+        border-radius: var(--radius);
+        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15);
+        z-index: 100;
+        width: 280px;
+        text-align: left;
+    }
+    .serial-tooltip-icon:hover .serial-tooltip-box {
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block breadcrumb_parent %}
+    <a href="{% url 'settings-dashboard' %}" class="hover:text-accent cursor-pointer">Settings</a>
+    <span class="opacity-50">/</span>
+{% endblock %}
+
+{% block breadcrumb_active %}Serial Numbers{% endblock %}
+
+{% block content %}
+<div class="stagger-in max-w-6xl mx-auto space-y-6">
+    <!-- Top Action bar with Title, Dropdowns, and Buttons -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[var(--border)] relative z-30">
+        <div>
+            <h1 class="text-[24px] font-extrabold text-[var(--text-primary)] tracking-tight flex items-center gap-2">
+                <a href="{% url 'settings-dashboard' %}" class="text-accent hover:underline cursor-pointer">Settings</a>
+                <span class="text-[var(--text-muted)] font-medium mx-1">/</span>
+                Serial Numbers
+            </h1>
+            
+            <div class="flex flex-col gap-1 mt-1">
+                <p class="text-[13px] text-[var(--text-muted)] flex items-center gap-1.5">
+                    Define Serial Number configuration for each module
+                    <span class="serial-tooltip-icon text-slate-400 hover:text-accent flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/>
+                        </svg>
+                        <span class="serial-tooltip-box text-[11px] font-semibold text-[var(--text-secondary)] leading-normal">
+                            Auto(Default)/Manual mode for generation of serial number of quote/invoice/credit note etc can be set here.
+                        </span>
+                    </span>
+                </p>
+                <!-- Warning shown in edit mode only -->
+                <p id="editWarning" class="text-[12px] text-amber-600 font-semibold hidden">
+                    Please make sure unique Prefix/Suffix provided to avoid conflicts with other branches.
+                </p>
+            </div>
+        </div>
+
+        <!-- Filter selectors and Mode switcher buttons -->
+        <div class="flex flex-wrap items-center gap-3">
+            <!-- FY Selector -->
+            <div class="relative">
+                <select id="fySelector" class="appearance-none bg-[var(--accent)] text-white pl-4 pr-8 py-1.5 rounded-lg text-[12px] font-bold shadow-sm outline-none cursor-pointer hover:brightness-110 transition-all duration-200">
+                    <option value="2026-2027" class="text-black bg-white">2026 - 2027</option>
+                    <option value="2025-2026" class="text-black bg-white">2025 - 2026</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-white">
+                    <svg class="fill-current h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                </div>
+            </div>
+
+            <!-- Branch Button Selector -->
+            <div class="relative">
+                <button class="flex items-center gap-2 px-4 py-1.5 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-sm transition-all duration-200">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                    </svg>
+                    Main Branch
+                    <svg class="w-3.5 h-3.5 ml-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Action buttons (primary color: accent, cancel color: dark gray) -->
+            <div class="flex items-center gap-2 ml-2">
+                <!-- View Mode Buttons -->
+                <button id="btnEdit" onclick="enterEditMode()" class="px-5 py-1.5 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold transition-all shadow-sm cursor-pointer">
+                    Edit
+                </button>
+
+                <!-- Edit Mode Buttons -->
+                <button id="btnSave" onclick="saveSettings()" class="hidden px-5 py-1.5 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold transition-all shadow-sm cursor-pointer">
+                    Save
+                </button>
+                <button id="btnCancel" onclick="exitEditMode(false)" class="hidden px-5 py-1.5 bg-slate-600 hover:bg-slate-700 text-white rounded-lg text-[12px] font-bold transition-all shadow-sm cursor-pointer">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Serial Configurations Grid Table -->
+    <div class="overflow-x-auto bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-sm">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-[var(--accent)] text-white text-[12px] font-bold select-none">
+                    <th class="py-3.5 px-6 font-bold">Module</th>
+                    <th class="py-3.5 px-6 font-bold">Series</th>
+                    <th class="py-3.5 px-6 font-bold">Mode</th>
+                    <th class="py-3.5 px-6 font-bold">Prefix</th>
+                    <th class="py-3.5 px-6 font-bold">Next Number</th>
+                    <th class="py-3.5 px-6 font-bold">Suffix</th>
+                    <th id="actionsHeader" class="py-3.5 px-6 text-center w-12 hidden font-bold"></th>
+                </tr>
+            </thead>
+            <tbody id="serialTableBody" class="divide-y divide-[var(--border)]/60 text-[13px] text-[var(--text-primary)]">
+                <!-- Rows generated by JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add Row button shown in edit mode -->
+    <div id="addRowContainer" class="flex justify-start hidden">
+        <button onclick="addNewRow()" class="flex items-center gap-1.5 px-4 py-2 bg-[var(--accent)] hover:brightness-110 text-white rounded-xl text-[12px] font-bold transition-all duration-200 cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+            </svg>
+            Add Row
+        </button>
+    </div>
+</div>
+
+<!-- Status Toast -->
+<div id="serialToast" class="fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3.5 bg-slate-900 text-white rounded-xl shadow-2xl opacity-0 translate-y-4 pointer-events-none transition-all duration-300">
+    <div id="serialToastIcon" class="flex items-center justify-center"></div>
+    <span id="serialToastText" class="text-[13px] font-semibold tracking-wide"></span>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Module choices list for custom added rows
+    const availableModules = ['Quote', 'Sales Order', 'Delivery Challan', 'Credit Note', 'Debit Note', 'Supplier Credit Note', 'Supplier Debit Note', 'E-Way Bill', 'E-Invoice'];
+
+    // Local Serial Settings Database
+    let serialData = [
+        { id: 1, module: 'Quote', series: 'Default', mode: 'Auto', prefix: 'QTE', next: 1, suffix: '/FEB/26-27', isDefault: true },
+        { id: 2, module: 'Quote', series: 'Estimate', mode: 'Auto', prefix: 'EST001', next: 1, suffix: '', isDefault: false },
+        { id: 3, module: 'Sales Order', series: 'Default', mode: 'Auto', prefix: 'ORD', next: 1, suffix: '', isDefault: true }
+    ];
+
+    let isEditMode = false;
+    let tempSerialData = []; // Clone storage for cancel revert
+
+    window.addEventListener('DOMContentLoaded', () => {
+        renderTable();
+    });
+
+    function renderTable() {
+        const body = document.getElementById('serialTableBody');
+        body.innerHTML = '';
+
+        const currentDataset = isEditMode ? tempSerialData : serialData;
+
+        currentDataset.forEach((row) => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-slate-50/50 transition-colors duration-150';
+
+            if (!isEditMode) {
+                // View Mode cells
+                tr.innerHTML = `
+                    <td class="py-4 px-6 font-semibold">${row.module}</td>
+                    <td class="py-4 px-6 text-[var(--text-secondary)]">${row.series}</td>
+                    <td class="py-4 px-6 text-[var(--text-muted)]">
+                        <span class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-md font-bold text-[11px]">${row.mode}</span>
+                    </td>
+                    <td class="py-4 px-6 font-mono font-semibold">${row.prefix || '-'}</td>
+                    <td class="py-4 px-6 font-mono font-semibold">${row.next}</td>
+                    <td class="py-4 px-6 text-[var(--text-secondary)]">${row.suffix || '-'}</td>
+                `;
+            } else {
+                // Edit Mode cells
+                let moduleCell = '';
+                let seriesCell = '';
+                let deleteCell = '';
+
+                if (row.isDefault) {
+                    // Default rows can't change module or series name
+                    moduleCell = `<td class="py-3.5 px-6 font-bold text-[var(--text-primary)]">${row.module}</td>`;
+                    seriesCell = `<td class="py-3.5 px-6 text-[var(--text-secondary)]">${row.series}</td>`;
+                    deleteCell = `<td class="py-3.5 px-6"></td>`;
+                } else {
+                    // Custom added rows have editable module selector and series input
+                    let optionsHtml = '';
+                    availableModules.forEach(mod => {
+                        optionsHtml += `<option value="${mod}" ${mod === row.module ? 'selected' : ''}>${mod}</option>`;
+                    });
+                    moduleCell = `
+                        <td class="py-3.5 px-6">
+                            <select onchange="updateRowField(${row.id}, 'module', this.value)" class="w-full h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                                ${optionsHtml}
+                            </select>
+                        </td>
+                    `;
+                    seriesCell = `
+                        <td class="py-3.5 px-6">
+                            <input type="text" value="${row.series}" oninput="updateRowField(${row.id}, 'series', this.value)" placeholder="Series Name"
+                                   class="w-full h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                        </td>
+                    `;
+                    deleteCell = `
+                        <td class="py-3.5 px-6 text-center">
+                            <button onclick="removeRow(${row.id})" class="text-rose-500 hover:text-rose-700 hover:bg-rose-50 p-1.5 rounded-lg transition-colors cursor-pointer">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </td>
+                    `;
+                }
+
+                tr.innerHTML = `
+                    ${moduleCell}
+                    ${seriesCell}
+                    <td class="py-3.5 px-6">
+                        <select onchange="updateRowField(${row.id}, 'mode', this.value)" class="h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none font-semibold">
+                            <option value="Auto" ${row.mode === 'Auto' ? 'selected' : ''}>Auto</option>
+                            <option value="Manual" ${row.mode === 'Manual' ? 'selected' : ''}>Manual</option>
+                        </select>
+                    </td>
+                    <td class="py-3.5 px-6">
+                        <input type="text" value="${row.prefix}" oninput="updateRowField(${row.id}, 'prefix', this.value)" placeholder="Prefix"
+                               class="w-32 h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] font-mono focus:border-accent outline-none">
+                    </td>
+                    <td class="py-3.5 px-6">
+                        <input type="number" value="${row.next}" oninput="updateRowField(${row.id}, 'next', parseInt(this.value) || 1)" placeholder="1"
+                               class="w-24 h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] font-mono focus:border-accent outline-none">
+                    </td>
+                    <td class="py-3.5 px-6">
+                        <input type="text" value="${row.suffix}" oninput="updateRowField(${row.id}, 'suffix', this.value)" placeholder="Suffix"
+                               class="w-48 h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                    </td>
+                    ${deleteCell}
+                `;
+            }
+            body.appendChild(tr);
+        });
+    }
+
+    function enterEditMode() {
+        isEditMode = true;
+        // Deep clone data
+        tempSerialData = JSON.parse(JSON.stringify(serialData));
+
+        document.getElementById('editWarning').classList.remove('hidden');
+        document.getElementById('addRowContainer').classList.remove('hidden');
+        document.getElementById('actionsHeader').classList.remove('hidden');
+
+        document.getElementById('btnEdit').classList.add('hidden');
+        document.getElementById('btnSave').classList.remove('hidden');
+        document.getElementById('btnCancel').classList.remove('hidden');
+
+        renderTable();
+    }
+
+    function exitEditMode(saveChanges = false) {
+        isEditMode = false;
+        if (saveChanges) {
+            serialData = JSON.parse(JSON.stringify(tempSerialData));
+        }
+
+        document.getElementById('editWarning').classList.add('hidden');
+        document.getElementById('addRowContainer').classList.add('hidden');
+        document.getElementById('actionsHeader').classList.add('hidden');
+
+        document.getElementById('btnEdit').classList.remove('hidden');
+        document.getElementById('btnSave').classList.add('hidden');
+        document.getElementById('btnCancel').classList.add('hidden');
+
+        renderTable();
+    }
+
+    function updateRowField(id, field, value) {
+        const row = tempSerialData.find(r => r.id === id);
+        if (row) {
+            row[field] = value;
+        }
+    }
+
+    function addNewRow() {
+        const nextId = tempSerialData.length > 0 ? Math.max(...tempSerialData.map(r => r.id)) + 1 : 1;
+        tempSerialData.push({
+            id: nextId,
+            module: 'Quote',
+            series: '',
+            mode: 'Auto',
+            prefix: '',
+            next: 1,
+            suffix: '',
+            isDefault: false
+        });
+        renderTable();
+    }
+
+    function removeRow(id) {
+        tempSerialData = tempSerialData.filter(r => r.id !== id);
+        renderTable();
+    }
+
+    function saveSettings() {
+        // Validation check for empty series names
+        const invalidRow = tempSerialData.find(r => !r.isDefault && (!r.series || r.series.trim() === ''));
+        if (invalidRow) {
+            showToast('Please specify a series name for all custom rows.', 'error');
+            return;
+        }
+
+        showToast('Saving serial number configurations...', 'loading');
+        setTimeout(() => {
+            exitEditMode(true);
+            showToast('Serial configurations saved successfully!', 'success');
+            hideToast(1800);
+        }, 800);
+    }
+
+    // Toast logic
+    let toastTimeout = null;
+    function showToast(text, type = 'loading') {
+        const toast = document.getElementById('serialToast');
+        const textSpan = document.getElementById('serialToastText');
+        const iconDiv = document.getElementById('serialToastIcon');
+
+        if (toastTimeout) clearTimeout(toastTimeout);
+
+        textSpan.innerText = text;
+
+        if (type === 'loading') {
+            iconDiv.innerHTML = '<div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>';
+        } else if (type === 'success') {
+            iconDiv.innerHTML = '<svg class="w-4.5 h-4.5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
+        } else {
+            iconDiv.innerHTML = '<svg class="w-4.5 h-4.5 text-rose-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>';
+        }
+
+        toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+        toast.classList.add('opacity-100', 'translate-y-0');
+    }
+
+    function hideToast(delay = 1500) {
+        const toast = document.getElementById('serialToast');
+        toastTimeout = setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+            toast.classList.remove('opacity-100', 'translate-y-0');
+        }, delay);
+    }
+</script>
+{% endblock %}

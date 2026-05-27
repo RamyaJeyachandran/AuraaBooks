@@ -1,0 +1,717 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Settings - Tax Rates - Auraa Books{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Dropdown arrow rotation */
+    .edit-dropdown-btn.active svg {
+        transform: rotate(180deg);
+    }
+</style>
+{% endblock %}
+
+{% block breadcrumb_parent %}
+    <a href="{% url 'settings-dashboard' %}" class="hover:text-accent cursor-pointer">Settings</a>
+    <span class="opacity-50">/</span>
+{% endblock %}
+
+{% block breadcrumb_active %}Tax Rates{% endblock %}
+
+{% block content %}
+<div class="stagger-in max-w-5xl mx-auto space-y-6 pb-12">
+    <!-- Header -->
+    <div class="pb-4 border-b border-[var(--border)] relative z-30">
+        <h1 class="text-[24px] font-extrabold text-[var(--text-primary)] tracking-tight flex items-center gap-2">
+            <a href="{% url 'settings-dashboard' %}" class="text-accent hover:underline cursor-pointer">Settings</a>
+            <span class="text-[var(--text-muted)] font-medium mx-1">/</span>
+            Tax Rates
+        </h1>
+    </div>
+
+    <!-- Tab Bar & Top Controls -->
+    <div class="flex justify-between items-center border-b border-[var(--border)]/60 pb-3 relative z-30">
+        <!-- Tabs -->
+        <div class="flex gap-6 text-[13px] font-bold">
+            <button onclick="switchTab('taxrates')" id="tabBtnTaxrates" class="pb-3 border-b-2 border-accent text-accent transition-all cursor-pointer">
+                TaxRates
+            </button>
+            <button onclick="switchTab('hsn')" id="tabBtnHsn" class="pb-3 border-b-2 border-transparent text-[var(--text-muted)] hover:text-accent transition-all cursor-pointer">
+                HSN/SACIN
+            </button>
+            <button onclick="switchTab('template')" id="tabBtnTemplate" class="pb-3 border-b-2 border-transparent text-[var(--text-muted)] hover:text-accent transition-all cursor-pointer">
+                Tax Template
+            </button>
+        </div>
+
+        <!-- Add buttons (styled in primary color) -->
+        <div>
+            <button id="btnAddTaxrate" onclick="openTaxDetailsModal(null)" class="px-5 py-2 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-sm cursor-pointer transition-all">
+                Add TaxRate
+            </button>
+            <button id="btnAddHsn" onclick="openHsnModal()" class="hidden px-5 py-2 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-sm cursor-pointer transition-all">
+                Add
+            </button>
+        </div>
+    </div>
+
+    <!-- TAB 1: TAX RATES GRID -->
+    <div id="tabContentTaxrates" class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-sm overflow-hidden">
+        <table class="w-full text-left border-collapse text-[13px]">
+            <thead>
+                <tr class="bg-[var(--accent)] text-white text-[12px] font-bold border-b border-[var(--border)]/60 select-none">
+                    <th class="py-3.5 px-6">Name</th>
+                    <th class="py-3.5 px-6">Status / Default</th>
+                    <th class="py-3.5 px-6 text-right pr-12 w-28">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="taxRatesTableBody" class="divide-y divide-[var(--border)]/60 text-[var(--text-primary)]">
+                <!-- Injected via JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- TAB 2: HSN/SACIN GRID -->
+    <div id="tabContentHsn" class="hidden bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-sm overflow-hidden">
+        <table class="w-full text-left border-collapse text-[13px]">
+            <thead>
+                <tr class="bg-[var(--accent)] text-white text-[12px] font-bold border-b border-[var(--border)]/60 select-none">
+                    <th class="py-3.5 px-6">HSN/SAC Code</th>
+                    <th class="py-3.5 px-6">Default Tax</th>
+                    <th class="py-3.5 px-6">Variable</th>
+                    <th class="py-3.5 px-6 text-center w-20">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="hsnTableBody" class="divide-y divide-[var(--border)]/60 text-[var(--text-primary)]">
+                <!-- Injected via JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- TAB 3: TAX TEMPLATE GRID -->
+    <div id="tabContentTemplate" class="hidden space-y-4">
+        <!-- View mode -->
+        <div id="taxTemplateViewMode" class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-sm overflow-hidden">
+            <table class="w-full text-left border-collapse text-[13px]">
+                <thead>
+                    <tr class="bg-[var(--accent)] text-white text-[12px] font-bold border-b border-[var(--border)]/60 select-none">
+                        <th class="py-3.5 px-6">TaxTypeCode</th>
+                        <th class="py-3.5 px-6">Label</th>
+                        <th class="py-3.5 px-6 text-right pr-6 w-24">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="taxTemplateTableBody" class="divide-y divide-[var(--border)]/60 text-[var(--text-primary)]">
+                    <!-- Injected via JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Edit Mode Panel -->
+        <div id="taxTemplateEditMode" class="hidden bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-sm space-y-4">
+            <div class="flex justify-between items-center border-b border-[var(--border)]/60 pb-3">
+                <span class="text-[14px] font-bold text-[var(--text-primary)]">Edit Tax Template Mapping</span>
+                <div class="flex items-center gap-2">
+                    <button onclick="saveTemplateEdit()" class="px-5 py-1.5 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-sm cursor-pointer">Save</button>
+                    <!-- Close button in header styled in RED -->
+                    <button onclick="toggleTemplateEdit(false)" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-[12px] font-bold shadow-sm cursor-pointer flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <table class="w-full text-left border-collapse text-[13px]">
+                <thead>
+                    <tr class="bg-[var(--accent)] text-white text-[12px] font-bold border-b border-[var(--border)]/60 select-none">
+                        <th class="py-2.5 px-3">TaxTypeCode</th>
+                        <th class="py-2.5 px-3">Label</th>
+                        <th class="py-2.5 px-3 text-center w-24">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="templateEditTableBody" class="divide-y divide-[var(--border)]/60">
+                    <!-- Injected via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- TAX DETAILS MODAL -->
+<div id="taxDetailsModal" class="fixed inset-0 z-[999] bg-black/45 backdrop-blur-sm flex items-center justify-center hidden">
+    <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl w-[700px] shadow-2xl overflow-hidden flex flex-col">
+        <!-- Header with Close button styled in RED -->
+        <div class="px-6 py-4 border-b border-[var(--border)] flex justify-between items-center bg-[var(--accent)] text-white animate-fade-in">
+            <h3 class="text-[15px] font-extrabold text-white">Tax Details</h3>
+            <button onclick="closeTaxDetailsModal()" class="w-7 h-7 flex items-center justify-center bg-rose-600 hover:bg-rose-700 text-white rounded-lg transition-colors cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="p-6 space-y-6 text-[13px] overflow-y-auto max-h-[500px]">
+            <!-- Name Input -->
+            <div class="space-y-1.5">
+                <label class="block font-bold text-[var(--text-primary)]">Name <span class="text-rose-500">*</span></label>
+                <input type="text" id="modalTaxName" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] focus:border-accent outline-none">
+            </div>
+
+            <!-- Grid for Intra/Inter State Taxes -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-[var(--border)]/60">
+                <!-- Left: Intra State -->
+                <div class="space-y-4">
+                    <span class="block font-extrabold text-[var(--text-primary)]">Intra State Tax</span>
+                    <div id="intraTaxContainer" class="space-y-3">
+                        <!-- Dynamic CGST/SGST rows -->
+                    </div>
+                    <!-- Add row styled in primary color -->
+                    <button onclick="addTaxComponent('intra')" class="flex items-center gap-1 px-3 py-1.5 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold cursor-pointer transition-all shadow-sm">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                        </svg>
+                        Add New
+                    </button>
+                </div>
+
+                <!-- Right: Inter State -->
+                <div class="space-y-4 md:border-l md:border-[var(--border)]/60 md:pl-6">
+                    <span class="block font-extrabold text-[var(--text-primary)]">Inter State Tax</span>
+                    <div id="interTaxContainer" class="space-y-3">
+                        <!-- Dynamic IGST rows -->
+                    </div>
+                    <!-- Add row styled in primary color -->
+                    <button onclick="addTaxComponent('inter')" class="flex items-center gap-1 px-3 py-1.5 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold cursor-pointer transition-all shadow-sm">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                        </svg>
+                        Add New
+                    </button>
+                </div>
+            </div>
+
+            <!-- Footer Checkboxes -->
+            <div class="flex gap-6 pt-4 border-t border-[var(--border)]/60">
+                <label class="flex items-center gap-2 font-bold text-[var(--text-primary)] cursor-pointer">
+                    <input type="checkbox" id="modalTaxActive" checked class="rounded border-slate-300">
+                    Active
+                </label>
+                <label class="flex items-center gap-2 font-bold text-[var(--text-primary)] cursor-pointer">
+                    <input type="checkbox" id="modalTaxDefault" class="rounded border-slate-300">
+                    Default
+                </label>
+            </div>
+        </div>
+
+        <!-- Modal Footer Actions -->
+        <div class="px-6 py-4 bg-slate-50 border-t border-[var(--border)] flex justify-end gap-2">
+            <!-- Save styled in primary, Cancel in dark gray -->
+            <button onclick="saveTaxDetails()" class="px-5 py-2 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-sm cursor-pointer">Save</button>
+            <button onclick="closeTaxDetailsModal()" class="px-5 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg text-[12px] font-bold shadow-sm cursor-pointer">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- HSN CODE MODAL -->
+<div id="hsnModal" class="fixed inset-0 z-[999] bg-black/45 backdrop-blur-sm flex items-center justify-center hidden">
+    <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl w-[450px] shadow-2xl overflow-hidden">
+        <div class="px-6 py-4 border-b border-[var(--border)] flex justify-between items-center bg-[var(--accent)] text-white">
+            <h3 class="text-[15px] font-extrabold text-white">Add HSN/SAC Code</h3>
+            <button onclick="closeHsnModal()" class="w-7 h-7 flex items-center justify-center bg-rose-600 hover:bg-rose-700 text-white rounded-lg transition-colors cursor-pointer">
+                <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="p-6 space-y-4 text-[13px]">
+            <div class="space-y-1.5">
+                <label class="block font-bold text-[var(--text-primary)]">HSN/SAC Code *</label>
+                <input type="text" id="modalHsnCode" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] focus:border-accent outline-none">
+            </div>
+            <div class="space-y-1.5">
+                <label class="block font-bold text-[var(--text-primary)]">Default Tax</label>
+                <select id="modalHsnTax" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] focus:border-accent outline-none font-semibold">
+                    <option value="GST 18%">GST 18%</option>
+                    <option value="GST 28%">GST 28%</option>
+                    <option value="GST 12%">GST 12%</option>
+                    <option value="GST 5%">GST 5%</option>
+                </select>
+            </div>
+            <div class="space-y-1.5">
+                <label class="block font-bold text-[var(--text-primary)]">Variable</label>
+                <select id="modalHsnVariable" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] focus:border-accent outline-none font-semibold">
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+        </div>
+        <div class="px-6 py-4 bg-slate-50 border-t border-[var(--border)] flex justify-end gap-2">
+            <button onclick="saveHsnCode()" class="px-5 py-2 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-sm cursor-pointer">Save</button>
+            <button onclick="closeHsnModal()" class="px-5 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg text-[12px] font-bold shadow-sm cursor-pointer">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Status Toast -->
+<div id="taxToast" class="fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3.5 bg-slate-900 text-white rounded-xl shadow-2xl opacity-0 translate-y-4 pointer-events-none transition-all duration-300">
+    <div id="taxToastIcon" class="flex items-center justify-center"></div>
+    <span id="taxToastText" class="text-[13px] font-semibold tracking-wide"></span>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Tab switching
+    let activeTab = 'taxrates';
+    function switchTab(tab) {
+        activeTab = tab;
+        
+        // Hide/Show tab contents
+        document.getElementById('tabContentTaxrates').classList.toggle('hidden', tab !== 'taxrates');
+        document.getElementById('tabContentHsn').classList.toggle('hidden', tab !== 'hsn');
+        document.getElementById('tabContentTemplate').classList.toggle('hidden', tab !== 'template');
+
+        // Toggle add button headers
+        document.getElementById('btnAddTaxrate').classList.toggle('hidden', tab !== 'taxrates');
+        document.getElementById('btnAddHsn').classList.toggle('hidden', tab !== 'hsn');
+
+        // Style tab buttons
+        document.getElementById('tabBtnTaxrates').className = tab === 'taxrates' 
+            ? 'pb-3 border-b-2 border-accent text-accent transition-all cursor-pointer' 
+            : 'pb-3 border-b-2 border-transparent text-[var(--text-muted)] hover:text-accent transition-all cursor-pointer';
+
+        document.getElementById('tabBtnHsn').className = tab === 'hsn' 
+            ? 'pb-3 border-b-2 border-accent text-accent transition-all cursor-pointer' 
+            : 'pb-3 border-b-2 border-transparent text-[var(--text-muted)] hover:text-accent transition-all cursor-pointer';
+
+        document.getElementById('tabBtnTemplate').className = tab === 'template' 
+            ? 'pb-3 border-b-2 border-accent text-accent transition-all cursor-pointer' 
+            : 'pb-3 border-b-2 border-transparent text-[var(--text-muted)] hover:text-accent transition-all cursor-pointer';
+
+        if (tab === 'template') {
+            toggleTemplateEdit(false);
+        }
+    }
+
+    // State Databases
+    let taxRatesData = [
+        { id: 1, name: 'GST 28%', isDefault: false, active: true, intra: [{ type: 'CGST', val: 14.0 }, { type: 'SGST', val: 14.0 }], inter: [{ type: 'IGST', val: 28.0 }] },
+        { id: 2, name: 'GST 18%', isDefault: true, active: true, intra: [{ type: 'CGST', val: 9.0 }, { type: 'SGST', val: 9.0 }], inter: [{ type: 'IGST', val: 18.0 }] },
+        { id: 3, name: 'GST 12%', isDefault: false, active: true, intra: [{ type: 'CGST', val: 6.0 }, { type: 'SGST', val: 6.0 }], inter: [{ type: 'IGST', val: 12.0 }] },
+        { id: 4, name: 'GST 5%', isDefault: false, active: true, intra: [{ type: 'CGST', val: 2.5 }, { type: 'SGST', val: 2.5 }], inter: [{ type: 'IGST', val: 5.0 }] },
+        { id: 5, name: 'GST 0%', isDefault: false, active: true, intra: [{ type: 'CGST', val: 0.0 }, { type: 'SGST', val: 0.0 }], inter: [{ type: 'IGST', val: 0.0 }] }
+    ];
+
+    let hsnData = [
+        { code: '998311', defaultTax: 'GST 18%', variable: 'Yes' }
+    ];
+
+    let taxTemplates = [
+        { type: 'IGST', label: 'IGST' },
+        { type: 'CGST', label: 'CGST' },
+        { type: 'SGST', label: 'SGST' }
+    ];
+
+    let tempTemplateData = []; // Clone for inline edits
+    let activeEditingTaxRateId = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+        renderTaxRates();
+        renderHsn();
+        renderTaxTemplates();
+    });
+
+    // 1. Tax Rates tab helpers
+    function renderTaxRates() {
+        const body = document.getElementById('taxRatesTableBody');
+        body.innerHTML = '';
+
+        taxRatesData.forEach(rate => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-slate-50/50 transition-colors duration-150 relative';
+            tr.innerHTML = `
+                <td class="py-4 px-6 font-semibold text-[13.5px]">${rate.name}</td>
+                <td class="py-4 px-6">
+                    ${rate.isDefault ? `
+                        <span class="inline-flex items-center gap-1 text-emerald-600 font-extrabold text-[12px]">
+                            <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="3.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                            </svg>
+                        </span>
+                    ` : '<span class="text-slate-300">-</span>'}
+                </td>
+                <td class="py-4 px-6 text-right pr-12 relative">
+                    <div class="inline-block relative">
+                        <button onclick="toggleActionDropdown(${rate.id}, event)" class="edit-dropdown-btn flex items-center gap-1.5 px-3 py-1 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[11px] font-bold shadow-sm transition-all cursor-pointer">
+                            Edit
+                            <svg class="w-3 h-3 transition-transform" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
+                            </svg>
+                        </button>
+                        <div id="dropdown-menu-${rate.id}" class="hidden absolute right-0 mt-1.5 w-24 bg-white border border-slate-200 rounded-lg shadow-xl py-1 z-55">
+                            <button onclick="openTaxDetailsModal(${rate.id})" class="w-full text-left px-3 py-1.5 text-[12px] font-semibold text-slate-700 hover:bg-slate-100 cursor-pointer">Edit</button>
+                            <button onclick="deleteTaxRate(${rate.id})" class="w-full text-left px-3 py-1.5 text-[12px] font-semibold text-rose-600 hover:bg-rose-50 cursor-pointer">Delete</button>
+                        </div>
+                    </div>
+                </td>
+            `;
+            body.appendChild(tr);
+        });
+    }
+
+    function toggleActionDropdown(id, e) {
+        e.stopPropagation();
+        
+        // Close others
+        document.querySelectorAll('[id^="dropdown-menu-"]').forEach(menu => {
+            if (menu.id !== `dropdown-menu-${id}`) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        const menu = document.getElementById(`dropdown-menu-${id}`);
+        menu.classList.toggle('hidden');
+    }
+
+    // Close action dropdowns on clicking window
+    window.addEventListener('click', () => {
+        document.querySelectorAll('[id^="dropdown-menu-"]').forEach(menu => menu.classList.add('hidden'));
+    });
+
+    function deleteTaxRate(id) {
+        showToast('Deleting tax rate...', 'loading');
+        setTimeout(() => {
+            taxRatesData = taxRatesData.filter(r => r.id !== id);
+            renderTaxRates();
+            showToast('Tax rate deleted successfully!', 'success');
+            hideToast(1500);
+        }, 500);
+    }
+
+    // 2. Tax Details Modal dynamic components logic
+    let intraComponents = [];
+    let interComponents = [];
+
+    function openTaxDetailsModal(rateId = null) {
+        activeEditingTaxRateId = rateId;
+        const modal = document.getElementById('taxDetailsModal');
+        
+        if (rateId !== null) {
+            // Edit mode pre-population
+            const data = taxRatesData.find(r => r.id === rateId);
+            document.getElementById('modalTaxName').value = data.name;
+            document.getElementById('modalTaxActive').checked = data.active;
+            document.getElementById('modalTaxDefault').checked = data.isDefault;
+            intraComponents = JSON.parse(JSON.stringify(data.intra));
+            interComponents = JSON.parse(JSON.stringify(data.inter));
+        } else {
+            // Add mode default
+            document.getElementById('modalTaxName').value = '';
+            document.getElementById('modalTaxActive').checked = true;
+            document.getElementById('modalTaxDefault').checked = false;
+            intraComponents = [{ type: 'CGST', val: 9.0 }, { type: 'SGST', val: 9.0 }];
+            interComponents = [{ type: 'IGST', val: 18.0 }];
+        }
+
+        renderModalComponents();
+        modal.classList.remove('hidden');
+    }
+
+    function closeTaxDetailsModal() {
+        document.getElementById('taxDetailsModal').classList.add('hidden');
+    }
+
+    function renderModalComponents() {
+        const intraContainer = document.getElementById('intraTaxContainer');
+        intraContainer.innerHTML = '';
+        intraComponents.forEach((c, idx) => {
+            const div = document.createElement('div');
+            div.className = 'flex items-center gap-2';
+            div.innerHTML = `
+                <input type="text" value="${c.type}" oninput="intraComponents[${idx}].type = this.value" class="w-16 h-8 px-2 border border-slate-200 rounded focus:border-accent outline-none">
+                <input type="number" step="0.01" value="${c.val}" oninput="intraComponents[${idx}].val = parseFloat(this.value) || 0.0" class="w-16 h-8 px-2 border border-slate-200 rounded focus:border-accent outline-none font-mono">
+                <span class="text-slate-400 font-bold">%</span>
+                <span class="px-2 py-1 bg-slate-100 text-slate-500 rounded text-[11px] font-semibold">On Value</span>
+                <!-- Delete row button styled in RED -->
+                <button onclick="removeTaxComponent('intra', ${idx})" class="w-7 h-7 flex items-center justify-center bg-rose-600 hover:bg-rose-700 text-white rounded-lg cursor-pointer">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            `;
+            intraContainer.appendChild(div);
+        });
+
+        const interContainer = document.getElementById('interTaxContainer');
+        interContainer.innerHTML = '';
+        interComponents.forEach((c, idx) => {
+            const div = document.createElement('div');
+            div.className = 'flex items-center gap-2';
+            div.innerHTML = `
+                <input type="text" value="${c.type}" oninput="interComponents[${idx}].type = this.value" class="w-16 h-8 px-2 border border-slate-200 rounded focus:border-accent outline-none">
+                <input type="number" step="0.01" value="${c.val}" oninput="interComponents[${idx}].val = parseFloat(this.value) || 0.0" class="w-16 h-8 px-2 border border-slate-200 rounded focus:border-accent outline-none font-mono">
+                <span class="text-slate-400 font-bold">%</span>
+                <span class="px-2 py-1 bg-slate-100 text-slate-500 rounded text-[11px] font-semibold">On Value</span>
+                <!-- Delete row button styled in RED -->
+                <button onclick="removeTaxComponent('inter', ${idx})" class="w-7 h-7 flex items-center justify-center bg-rose-600 hover:bg-rose-700 text-white rounded-lg cursor-pointer">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            `;
+            interContainer.appendChild(div);
+        });
+    }
+
+    function addTaxComponent(type) {
+        if (type === 'intra') {
+            intraComponents.push({ type: 'CGST', val: 0.0 });
+        } else {
+            interComponents.push({ type: 'IGST', val: 0.0 });
+        }
+        renderModalComponents();
+    }
+
+    function removeTaxComponent(type, idx) {
+        if (type === 'intra') {
+            intraComponents.splice(idx, 1);
+        } else {
+            interComponents.splice(idx, 1);
+        }
+        renderModalComponents();
+    }
+
+    function saveTaxDetails() {
+        const name = document.getElementById('modalTaxName').value.trim();
+        if (!name) {
+            showToast('Please enter a name for the tax rate.', 'error');
+            return;
+        }
+
+        const active = document.getElementById('modalTaxActive').checked;
+        const isDefault = document.getElementById('modalTaxDefault').checked;
+
+        showToast('Saving tax details...', 'loading');
+
+        setTimeout(() => {
+            if (isDefault) {
+                // Remove default from other items
+                taxRatesData.forEach(r => r.isDefault = false);
+            }
+
+            if (activeEditingTaxRateId !== null) {
+                // Update
+                const existing = taxRatesData.find(r => r.id === activeEditingTaxRateId);
+                existing.name = name;
+                existing.active = active;
+                existing.isDefault = isDefault;
+                existing.intra = intraComponents;
+                existing.inter = interComponents;
+            } else {
+                // Add new
+                const nextId = taxRatesData.length > 0 ? Math.max(...taxRatesData.map(r => r.id)) + 1 : 1;
+                taxRatesData.push({
+                    id: nextId,
+                    name: name,
+                    isDefault: isDefault,
+                    active: active,
+                    intra: intraComponents,
+                    inter: interComponents
+                });
+            }
+
+            closeTaxDetailsModal();
+            renderTaxRates();
+            showToast('Tax rates updated successfully!', 'success');
+            hideToast(1500);
+        }, 700);
+    }
+
+    // 3. HSN tab helpers
+    function renderHsn() {
+        const body = document.getElementById('hsnTableBody');
+        body.innerHTML = '';
+
+        hsnData.forEach((row, idx) => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-slate-50/50 transition-colors duration-150';
+            tr.innerHTML = `
+                <td class="py-4 px-6 font-semibold">${row.code}</td>
+                <td class="py-4 px-6 text-slate-600 font-bold">${row.defaultTax}</td>
+                <td class="py-4 px-6">${row.variable}</td>
+                <td class="py-4 px-6 text-center">
+                    <!-- Delete button styled in RED -->
+                    <button onclick="deleteHsn(${idx})" class="w-7 h-7 flex items-center justify-center bg-rose-600 hover:bg-rose-700 text-white rounded-lg cursor-pointer">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </td>
+            `;
+            body.appendChild(tr);
+        });
+    }
+
+    function openHsnModal() {
+        document.getElementById('modalHsnCode').value = '';
+        document.getElementById('hsnModal').classList.remove('hidden');
+    }
+
+    function closeHsnModal() {
+        document.getElementById('hsnModal').classList.add('hidden');
+    }
+
+    function saveHsnCode() {
+        const code = document.getElementById('modalHsnCode').value.trim();
+        if (!code) {
+            showToast('Please enter an HSN/SAC code.', 'error');
+            return;
+        }
+
+        const tax = document.getElementById('modalHsnTax').value;
+        const variable = document.getElementById('modalHsnVariable').value;
+
+        showToast('Saving HSN mappings...', 'loading');
+        setTimeout(() => {
+            hsnData.push({ code, defaultTax: tax, variable });
+            closeHsnModal();
+            renderHsn();
+            showToast('HSN mapping saved successfully!', 'success');
+            hideToast(1500);
+        }, 500);
+    }
+
+    function deleteHsn(idx) {
+        showToast('Deleting HSN mapping...', 'loading');
+        setTimeout(() => {
+            hsnData.splice(idx, 1);
+            renderHsn();
+            showToast('HSN mapping deleted successfully!', 'success');
+            hideToast(1500);
+        }, 500);
+    }
+
+    // 4. Tax Template tab helpers
+    function renderTaxTemplates() {
+        const body = document.getElementById('taxTemplateTableBody');
+        body.innerHTML = '';
+
+        taxTemplates.forEach((t, idx) => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-slate-50/50 transition-colors duration-150';
+            tr.innerHTML = `
+                <td class="py-4 px-6 font-bold text-slate-700">${t.type}</td>
+                <td class="py-4 px-6 font-semibold">${t.label}</td>
+                <td class="py-4 px-6 text-right pr-6">
+                    <!-- Edit button styled in primary accent -->
+                    <button onclick="toggleTemplateEdit(true)" class="px-5 py-1.5 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[11px] font-bold shadow-sm transition-all cursor-pointer">
+                        Edit
+                    </button>
+                </td>
+            `;
+            body.appendChild(tr);
+        });
+    }
+
+    function toggleTemplateEdit(show) {
+        document.getElementById('taxTemplateViewMode').classList.toggle('hidden', show);
+        document.getElementById('taxTemplateEditMode').classList.toggle('hidden', !show);
+        
+        if (show) {
+            tempTemplateData = JSON.parse(JSON.stringify(taxTemplates));
+            renderTemplateEditRows();
+        }
+    }
+
+    function renderTemplateEditRows() {
+        const body = document.getElementById('templateEditTableBody');
+        body.innerHTML = '';
+
+        const typeOptions = ['IGST', 'CGST', 'SGST', 'UTGST', 'Cess', 'VAT', 'CST', 'Kerala Flood Cess', '-- SUM --'];
+
+        tempTemplateData.forEach((t, idx) => {
+            let selectHtml = `<select onchange="tempTemplateData[${idx}].type = this.value" class="h-9 px-3 border border-slate-200 rounded-lg bg-[var(--surface)] text-[13px] outline-none">`;
+            typeOptions.forEach(opt => {
+                selectHtml += `<option value="${opt}" ${opt === t.type ? 'selected' : ''}>${opt}</option>`;
+            });
+            selectHtml += `</select>`;
+
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-slate-50/50';
+            tr.innerHTML = `
+                <td class="py-2.5 px-3">${selectHtml}</td>
+                <td class="py-2.5 px-3">
+                    <input type="text" value="${t.label}" oninput="tempTemplateData[${idx}].label = this.value" class="h-9 px-3 border border-slate-200 rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                </td>
+                <td class="py-2.5 px-3 text-center flex items-center justify-center gap-1.5">
+                    <!-- + button styled in primary, delete trash styled in RED -->
+                    <button onclick="addTemplateRow(${idx})" class="w-8 h-8 flex items-center justify-center bg-[var(--accent)] hover:brightness-110 text-white rounded-lg cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                        </svg>
+                    </button>
+                    <button onclick="deleteTemplateRow(${idx})" class="w-8 h-8 flex items-center justify-center bg-rose-600 hover:bg-rose-700 text-white rounded-lg cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
+                        </svg>
+                    </button>
+                </td>
+            `;
+            body.appendChild(tr);
+        });
+    }
+
+    function addTemplateRow(idx) {
+        tempTemplateData.splice(idx + 1, 0, { type: 'IGST', label: '' });
+        renderTemplateEditRows();
+    }
+
+    function deleteTemplateRow(idx) {
+        tempTemplateData.splice(idx, 1);
+        renderTemplateEditRows();
+    }
+
+    function saveTemplateEdit() {
+        showToast('Saving templates...', 'loading');
+        setTimeout(() => {
+            taxTemplates = JSON.parse(JSON.stringify(tempTemplateData));
+            toggleTemplateEdit(false);
+            renderTaxTemplates();
+            showToast('Tax template updated successfully!', 'success');
+            hideToast(1500);
+        }, 700);
+    }
+
+    // Toast helpers
+    let toastTimeout = null;
+    function showToast(text, type = 'loading') {
+        const toast = document.getElementById('taxToast');
+        const textSpan = document.getElementById('taxToastText');
+        const iconDiv = document.getElementById('taxToastIcon');
+
+        if (toastTimeout) clearTimeout(toastTimeout);
+
+        textSpan.innerText = text;
+
+        if (type === 'loading') {
+            iconDiv.innerHTML = '<div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>';
+        } else if (type === 'success') {
+            iconDiv.innerHTML = '<svg class="w-4.5 h-4.5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
+        } else {
+            iconDiv.innerHTML = '<svg class="w-4.5 h-4.5 text-rose-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>';
+        }
+
+        toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+        toast.classList.add('opacity-100', 'translate-y-0');
+    }
+
+    function hideToast(delay = 1500) {
+        const toast = document.getElementById('taxToast');
+        toastTimeout = setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+            toast.classList.remove('opacity-100', 'translate-y-0');
+        }, delay);
+    }
+</script>
+{% endblock %}

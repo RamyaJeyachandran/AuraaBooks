@@ -1,0 +1,910 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Accounts - Auraa Books{% endblock %}
+
+{% block breadcrumb_parent %}
+    <span class="hover:text-accent cursor-pointer">Accounting</span>
+    <span class="opacity-50">/</span>
+{% endblock %}
+
+{% block breadcrumb_active %}Accounts{% endblock %}
+
+{% block content %}
+<div class="p-8 stagger-in max-w-[1600px] mx-auto">
+    <!-- Header Section -->
+    <div class="flex items-center justify-between mb-6 relative z-[300]">
+        <div class="flex items-center gap-4 flex-1 mr-6">
+            <div class="flex items-center gap-2 relative">
+                <h1 class="text-[32px] font-black text-slate-800 tracking-tight">Accounts</h1>
+                
+                <!-- Help Icon & Tooltip -->
+                <div class="relative flex items-center">
+                    <svg onclick="toggleHelpTooltip(this)" class="w-6 h-6 text-slate-400 hover:text-slate-600 cursor-pointer hover:scale-110 active:scale-95 transition-all" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div onclick="event.stopPropagation()" class="help-tooltip absolute left-full ml-2 top-1/2 -translate-y-1/2 w-64 bg-slate-900 text-white text-[12px] font-bold rounded-xl p-3 hidden z-[400] shadow-xl animate-in fade-in zoom-in-95">
+                        <div class="absolute -left-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-slate-900 rotate-45"></div>
+                        <p class="leading-relaxed relative z-10">All type of accounts with specification of categories are listed here</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compact Count Pills (Inline like Customer page) -->
+            <div class="flex-1 flex items-center justify-around bg-white border border-slate-200 rounded-2xl px-6 py-3 shadow-sm max-w-[550px]">
+                <div onclick="filterByGroup('All')" class="flex flex-col items-center cursor-pointer hover:bg-slate-50 px-8 py-2 rounded-xl transition-all active:scale-95 min-w-[120px]" title="Total Accounts">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-2">Total</span>
+                    <span id="pillTotalCount" class="text-[30px] font-black text-slate-700 leading-none">13</span>
+                </div>
+                <div class="w-px h-12 bg-slate-200"></div>
+                <div onclick="filterByGroup('Assets')" class="flex flex-col items-center cursor-pointer hover:bg-slate-50 px-6 py-2 rounded-xl transition-all active:scale-95 min-w-[100px]" title="Asset Accounts">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-2">Assets</span>
+                    <span id="pillAssetCount" class="text-[30px] font-black text-emerald-500 leading-none">8</span>
+                </div>
+                <div class="w-px h-12 bg-slate-200"></div>
+                <div onclick="filterByGroup('Expenses')" class="flex flex-col items-center cursor-pointer hover:bg-slate-50 px-6 py-2 rounded-xl transition-all active:scale-95 min-w-[100px]" title="Expense Accounts">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-2">Expenses</span>
+                    <span id="pillExpenseCount" class="text-[30px] font-black text-rose-500 leading-none">4</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side Navigators & Actions -->
+        <div class="flex items-center gap-4 flex-wrap">
+            <!-- Recent Navigator -->
+            <div class="relative">
+                <div class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-[var(--accent)] z-10 border-2 border-white box-content"></div>
+                <div class="flex items-center bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden h-[52px]">
+                    <button type="button" onclick="navigateRecent(-1)" class="px-3 h-full hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-all border-r border-slate-200">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+                    </button>
+                    <div class="px-5 flex flex-col items-center min-w-[100px] justify-center">
+                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Recent</span>
+                        <span id="recentNavigatorCode" class="text-[14px] font-black text-slate-700 leading-none">ACC-013</span>
+                    </div>
+                    <button type="button" onclick="navigateRecent(1)" class="px-3 h-full hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-all border-l border-slate-200">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- New Account Green Button - primary background color -->
+            <button onclick="openNewAccountModal()" class="px-8 h-[52px] bg-[var(--accent)] text-white rounded-2xl shadow-xl shadow-[var(--accent)]/20 text-[14px] font-black flex items-center gap-2 hover:brightness-110 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-widest">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+                New Account
+            </button>
+        </div>
+    </div>
+
+    <!-- Filter & Actions Section -->
+    <div class="mb-4 relative z-[110]">
+        <div class="bg-white px-6 py-2 rounded-[24px] border border-slate-100 shadow-sm flex items-center justify-between gap-6">
+            <div class="flex items-center gap-4 flex-1">
+                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Filter</label>
+                <!-- Search input dropdown -->
+                <div class="relative min-w-[300px]">
+                    <input type="text" id="accountSearchInput" oninput="filterAccountsTable()" placeholder="Account..." class="w-full h-8 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-[var(--accent)]/10 transition-all">
+                    <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none flex items-center">
+                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Toolbar (Integrated like Customer page) -->
+            <div class="flex items-center gap-3">
+                <!-- PDF Dropdown button - primary background color -->
+                <div class="relative inline-block text-left">
+                    <button onclick="toggleActionMenu(event, 'exportMenu')" class="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--accent)] text-white hover:brightness-110 transition-all shadow-lg shadow-[var(--accent)]/20">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    </button>
+                    <!-- Export Menu Dropdown -->
+                    <div id="exportMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-slate-100 py-1.5 z-[310] animate-in fade-in slide-in-from-top-2 duration-150">
+                        <button onclick="triggerExport('PDF')" class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-700 hover:bg-slate-50 transition-all flex items-center gap-2">
+                            <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A1 1 0 0112 2.586L15.414 6A1 1 0 0116 6.707V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" /></svg>
+                            Export PDF
+                        </button>
+                        <button onclick="triggerExport('CSV')" class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-700 hover:bg-slate-50 transition-all flex items-center gap-2">
+                            <svg class="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A1 1 0 0112 2.586L15.414 6A1 1 0 0116 6.707V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" /></svg>
+                            Export CSV
+                        </button>
+                        <button onclick="triggerImport()" class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-700 hover:bg-slate-50 transition-all border-t border-slate-100 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" /></svg>
+                            Import CSV
+                        </button>
+                    </div>
+                </div>
+
+                <!-- View toggle button - primary background color -->
+                <button onclick="toggleViewLayout()" class="w-8 h-8 bg-[var(--accent)] text-white hover:brightness-110 transition-all rounded-lg shadow-lg shadow-[var(--accent)]/20 flex items-center justify-center" title="Toggle List View">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                    </svg>
+                </button>
+
+                <!-- Folder Button (Account Group) - Dark Gray color -->
+                <div class="relative group">
+                    <button onclick="openAccountGroupModal()" class="w-8 h-8 bg-slate-700 text-white hover:bg-slate-800 transition-all rounded-lg shadow-lg flex items-center justify-center" id="folderBtn">
+                        <svg class="w-4.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+                        </svg>
+                    </button>
+                    <!-- Tooltip -->
+                    <div class="absolute top-full mt-2 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[11px] font-black uppercase tracking-wider px-3 py-1.5 rounded-lg shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-all whitespace-nowrap z-[310]">
+                        Account Group
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accounts Table (Image 1) -->
+    <div class="bg-white rounded-[40px] shadow-sm border border-slate-100 overflow-hidden">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <!-- Table header background color as primary color -->
+                <tr class="bg-[var(--accent)] text-white">
+                    <th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest">Name</th>
+                    <th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest">Group</th>
+                    <th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="accountsTableBody" class="divide-y divide-slate-100">
+                <!-- Rows loaded via JavaScript -->
+            </tbody>
+        </table>
+        
+        <!-- Empty State -->
+        <div id="emptyTableState" class="hidden py-16 flex flex-col items-center justify-center text-center space-y-4">
+            <svg class="w-12 h-12 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <p class="text-[14px] font-bold text-slate-500">No accounts match your criteria.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ================= MODALS ================= -->
+
+<!-- Account Group Modal (Image 4) -->
+<div id="accountGroupModal" class="fixed inset-0 z-[1100] flex items-center justify-center p-6 hidden">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity" onclick="closeAccountGroupModal()"></div>
+    
+    <!-- Modal Wrapper -->
+    <div class="w-full max-w-[800px] h-[90vh] bg-white rounded-[32px] shadow-2xl flex flex-col overflow-hidden relative z-10 scale-in-center pointer-events-auto">
+        <!-- Modal Header -->
+        <div class="px-8 py-5 border-b border-slate-100 flex items-center justify-between shrink-0 bg-[var(--accent)] text-white relative z-[200]">
+            <h2 class="text-[18px] font-black tracking-wide uppercase">Account Group</h2>
+            <div class="flex items-center gap-3">
+                <!-- Add Button: white background with primary border -->
+                <button onclick="openAddGroupModal()" class="px-6 h-10 bg-white border border-[var(--accent)] text-[var(--accent)] rounded-xl text-[12px] font-black uppercase tracking-wider hover:bg-slate-50 shadow-md transition-all">Add</button>
+                <!-- Cancel Button: dark gray color -->
+                <button onclick="closeAccountGroupModal()" class="px-6 h-10 bg-slate-700 text-white rounded-xl text-[12px] font-black uppercase tracking-wider hover:bg-slate-800 shadow-md transition-all">Cancel</button>
+                <!-- Red X Close Button -->
+                <button onclick="closeAccountGroupModal()" class="w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center text-white transition-all shadow-md" title="Close">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal Body (Indented tree view with custom scrollbar) -->
+        <div class="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-1">
+            <div class="border border-slate-100 rounded-2xl overflow-hidden divide-y divide-slate-50">
+                <!-- Header row for the group table -->
+                <div class="grid grid-cols-12 bg-[var(--accent)] py-3.5 px-6 border-b border-[var(--accent)] text-white">
+                    <div class="col-span-8 text-[11px] font-black uppercase tracking-widest">Group Name</div>
+                    <div class="col-span-4 text-[11px] font-black uppercase tracking-widest text-right">Actions</div>
+                </div>
+                <!-- Indented List Rows Container -->
+                <div id="groupTreeContainer" class="divide-y divide-slate-50">
+                    <!-- Loaded dynamically via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Group Sub-Modal -->
+<div id="addGroupSubModal" class="fixed inset-0 z-[1200] flex items-center justify-center p-6 hidden">
+    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]" onclick="closeAddGroupModal()"></div>
+    <div class="w-full max-w-[450px] bg-white rounded-[24px] shadow-2xl overflow-hidden relative z-10 scale-in-center">
+        <div class="px-6 py-4 bg-slate-800 text-white flex items-center justify-between">
+            <h3 class="text-[15px] font-black uppercase tracking-wider">New Group Name</h3>
+            <button onclick="closeAddGroupModal()" class="text-white hover:opacity-80">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div class="p-6 space-y-4">
+            <div class="space-y-1">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Group Name</label>
+                <input type="text" id="newGroupNameInput" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-accent shadow-inner transition-all">
+            </div>
+            <div class="space-y-1">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Parent Group</label>
+                <div class="relative">
+                    <select id="newGroupParentSelect" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white appearance-none cursor-pointer shadow-inner">
+                        <!-- Loaded dynamically -->
+                    </select>
+                    <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                </div>
+            </div>
+            <div class="flex gap-3 justify-end pt-2">
+                <button onclick="closeAddGroupModal()" class="px-5 h-10 bg-slate-100 text-slate-600 rounded-xl text-[12px] font-black uppercase tracking-wider hover:bg-slate-200">Cancel</button>
+                <button onclick="saveNewGroup()" class="px-5 h-10 bg-[var(--accent)] text-white rounded-xl text-[12px] font-black uppercase tracking-wider hover:brightness-110 shadow-md">Add Group</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- New / Edit Account Modal -->
+<div id="accountFormModal" class="fixed inset-0 z-[1000] flex items-center justify-center p-6 hidden">
+    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity" onclick="closeAccountFormModal()"></div>
+    <div class="w-full max-w-[650px] bg-white rounded-[32px] shadow-2xl overflow-hidden relative z-10 scale-in-center flex flex-col max-h-[90vh]">
+        <!-- Header -->
+        <div class="px-8 py-5 border-b border-slate-100 flex items-center justify-between bg-[var(--accent)] text-white shrink-0 relative z-[200]">
+            <h3 id="accountModalTitle" class="text-[18px] font-black tracking-wide uppercase">Account Details</h3>
+            <div class="flex items-center gap-3">
+                <!-- Split Save Button (Top) -->
+                <div class="relative inline-flex">
+                    <button type="button" onclick="saveAccount(false)" class="px-4 h-9 bg-white border border-[var(--accent)] border-r-0 text-[var(--accent)] text-[12px] font-black uppercase tracking-wider rounded-l-xl hover:bg-slate-50 transition-all">Save</button>
+                    <button type="button" onclick="toggleActionMenu(event, 'topSaveMenu')" class="px-2.5 h-9 bg-white border border-[var(--accent)] text-[var(--accent)] rounded-r-xl hover:bg-slate-50 transition-all border-l border-slate-200">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <div id="topSaveMenu" class="hidden absolute right-0 top-full mt-1.5 w-36 bg-white border border-slate-100 rounded-xl shadow-xl z-[1200] overflow-hidden py-1">
+                        <button type="button" onclick="saveAccount(false)" class="w-full text-left px-4 py-2 text-[12px] font-bold text-slate-700 hover:bg-slate-50">Save</button>
+                        <button type="button" onclick="saveAccount(true)" class="w-full text-left px-4 py-2 text-[12px] font-bold text-slate-700 hover:bg-slate-50 border-t border-slate-100">Save & New</button>
+                    </div>
+                </div>
+                <!-- Cancel Button (Top) -->
+                <button type="button" onclick="closeAccountFormModal()" class="px-4 h-9 bg-slate-700 text-white rounded-xl text-[12px] font-black uppercase tracking-wider hover:bg-slate-800 transition-all">Cancel</button>
+                <!-- Close Button icon -->
+                <button type="button" onclick="closeAccountFormModal()" class="w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center text-white transition-all shadow-md" title="Close">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+        </div>
+        <!-- Form Body -->
+        <div class="p-8 space-y-5 overflow-y-auto custom-scrollbar flex-1">
+            <input type="hidden" id="editAccountIdInput">
+            
+            <!-- Name Field -->
+            <div class="space-y-1">
+                <label class="text-[10px] font-black text-rose-500 uppercase tracking-widest">Account Name *</label>
+                <input type="text" id="accountNameInput" required class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-accent shadow-inner transition-all">
+            </div>
+            
+            <!-- Code & Group Grid -->
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Account Code -->
+                <div class="space-y-1">
+                    <div class="relative flex items-center gap-1.5">
+                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Account Code</label>
+                        <svg onclick="toggleHelpTooltip(this)" class="w-4 h-4 text-blue-600 cursor-pointer hover:scale-110 active:scale-95 transition-all drop-shadow-md" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <!-- Tooltip -->
+                        <div onclick="event.stopPropagation()" class="help-tooltip absolute bottom-full left-0 mb-2 w-72 bg-white border border-slate-100 shadow-2xl rounded-2xl p-4 hidden z-[1200] animate-in fade-in zoom-in-95">
+                            <div class="absolute -bottom-2 left-4 w-4 h-4 bg-white border-b border-r border-slate-100 rotate-45"></div>
+                            <p class="text-[13px] font-bold text-slate-600 leading-relaxed normal-case tracking-normal">Code can be entered for quick reference</p>
+                        </div>
+                    </div>
+                    <input type="text" id="accountCodeInput" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-accent shadow-inner transition-all">
+                </div>
+                
+                <!-- Group -->
+                <div class="space-y-1">
+                    <div class="relative flex items-center gap-1.5">
+                        <label class="text-[10px] font-black text-rose-500 uppercase tracking-widest">Group *</label>
+                        <svg onclick="toggleHelpTooltip(this)" class="w-4 h-4 text-blue-600 cursor-pointer hover:scale-110 active:scale-95 transition-all drop-shadow-md" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <!-- Tooltip -->
+                        <div onclick="event.stopPropagation()" class="help-tooltip absolute bottom-full left-0 mb-2 w-72 bg-white border border-slate-100 shadow-2xl rounded-2xl p-4 hidden z-[1200] animate-in fade-in zoom-in-95">
+                            <div class="absolute -bottom-2 left-4 w-4 h-4 bg-white border-b border-r border-slate-100 rotate-45"></div>
+                            <p class="text-[13px] font-bold text-slate-600 leading-relaxed normal-case tracking-normal">Select the parent account from drop down while creating new account</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="relative flex-1">
+                            <select id="accountGroupSelect" required class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-accent appearance-none cursor-pointer shadow-inner">
+                                <!-- Populated dynamically -->
+                            </select>
+                            <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                        </div>
+                        <button type="button" onclick="openAccountGroupModal()" class="w-10 h-10 bg-[var(--accent)] text-white rounded-xl flex items-center justify-center hover:brightness-110 transition-all shadow-md shadow-[var(--accent)]/10" title="Manage Account Groups">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Description -->
+            <div class="space-y-1">
+                <div class="relative flex items-center gap-1.5">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Description</label>
+                    <svg onclick="toggleHelpTooltip(this)" class="w-4 h-4 text-blue-600 cursor-pointer hover:scale-110 active:scale-95 transition-all drop-shadow-md" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <!-- Tooltip -->
+                    <div onclick="event.stopPropagation()" class="help-tooltip absolute bottom-full left-0 mb-2 w-72 bg-white border border-slate-100 shadow-2xl rounded-2xl p-4 hidden z-[1200] animate-in fade-in zoom-in-95">
+                        <div class="absolute -bottom-2 left-4 w-4 h-4 bg-white border-b border-r border-slate-100 rotate-45"></div>
+                        <p class="text-[13px] font-bold text-slate-600 leading-relaxed normal-case tracking-normal">Details of the account(if any) can be given here</p>
+                    </div>
+                </div>
+                <textarea id="accountDescriptionInput" class="w-full h-20 bg-slate-50 border border-slate-100 rounded-xl px-4 py-2.5 text-[13px] font-bold outline-none focus:bg-white focus:border-accent resize-none shadow-inner transition-all" placeholder="Enter notes..."></textarea>
+            </div>
+            
+            <!-- Tax ID, SAC & Input Tax Credit Row -->
+            <div class="grid grid-cols-12 gap-4 items-end">
+                <!-- Tax ID -->
+                <div class="col-span-5 space-y-1">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tax ID</label>
+                    <div class="relative">
+                        <select id="accountTaxIdSelect" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white appearance-none cursor-pointer shadow-inner">
+                            <option value="">Select Tax ID</option>
+                            <option value="GST 0%">GST 0%</option>
+                            <option value="GST 5%">GST 5%</option>
+                            <option value="GST 12%">GST 12%</option>
+                            <option value="GST 18%">GST 18%</option>
+                            <option value="GST 28%">GST 28%</option>
+                            <option value="Exempted">Exempted</option>
+                            <option value="Out of Scope">Out of Scope</option>
+                        </select>
+                        <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                    </div>
+                </div>
+                <!-- SAC -->
+                <div class="col-span-4 space-y-1">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">SAC / HSN</label>
+                    <input type="text" id="accountSacInput" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-accent shadow-inner transition-all">
+                </div>
+                <!-- Input Tax Credit Checkbox -->
+                <div class="col-span-3 pb-2.5 flex items-center gap-2">
+                    <input type="checkbox" id="accountInputTaxCreditCheckbox" class="w-4.5 h-4.5 text-[var(--accent)] border-slate-200 rounded focus:ring-[var(--accent)] focus:ring-2 cursor-pointer">
+                    <label for="accountInputTaxCreditCheckbox" class="text-[11px] font-bold text-slate-600 cursor-pointer select-none">Input Tax Credit</label>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+        <div class="px-8 py-5 border-t border-slate-100 flex items-center justify-between bg-slate-50 shrink-0">
+            <div class="flex items-center gap-6">
+                <!-- Active checkbox -->
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="accountActiveCheckbox" checked class="w-4.5 h-4.5 text-[var(--accent)] border-slate-200 rounded focus:ring-[var(--accent)] focus:ring-2 cursor-pointer">
+                    <label for="accountActiveCheckbox" class="text-[12px] font-bold text-slate-700 cursor-pointer select-none">Active</label>
+                </div>
+                <!-- Applicable For select dropdown -->
+                <div class="flex items-center gap-2">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Applicable For</label>
+                    <div class="relative">
+                        <select id="accountApplicableForSelect" class="h-8 bg-white border border-slate-200 rounded-lg pl-3 pr-8 text-[12px] font-bold text-slate-700 outline-none appearance-none cursor-pointer">
+                            <option value="All Branches">All Branches</option>
+                            <option value="Main Branch">Main Branch</option>
+                            <option value="Sub Branch">Sub Branch</option>
+                        </select>
+                        <svg class="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <!-- Split Save Button (Bottom) -->
+                <div class="relative inline-flex">
+                    <button type="button" onclick="saveAccount(false)" class="px-5 h-10 bg-[var(--accent)] text-white text-[12px] font-black uppercase tracking-wider rounded-l-xl hover:brightness-110 transition-all shadow-md">Save</button>
+                    <button type="button" onclick="toggleActionMenu(event, 'bottomSaveMenu')" class="px-2.5 h-10 bg-[var(--accent)] text-white rounded-r-xl hover:brightness-110 transition-all border-l border-white/20 shadow-md">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <div id="bottomSaveMenu" class="hidden absolute right-0 bottom-full mb-1.5 w-36 bg-white border border-slate-100 rounded-xl shadow-xl z-[1200] overflow-hidden py-1">
+                        <button type="button" onclick="saveAccount(false)" class="w-full text-left px-4 py-2 text-[12px] font-bold text-slate-700 hover:bg-slate-50">Save</button>
+                        <button type="button" onclick="saveAccount(true)" class="w-full text-left px-4 py-2 text-[12px] font-bold text-slate-700 hover:bg-slate-50 border-t border-slate-100">Save & New</button>
+                    </div>
+                </div>
+                <!-- Cancel Button (Bottom) -->
+                <button type="button" onclick="closeAccountFormModal()" class="px-5 h-10 bg-slate-700 text-white rounded-xl text-[12px] font-black uppercase tracking-wider hover:bg-slate-800 transition-all shadow-md">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= SCRIPTS & STYLES ================= -->
+
+{% block extra_js %}
+<script>
+// Mock initial accounts list matching Image 1
+let accounts = [
+    { id: 1, name: "Advance from Customers", group: "Current Liabilities" },
+    { id: 2, name: "Advance Tax", group: "Current Assets" },
+    { id: 3, name: "Advance to Suppliers", group: "Current Assets" },
+    { id: 4, name: "Advertising & Promotion", group: "Indirect Expenses" },
+    { id: 5, name: "Bad Debts Written Off", group: "Indirect Expenses" },
+    { id: 6, name: "Balance Written Off", group: "Indirect Income" },
+    { id: 7, name: "Bank Charges", group: "Indirect Expenses" },
+    { id: 8, name: "Bills Receivable", group: "Current Assets" },
+    { id: 9, name: "Branch", group: "Current Assets" },
+    { id: 10, name: "Branch / Division", group: "Branch / Divisions" },
+    { id: 11, name: "Branch Transfer Inward", group: "Purchase" },
+    { id: 12, name: "Branch Transfer Outward", group: "Sales" },
+    { id: 13, name: "Building", group: "Fixed Assets" }
+];
+
+// Hierarchical Group tree matching Image 4
+let groups = [
+    { id: 1, name: "Assets", level: 0, parentId: null },
+    { id: 2, name: "Current Assets", level: 1, parentId: 1 },
+    { id: 3, name: "Bank Accounts", level: 2, parentId: 2 },
+    { id: 4, name: "Cash-in-hand", level: 2, parentId: 2 },
+    { id: 5, name: "Deposits (Asset)", level: 2, parentId: 2 },
+    { id: 6, name: "Loans & Advances (Asset)", level: 2, parentId: 2 },
+    { id: 7, name: "Stock-in-hand", level: 2, parentId: 2 },
+    { id: 8, name: "Sundry Debtors", level: 2, parentId: 2 },
+    { id: 9, name: "Fixed Assets", level: 1, parentId: 1 },
+    { id: 10, name: "Investments", level: 1, parentId: 1 },
+    { id: 11, name: "Direct Expenses", level: 0, parentId: null },
+    { id: 12, name: "Direct Income", level: 0, parentId: null },
+    { id: 13, name: "Indirect Expenses", level: 0, parentId: null },
+    { id: 14, name: "Indirect Income", level: 0, parentId: null },
+    { id: 15, name: "Branch / Divisions", level: 0, parentId: null },
+    { id: 16, name: "Current Liabilities", level: 0, parentId: null },
+    { id: 17, name: "Purchase", level: 0, parentId: null },
+    { id: 18, name: "Sales", level: 0, parentId: null }
+];
+
+let activeActionMenu = null;
+let currentRecentIndex = accounts.length - 1;
+let currentFilterGroup = "All";
+
+document.addEventListener('DOMContentLoaded', () => {
+    renderAccountsTable();
+    updateCounts();
+    populateSelectDropdowns();
+    renderGroupTree();
+});
+
+// Dropdown Action Menu Toggle
+function toggleActionMenu(e, id) {
+    e.stopPropagation();
+    const menu = document.getElementById(id);
+    if (activeActionMenu && activeActionMenu !== menu) {
+        activeActionMenu.classList.add('hidden');
+    }
+    menu.classList.toggle('hidden');
+    activeActionMenu = menu.classList.contains('hidden') ? null : menu;
+}
+
+document.addEventListener('click', (e) => {
+    if (activeActionMenu && !activeActionMenu.parentElement.contains(e.target)) {
+        activeActionMenu.classList.add('hidden');
+        activeActionMenu = null;
+    }
+});
+
+// Render Accounts table dynamically
+function renderAccountsTable() {
+    const tbody = document.getElementById('accountsTableBody');
+    const emptyState = document.getElementById('emptyTableState');
+    tbody.innerHTML = '';
+    
+    const searchVal = document.getElementById('accountSearchInput').value.toLowerCase().trim();
+    
+    // Filter logic
+    let filtered = accounts.filter(acc => {
+        const matchesSearch = acc.name.toLowerCase().includes(searchVal) || acc.group.toLowerCase().includes(searchVal);
+        
+        let matchesGroup = true;
+        if (currentFilterGroup !== "All") {
+            if (currentFilterGroup === "Assets") {
+                matchesGroup = acc.group.toLowerCase().includes("asset");
+            } else if (currentFilterGroup === "Expenses") {
+                matchesGroup = acc.group.toLowerCase().includes("expense") || acc.group.toLowerCase().includes("purchase") || acc.group.toLowerCase().includes("sales");
+            }
+        }
+        
+        return matchesSearch && matchesGroup;
+    });
+
+    if (filtered.length === 0) {
+        emptyState.classList.remove('hidden');
+    } else {
+        emptyState.classList.add('hidden');
+        filtered.forEach(acc => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-slate-50/50 group transition-all duration-150';
+            tr.innerHTML = `
+                <td class="px-8 py-5">
+                    <span class="text-[14px] font-semibold text-blue-600 hover:underline cursor-pointer" onclick="openEditAccountModal(${acc.id})">${acc.name}</span>
+                </td>
+                <td class="px-8 py-5">
+                    <span class="text-[13px] text-slate-600 font-medium">${acc.group}</span>
+                </td>
+                <td class="px-8 py-5 text-right relative">
+                    <button onclick="toggleActionMenu(event, 'rowAction-${acc.id}')" class="text-blue-600 font-bold text-[12px] uppercase tracking-wider hover:underline inline-flex items-center gap-1.5">
+                        Edit 
+                        <svg class="w-3 h-3 transition-transform group-hover:translate-y-0.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <!-- Row Action Dropdown -->
+                    <div id="rowAction-${acc.id}" class="hidden absolute right-8 mt-1 w-32 bg-white rounded-xl shadow-lg border border-slate-100 py-1 z-[200] text-left">
+                        <button onclick="openEditAccountModal(${acc.id})" class="w-full px-4 py-2 text-[12px] font-bold text-slate-700 hover:bg-slate-50 transition-all">Edit Details</button>
+                        <button onclick="deleteAccount(${acc.id})" class="w-full px-4 py-2 text-[12px] font-bold text-red-600 hover:bg-red-50 transition-all border-t border-slate-50">Delete</button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+}
+
+// Live Search Filter
+function filterAccountsTable() {
+    renderAccountsTable();
+}
+
+// Filter counts logic
+function filterByGroup(groupType) {
+    currentFilterGroup = groupType;
+    // Highlight active pill
+    document.querySelectorAll('[onclick^="filterByGroup"]').forEach(pill => {
+        pill.classList.remove('bg-slate-100');
+    });
+    event.currentTarget.classList.add('bg-slate-100');
+    renderAccountsTable();
+}
+
+function updateCounts() {
+    document.getElementById('pillTotalCount').innerText = accounts.length;
+    
+    const assetsCount = accounts.filter(acc => acc.group.toLowerCase().includes("asset")).length;
+    document.getElementById('pillAssetCount').innerText = assetsCount;
+    
+    const expensesCount = accounts.filter(acc => acc.group.toLowerCase().includes("expense") || acc.group.toLowerCase().includes("purchase") || acc.group.toLowerCase().includes("sales")).length;
+    document.getElementById('pillExpenseCount').innerText = expensesCount;
+}
+
+// Recent Navigator controls
+function navigateRecent(direction) {
+    currentRecentIndex += direction;
+    if (currentRecentIndex < 0) currentRecentIndex = accounts.length - 1;
+    if (currentRecentIndex >= accounts.length) currentRecentIndex = 0;
+    
+    const currentCode = 'ACC-' + String(accounts[currentRecentIndex].id).padStart(3, '0');
+    document.getElementById('recentNavigatorCode').innerText = currentCode;
+    
+    // Highlight row briefly
+    const searchVal = document.getElementById('accountSearchInput');
+    searchVal.value = accounts[currentRecentIndex].name;
+    renderAccountsTable();
+    
+    setTimeout(() => {
+        searchVal.value = '';
+        renderAccountsTable();
+    }, 2000);
+}
+
+// Populates dropdown selects inside forms
+function populateSelectDropdowns() {
+    const parentSelect = document.getElementById('newGroupParentSelect');
+    parentSelect.innerHTML = '<option value="">None (Top Level)</option>';
+    
+    const groupSelect = document.getElementById('accountGroupSelect');
+    groupSelect.innerHTML = '';
+    
+    // Sort groups alphabetically by level
+    groups.forEach(g => {
+        const option = document.createElement('option');
+        option.value = g.name;
+        option.innerText = g.name;
+        groupSelect.appendChild(option);
+        
+        const parentOption = document.createElement('option');
+        parentOption.value = g.id;
+        parentOption.innerText = g.name;
+        parentSelect.appendChild(parentOption);
+    });
+}
+
+// Render Account Group Tree hierarchy (Image 4)
+let editGroupId = null;
+
+function renderGroupTree() {
+    const container = document.getElementById('groupTreeContainer');
+    container.innerHTML = '';
+    
+    // Custom recursive helper to sort groups hierarchy
+    function renderNode(nodeList) {
+        nodeList.forEach(g => {
+            const row = document.createElement('div');
+            row.className = 'grid grid-cols-12 py-3 px-6 hover:bg-slate-50 items-center transition-all';
+            
+            // Build indentation strings (Image 4 styles: - Current Assets, -- Bank Accounts)
+            let indent = '';
+            if (g.level === 1) indent = '- ';
+            if (g.level >= 2) indent = '-- '.repeat(g.level - 1) + '- ';
+            
+            row.innerHTML = `
+                <div class="col-span-8 text-[13.5px] font-bold text-slate-700 flex items-center">
+                    <span class="text-slate-400 font-mono tracking-wider mr-1.5">${indent}</span>
+                    <span class="${g.level === 0 ? 'font-black' : ''}">${g.name}</span>
+                </div>
+                <div class="col-span-4 text-right relative">
+                    <button onclick="toggleActionMenu(event, 'groupAction-${g.id}')" class="text-blue-600 font-bold text-[12px] uppercase tracking-wider hover:underline inline-flex items-center gap-1.5">
+                        Edit 
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <!-- Group Action Dropdown -->
+                    <div id="groupAction-${g.id}" class="hidden absolute right-0 mt-2 w-28 bg-white rounded-xl shadow-xl border border-slate-100 py-1 z-[1200] text-left">
+                        <div class="absolute -top-1.5 right-5 w-3 h-3 bg-white border-t border-l border-slate-100 rotate-45"></div>
+                        <button onclick="editGroup(${g.id})" class="w-full px-4 py-2 text-[12px] font-bold text-slate-700 hover:bg-slate-50 transition-all relative z-10">Edit</button>
+                        <button onclick="deleteGroup(${g.id})" class="w-full px-4 py-2 text-[12px] font-bold text-red-600 hover:bg-red-50 transition-all border-t border-slate-50 relative z-10">Delete</button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(row);
+        });
+    }
+    
+    // Reconstruct hierarchical list
+    let sortedList = [];
+    function traverse(parentId, level) {
+        groups.filter(g => g.parentId === parentId)
+              .sort((a,b) => a.name.localeCompare(b.name))
+              .forEach(g => {
+                  g.level = level;
+                  sortedList.push(g);
+                  traverse(g.id, level + 1);
+              });
+    }
+    traverse(null, 0);
+    renderNode(sortedList);
+}
+
+// Modal control functions
+function openAccountGroupModal() {
+    document.getElementById('accountGroupModal').classList.remove('hidden');
+}
+
+function closeAccountGroupModal() {
+    document.getElementById('accountGroupModal').classList.add('hidden');
+}
+
+function openAddGroupModal() {
+    editGroupId = null;
+    document.getElementById('newGroupNameInput').value = '';
+    document.getElementById('newGroupParentSelect').value = '';
+    
+    const subModalTitle = document.querySelector('#addGroupSubModal h3');
+    if (subModalTitle) subModalTitle.innerText = "New Group Name";
+    
+    const saveBtn = document.querySelector('#addGroupSubModal button[onclick="saveNewGroup()"]');
+    if (saveBtn) saveBtn.innerText = "Add Group";
+    
+    document.getElementById('addGroupSubModal').classList.remove('hidden');
+}
+
+function editGroup(id) {
+    const g = groups.find(x => x.id === id);
+    if (!g) return;
+    
+    const menu = document.getElementById(`groupAction-${id}`);
+    if (menu) menu.classList.add('hidden');
+    
+    editGroupId = id;
+    document.getElementById('newGroupNameInput').value = g.name;
+    document.getElementById('newGroupParentSelect').value = g.parentId || '';
+    
+    const subModalTitle = document.querySelector('#addGroupSubModal h3');
+    if (subModalTitle) subModalTitle.innerText = "Edit Group Details";
+    
+    const saveBtn = document.querySelector('#addGroupSubModal button[onclick="saveNewGroup()"]');
+    if (saveBtn) saveBtn.innerText = "Save Changes";
+    
+    document.getElementById('addGroupSubModal').classList.remove('hidden');
+}
+
+function closeAddGroupModal() {
+    document.getElementById('addGroupSubModal').classList.add('hidden');
+    document.getElementById('newGroupNameInput').value = '';
+    editGroupId = null;
+}
+
+function saveNewGroup() {
+    const nameInput = document.getElementById('newGroupNameInput').value.trim();
+    const parentIdVal = document.getElementById('newGroupParentSelect').value;
+    
+    if (!nameInput) {
+        alert("Please enter a group name");
+        return;
+    }
+    
+    const parentId = parentIdVal ? parseInt(parentIdVal) : null;
+    let level = 0;
+    if (parentId) {
+        const parent = groups.find(g => g.id === parentId);
+        if (parent) level = parent.level + 1;
+    }
+    
+    if (editGroupId !== null) {
+        // Edit mode
+        const g = groups.find(x => x.id === editGroupId);
+        if (g) {
+            g.name = nameInput;
+            g.parentId = parentId;
+            g.level = level;
+        }
+    } else {
+        // Create mode
+        const newId = groups.length ? Math.max(...groups.map(g => g.id)) + 1 : 1;
+        groups.push({
+            id: newId,
+            name: nameInput,
+            level: level,
+            parentId: parentId
+        });
+    }
+    
+    populateSelectDropdowns();
+    renderGroupTree();
+    closeAddGroupModal();
+}
+
+function deleteGroup(id) {
+    const menu = document.getElementById(`groupAction-${id}`);
+    if (menu) menu.classList.add('hidden');
+    
+    if (confirm("Are you sure you want to delete this group?")) {
+        groups = groups.filter(g => g.id !== id);
+        populateSelectDropdowns();
+        renderGroupTree();
+    }
+}
+
+// New / Edit Account Modal Controls
+function openNewAccountModal() {
+    document.getElementById('accountModalTitle').innerText = "Add Account Details";
+    document.getElementById('editAccountIdInput').value = '';
+    document.getElementById('accountNameInput').value = '';
+    document.getElementById('accountCodeInput').value = '';
+    document.getElementById('accountDescriptionInput').value = '';
+    document.getElementById('accountTaxIdSelect').value = '';
+    document.getElementById('accountSacInput').value = '';
+    document.getElementById('accountInputTaxCreditCheckbox').checked = false;
+    document.getElementById('accountActiveCheckbox').checked = true;
+    document.getElementById('accountApplicableForSelect').value = 'All Branches';
+    document.getElementById('accountFormModal').classList.remove('hidden');
+    setTimeout(() => {
+        document.getElementById('accountNameInput').focus();
+    }, 100);
+}
+
+function openEditAccountModal(id) {
+    const acc = accounts.find(a => a.id === id);
+    if (!acc) return;
+    
+    document.getElementById('accountModalTitle').innerText = "Edit Account Details";
+    document.getElementById('editAccountIdInput').value = acc.id;
+    document.getElementById('accountNameInput').value = acc.name || '';
+    document.getElementById('accountGroupSelect').value = acc.group || '';
+    document.getElementById('accountCodeInput').value = acc.code || '';
+    document.getElementById('accountDescriptionInput').value = acc.description || '';
+    document.getElementById('accountTaxIdSelect').value = acc.taxId || '';
+    document.getElementById('accountSacInput').value = acc.sac || '';
+    document.getElementById('accountInputTaxCreditCheckbox').checked = !!acc.inputTaxCredit;
+    document.getElementById('accountActiveCheckbox').checked = acc.active !== false; // defaults to true
+    document.getElementById('accountApplicableForSelect').value = acc.applicableFor || 'All Branches';
+    
+    document.getElementById('accountFormModal').classList.remove('hidden');
+}
+
+function closeAccountFormModal() {
+    document.getElementById('accountFormModal').classList.add('hidden');
+}
+
+function saveAccount(stayOpen = false) {
+    const idVal = document.getElementById('editAccountIdInput').value;
+    const name = document.getElementById('accountNameInput').value.trim();
+    const group = document.getElementById('accountGroupSelect').value;
+    const code = document.getElementById('accountCodeInput').value.trim();
+    const description = document.getElementById('accountDescriptionInput').value.trim();
+    const taxId = document.getElementById('accountTaxIdSelect').value;
+    const sac = document.getElementById('accountSacInput').value.trim();
+    const inputTaxCredit = document.getElementById('accountInputTaxCreditCheckbox').checked;
+    const active = document.getElementById('accountActiveCheckbox').checked;
+    const applicableFor = document.getElementById('accountApplicableForSelect').value;
+    
+    if (!name) {
+        alert("Please enter account name");
+        return;
+    }
+    
+    if (idVal) {
+        // Edit mode
+        const acc = accounts.find(a => a.id === parseInt(idVal));
+        if (acc) {
+            acc.name = name;
+            acc.group = group;
+            acc.code = code;
+            acc.description = description;
+            acc.taxId = taxId;
+            acc.sac = sac;
+            acc.inputTaxCredit = inputTaxCredit;
+            acc.active = active;
+            acc.applicableFor = applicableFor;
+        }
+    } else {
+        // Create mode
+        const newId = accounts.length ? Math.max(...accounts.map(a => a.id)) + 1 : 1;
+        accounts.push({
+            id: newId,
+            name: name,
+            group: group,
+            code: code,
+            description: description,
+            taxId: taxId,
+            sac: sac,
+            inputTaxCredit: inputTaxCredit,
+            active: active,
+            applicableFor: applicableFor
+        });
+    }
+    
+    renderAccountsTable();
+    updateCounts();
+    
+    if (stayOpen) {
+        // Clear fields for successive addition
+        document.getElementById('accountNameInput').value = '';
+        document.getElementById('accountCodeInput').value = '';
+        document.getElementById('accountDescriptionInput').value = '';
+        document.getElementById('accountTaxIdSelect').value = '';
+        document.getElementById('accountSacInput').value = '';
+        document.getElementById('accountInputTaxCreditCheckbox').checked = false;
+        document.getElementById('accountActiveCheckbox').checked = true;
+        document.getElementById('accountApplicableForSelect').value = 'All Branches';
+        document.getElementById('accountNameInput').focus();
+    } else {
+        closeAccountFormModal();
+    }
+}
+
+function deleteAccount(id) {
+    if (confirm("Are you sure you want to delete this account?")) {
+        accounts = accounts.filter(a => a.id !== id);
+        renderAccountsTable();
+        updateCounts();
+    }
+}
+
+// PDF/CSV Export simulation
+function triggerExport(type) {
+    alert(`Generating and downloading Accounts ${type} Report...`);
+    const menu = document.getElementById('exportMenu');
+    if (menu) menu.classList.add('hidden');
+}
+
+function triggerImport() {
+    alert("Triggering CSV import workflow. Select your accounts file...");
+    const menu = document.getElementById('exportMenu');
+    if (menu) menu.classList.add('hidden');
+}
+
+// View Layout toggle simulation
+function toggleViewLayout() {
+    alert("Switching between List view and Grid/Hierarchical view...");
+}
+</script>
+
+<style>
+.stagger-in { animation: staggerIn 0.5s ease-out forwards; }
+@keyframes staggerIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.scale-in-center { animation: scale-in-center 0.25s cubic-bezier(0.250, 0.460, 0.450, 0.940) both; }
+@keyframes scale-in-center {
+  0% { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+</style>
+{% endblock %}
+{% endblock %}

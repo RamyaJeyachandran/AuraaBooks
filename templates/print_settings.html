@@ -1,0 +1,707 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Settings - Print - Auraa Books{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Document category rows layout */
+    .document-row {
+        background-color: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    }
+    
+    /* Horizontal scrolling template container */
+    .templates-scroll {
+        display: flex;
+        gap: 16px;
+        overflow-x: auto;
+        padding: 10px 4px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--text-muted) var(--surface) !important;
+    }
+    
+    .templates-scroll::-webkit-scrollbar {
+        height: 6px;
+        background-color: var(--surface) !important;
+    }
+    .templates-scroll::-webkit-scrollbar-thumb {
+        background-color: var(--text-muted) !important;
+        border-radius: 3px;
+        opacity: 0.5;
+    }
+    
+    /* Template Preview Cards */
+    .template-card {
+        flex: 0 0 160px;
+        background-color: var(--surface);
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+    }
+    .template-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(47, 128, 237, 0.15);
+        border-color: var(--accent);
+    }
+    .template-card.active {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(47, 128, 237, 0.15);
+    }
+    
+    /* Mock Invoice Thumbnail Style */
+    .mock-thumbnail {
+        height: 190px;
+        background-color: #f8fafc;
+        border-bottom: 1px solid var(--border);
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+    }
+    
+    /* Action overlays */
+    .card-overlay {
+        position: absolute;
+        inset: 0;
+        background-color: rgba(15, 23, 42, 0.65);
+        backdrop-filter: blur(1.5px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out;
+        z-index: 10;
+    }
+    .template-card:hover .card-overlay {
+        opacity: 1;
+    }
+
+    /* Fullscreen print settings layout */
+    .custom-scroll::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+        background-color: var(--surface) !important;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+        background-color: var(--surface) !important;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+        background-color: var(--text-muted) !important;
+        opacity: 0.5;
+        border-radius: 3px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+        background-color: var(--accent) !important;
+    }
+    .custom-scroll {
+        scrollbar-width: thin;
+        scrollbar-color: var(--text-muted) var(--surface) !important;
+    }
+</style>
+{% endblock %}
+
+{% block breadcrumb_parent %}
+    <a href="{% url 'settings-dashboard' %}" class="hover:text-accent cursor-pointer">Settings</a>
+    <span class="opacity-50">/</span>
+{% endblock %}
+
+{% block breadcrumb_active %}Print{% endblock %}
+
+{% block content %}
+<div class="stagger-in max-w-6xl mx-auto space-y-6 h-full">
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-[var(--border)] relative z-30">
+        <div>
+            <h1 class="text-[24px] font-extrabold text-[var(--text-primary)] mb-1 tracking-tight flex items-center gap-2">
+                <a href="{% url 'settings-dashboard' %}" class="text-accent hover:underline cursor-pointer">Settings</a>
+                <span class="text-[var(--text-muted)] font-medium mx-1">/</span>
+                Print Templates
+            </h1>
+            <p class="text-[13px] text-[var(--text-muted)]">Configure paper dimensions, colors, columns, and signatures for output forms.</p>
+        </div>
+    </div>
+
+    <!-- Scrollable Categories Stack -->
+    <div class="space-y-6 pb-12 custom-scroll overflow-y-auto max-h-[80vh]">
+        <div id="printCategoriesContainer" class="space-y-6">
+            <!-- Dynamic Category rows loaded by JavaScript -->
+        </div>
+    </div>
+</div>
+
+<!-- ==============================================
+     FULLSCREEN PRINT SETTINGS DIALOG
+     ============================================== -->
+<div id="fullscreenConfigModal" class="hidden fixed inset-0 z-50 flex flex-col bg-slate-900/60 backdrop-blur-sm p-4 md:p-6 justify-center items-center">
+    <div class="bg-[var(--surface)] border border-[var(--border)] w-full h-full max-w-7xl rounded-2xl shadow-2xl flex flex-col overflow-hidden relative">
+        
+        <!-- Modal Header -->
+        <div class="px-6 py-4 bg-[var(--accent)] text-white flex items-center justify-between z-10 shrink-0">
+            <h3 class="text-[16px] font-extrabold text-white" id="modalConfigTitle">Print Settings (Quotation)</h3>
+            <div class="flex items-center gap-3">
+                <button onclick="saveConfigSettings()" class="px-5 py-2 bg-white text-[var(--accent)] border border-[var(--accent)] hover:bg-[var(--accent-light)] text-[12px] font-bold rounded-lg transition-all cursor-pointer">
+                    Save
+                </button>
+                <button onclick="closeConfigModal()" class="w-7 h-7 bg-rose-500 hover:bg-rose-600 text-white font-extrabold flex items-center justify-center rounded-lg cursor-pointer" title="Close">
+                    &times;
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Body split into config (Left) and live paper sheet (Right) -->
+        <div class="flex-1 flex flex-col lg:flex-row overflow-hidden bg-[var(--bg)]/30">
+            
+            <!-- Left Side: Config Panel (Scrollable) -->
+            <div class="w-full lg:w-[350px] border-b lg:border-b-0 lg:border-r border-[var(--border)] p-6 overflow-y-auto custom-scroll space-y-6 shrink-0 bg-[var(--surface)]">
+                
+                <!-- Title Text & Colors -->
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Title Text</label>
+                        <input type="text" id="cfgTitleText" value="Quotation" oninput="syncLiveInvoice()"
+                               class="w-full h-8 px-2 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none focus:border-accent">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Color</label>
+                            <div class="flex items-center gap-2">
+                                <input type="color" id="cfgPrimaryColor" value="#FF0000" oninput="syncLiveInvoice()" class="w-8 h-8 rounded border border-[var(--border)] cursor-pointer">
+                                <input type="text" id="cfgPrimaryColorText" value="#FF0000" oninput="syncLiveColorFromText(this.value)" class="w-full h-8 px-1.5 border border-[var(--border)] rounded bg-[var(--surface)] text-[11px] outline-none uppercase font-mono">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Email Color</label>
+                            <select id="cfgEmailColor" class="w-full h-8 px-1 border border-[var(--border)] rounded bg-[var(--surface)] text-[11px] outline-none">
+                                <option>No Color</option>
+                                <option>Match Theme</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Font & Sizing -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Font Size</label>
+                        <select id="cfgFontSize" onchange="syncLiveInvoice()" class="w-full h-8 px-1 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none">
+                            <option value="11">11px</option>
+                            <option value="12">12px</option>
+                            <option value="13" selected>13px</option>
+                            <option value="14">14px</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Orientation</label>
+                        <select id="cfgOrientation" class="w-full h-8 px-1 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none">
+                            <option>Portrait</option>
+                            <option>Landscape</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Templates</label>
+                        <select class="w-full h-8 px-1 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none">
+                            <option>General</option>
+                            <option>Simple</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Font Style</label>
+                        <select class="w-full h-8 px-1 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none">
+                            <option>Default</option>
+                            <option>Sans-Serif</option>
+                            <option>Monospace</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Margins (inch) -->
+                <div>
+                    <span class="block text-[11px] font-bold text-[var(--text-secondary)] mb-2">Margin (inch)</span>
+                    <div class="grid grid-cols-4 gap-1.5">
+                        <div>
+                            <span class="block text-[9px] text-[var(--text-muted)] mb-0.5">Left</span>
+                            <input type="number" id="cfgMarginLeft" step="0.1" value="0.5" class="w-full h-7 px-1.5 border border-[var(--border)] rounded text-[11px] outline-none">
+                        </div>
+                        <div>
+                            <span class="block text-[9px] text-[var(--text-muted)] mb-0.5">Top</span>
+                            <input type="number" id="cfgMarginTop" step="0.1" value="0.5" class="w-full h-7 px-1.5 border border-[var(--border)] rounded text-[11px] outline-none">
+                        </div>
+                        <div>
+                            <span class="block text-[9px] text-[var(--text-muted)] mb-0.5">Right</span>
+                            <input type="number" id="cfgMarginRight" step="0.1" value="0.5" class="w-full h-7 px-1.5 border border-[var(--border)] rounded text-[11px] outline-none">
+                        </div>
+                        <div>
+                            <span class="block text-[9px] text-[var(--text-muted)] mb-0.5">Bottom</span>
+                            <input type="number" id="cfgMarginBottom" step="0.1" value="0.5" class="w-full h-7 px-1.5 border border-[var(--border)] rounded text-[11px] outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paper Size cards -->
+                <div>
+                    <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-2">Paper</label>
+                    <div class="flex items-center gap-3">
+                        <div onclick="selectPaperType('A4')" id="paperA4" class="border-2 border-accent bg-blue-50/20 dark:bg-blue-950/20 w-16 h-20 rounded-lg flex items-center justify-center font-bold text-[11px] cursor-pointer text-[var(--text-primary)]">A4</div>
+                        <div onclick="selectPaperType('A5')" id="paperA5" class="border border-[var(--border)] w-14 h-16 rounded-lg flex items-center justify-center font-bold text-[11px] cursor-pointer text-[var(--text-primary)]">A5</div>
+                    </div>
+                </div>
+
+                <!-- Header Options -->
+                <div class="space-y-2 pt-4 border-t border-[var(--border)]/60">
+                    <span class="block text-[11px] font-extrabold uppercase text-[var(--text-muted)] tracking-wider">Header</span>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="flex items-center gap-1.5 text-[11px] text-[var(--text-secondary)] cursor-pointer">
+                            <input type="checkbox" id="cfgHeaderLogo" checked onchange="syncLiveInvoice()" class="accent-[var(--accent)]"> Logo
+                        </label>
+                        <label class="flex items-center gap-1.5 text-[11px] text-[var(--text-secondary)] cursor-pointer">
+                            <input type="checkbox" id="cfgHeaderAllPages" checked class="accent-[var(--accent)]"> Header in All Pages
+                        </label>
+                        <label class="flex items-center gap-1.5 text-[11px] text-[var(--text-secondary)] cursor-pointer">
+                            <input type="checkbox" id="cfgHeaderCompact" class="accent-[var(--accent)]"> Compact Mode
+                        </label>
+                        <label class="flex items-center gap-1.5 text-[11px] text-[var(--text-secondary)] cursor-pointer">
+                            <input type="checkbox" id="cfgHeaderDueDate" class="accent-[var(--accent)]"> Due Date
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Grid Columns Selection -->
+                <div class="space-y-2 pt-4 border-t border-[var(--border)]/60">
+                    <span class="block text-[11px] font-extrabold uppercase text-[var(--text-muted)] tracking-wider">Grid Columns</span>
+                    
+                    <div>
+                        <label class="block text-[10px] text-[var(--text-muted)] mb-1">Header Text</label>
+                        <textarea id="cfgGridHeaderText" oninput="syncLiveInvoice()" class="w-full h-12 p-1.5 border border-[var(--border)] rounded text-[11px] bg-[var(--surface)] outline-none resize-none" placeholder="Enter header text"></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 max-h-[140px] overflow-y-auto custom-scroll border border-[var(--border)] rounded p-2">
+                        <label class="flex items-center gap-1.5 text-[11px] text-[var(--text-secondary)] cursor-pointer">
+                            <input type="checkbox" id="colSerial" checked onchange="syncLiveInvoice()" class="accent-[var(--accent)]"> Serial No
+                        </label>
+                        <label class="flex items-center gap-1.5 text-[11px] text-[var(--text-secondary)] cursor-pointer">
+                            <input type="checkbox" id="colDesc" checked onchange="syncLiveInvoice()" class="accent-[var(--accent)]"> Item Description
+                        </label>
+                        <label class="flex items-center gap-1.5 text-[11px] text-[var(--text-secondary)] cursor-pointer">
+                            <input type="checkbox" id="colSku" onchange="syncLiveInvoice()" class="accent-[var(--accent)]"> SKU
+                        </label>
+                        <label class="flex items-center gap-1.5 text-[11px] text-[var(--text-secondary)] cursor-pointer">
+                            <input type="checkbox" id="colHsn" checked onchange="syncLiveInvoice()" class="accent-[var(--accent)]"> HSN/SAC
+                        </label>
+                        <label class="flex items-center gap-1.5 text-[11px] text-[var(--text-secondary)] cursor-pointer">
+                            <input type="checkbox" id="colQty" checked onchange="syncLiveInvoice()" class="accent-[var(--accent)]"> Qty
+                        </label>
+                        <label class="flex items-center gap-1.5 text-[11px] text-[var(--text-secondary)] cursor-pointer">
+                            <input type="checkbox" id="colRate" checked onchange="syncLiveInvoice()" class="accent-[var(--accent)]"> Rate
+                        </label>
+                        <label class="flex items-center gap-1.5 text-[11px] text-[var(--text-secondary)] cursor-pointer">
+                            <input type="checkbox" id="colTotal" checked onchange="syncLiveInvoice()" class="accent-[var(--accent)]"> Amount
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Footer Config -->
+                <div class="space-y-2 pt-4 border-t border-[var(--border)]/60">
+                    <span class="block text-[11px] font-extrabold uppercase text-[var(--text-muted)] tracking-wider">Footer Settings</span>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="flex items-center gap-1.5 text-[11px] text-[var(--text-secondary)] cursor-pointer">
+                            <input type="checkbox" id="cfgFootBank" checked onchange="syncLiveInvoice()" class="accent-[var(--accent)]"> Bank Details
+                        </label>
+                        <label class="flex items-center gap-1.5 text-[11px] text-[var(--text-secondary)] cursor-pointer">
+                            <input type="checkbox" id="cfgFootDate" checked class="accent-[var(--accent)]"> Print Date
+                        </label>
+                        <label class="flex items-center gap-1.5 text-[11px] text-[var(--text-secondary)] cursor-pointer">
+                            <input type="checkbox" id="cfgFootSig" checked class="accent-[var(--accent)]"> Authorised Sign
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Live Page Canvas (Centered) -->
+            <div class="flex-1 overflow-auto p-8 flex items-start justify-center custom-scroll">
+                <!-- Main Paper Page -->
+                <div id="livePaperSheet" class="bg-white w-[595px] min-h-[842px] p-8 shadow-xl border border-slate-300 text-[11px] space-y-6 text-black flex flex-col justify-between select-none">
+                    
+                    <div class="space-y-4">
+                        <!-- Invoice Header -->
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h2 class="text-[18px] font-black text-slate-900" id="liveCompName">Auraa Crackers</h2>
+                                <p class="text-slate-500">S.No.226/5, D.No.1/177_5_20, Sivakasi Main Road</p>
+                                <p class="text-slate-500 font-bold">GSTIN: 33ABCDE1234F1Z7</p>
+                            </div>
+                            
+                            <!-- Header Title block matching custom selected theme color -->
+                            <div class="text-right">
+                                <div id="liveTitleBlock" class="px-6 py-2 text-white font-extrabold uppercase text-[15px] tracking-wider mb-2" style="background-color: #FF0000;">
+                                    Quotation
+                                </div>
+                                <p class="text-slate-500">q_text : <span class="font-bold">INV2</span></p>
+                                <p class="text-slate-500">Date : <span class="font-bold">18/09/2018</span></p>
+                            </div>
+                        </div>
+
+                        <!-- Address Rows -->
+                        <div class="grid grid-cols-2 gap-6 border-t border-b border-slate-200 py-4">
+                            <div>
+                                <span class="block font-bold text-slate-400 uppercase text-[8px] tracking-widest mb-1">Issued to</span>
+                                <p class="font-bold text-rose-600" id="liveClientName">ABC Industry Private Limited</p>
+                                <p class="text-slate-500">GSTIN: 33ABCDE1234F1Z7</p>
+                                <p class="text-slate-500">POS: Tamil Nadu</p>
+                            </div>
+                            <div class="border-l border-slate-200 pl-6">
+                                <span class="block font-bold text-slate-400 uppercase text-[8px] tracking-widest mb-1">Billing Address</span>
+                                <p class="font-bold text-slate-900">ABC Industry Private Limited</p>
+                                <p class="text-slate-500">256, 1st Floor, NRKR Road, Sivakasi</p>
+                                <p class="text-slate-500">Phone: 9876543210</p>
+                                <p class="text-slate-500">Email: ramcharan@gmail.com</p>
+                            </div>
+                        </div>
+
+                        <!-- Grid Header Text Block -->
+                        <div id="liveGridHeaderBlock" class="hidden p-2 bg-slate-50 border border-slate-200 rounded text-slate-600 text-[10px]">
+                        </div>
+
+                        <!-- Items Table Grid -->
+                        <table class="w-full text-left border-collapse border border-slate-300 overflow-hidden rounded-lg">
+                            <thead id="liveGridHeader" class="text-white text-[10px] font-bold tracking-wider" style="background-color: #FF0000;">
+                                <!-- Table column headers synced dynamically -->
+                            </thead>
+                            <tbody id="liveGridBody">
+                                <!-- Table body rows synced dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Footer Details -->
+                    <div class="space-y-4 border-t border-slate-200 pt-4">
+                        <div class="flex justify-between items-end">
+                            <div class="text-[9px] text-slate-500 space-y-1 w-[280px]">
+                                <p class="font-bold uppercase text-slate-700">Terms & Conditions</p>
+                                <p>Goods once sold will not be taken back.</p>
+                                <div id="liveBankDetails" class="hidden pt-2">
+                                    <p class="font-bold text-slate-700">Bank details (UPI QR enabled)</p>
+                                    <p>Auraa Crackers | AC-981122 | IFSC: ABIN00012</p>
+                                </div>
+                            </div>
+                            <div class="w-[200px] space-y-1.5 text-right">
+                                <div class="flex justify-between"><span>Sub Total:</span><span class="font-bold">62,000.00</span></div>
+                                <div class="flex justify-between"><span>CGST (9%):</span><span>5,580.00</span></div>
+                                <div class="flex justify-between"><span>SGST (9%):</span><span>5,580.00</span></div>
+                                <div id="liveTotalRow" class="flex justify-between px-2 py-1.5 text-white font-extrabold text-[12px] rounded" style="background-color: #FF0000;">
+                                    <span>TOTAL:</span><span id="lblLiveTotalAmount">Rs. 73,160.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Signatures -->
+                        <div class="flex justify-between items-center text-[10px] pt-4 border-t border-slate-100">
+                            <div>
+                                <p class="text-slate-400">Printed: 26-May-2026</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-slate-800" id="liveSigBlock">Authorized Signature</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Toast notification -->
+<div id="printToast" class="fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3.5 bg-slate-900 text-white rounded-xl shadow-2xl opacity-0 translate-y-4 pointer-events-none transition-all duration-300">
+    <div id="printToastIcon" class="flex items-center justify-center">
+        <div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+    </div>
+    <span id="printToastText" class="text-[13px] font-semibold tracking-wide"></span>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Categories & defaults setup
+    const categoriesDb = [
+        { key: 'invoice', name: 'Sales Invoices' },
+        { key: 'challan', name: 'Sales Delivery Challans' },
+        { key: 'sales_order', name: 'Sales Orders' },
+        { key: 'sales_quote', name: 'Sales Quotes' },
+        { key: 'sales_credit', name: 'Sales Credit Notes' },
+        { key: 'sales_receipt', name: 'Sales Receipts' },
+        { key: 'purchase_order', name: 'Purchase Orders' },
+        { key: 'purchase_bill', name: 'Purchase Bills' },
+        { key: 'purchase_payment', name: 'Purchase Payments' },
+        { key: 'purchase_receipt', name: 'Purchase Receipts' },
+        { key: 'purchase_quote', name: 'Purchase Quotes' },
+        { key: 'purchase_credit', name: 'Purchase Credit Notes' }
+    ];
+
+    const templatesDb = [
+        { key: 'classic', name: 'Classic Label' },
+        { key: 'modern', name: 'Modern Theme' },
+        { key: 'professional', name: 'Professional Layout' },
+        { key: 'elegant', name: 'Elegant Style' },
+        { key: 'simple', name: 'Simple Minimal' },
+        { key: 'thermal', name: 'Thermal Voucher' }
+    ];
+
+    const activeTemplates = {
+        invoice: 'classic', challan: 'modern', sales_order: 'classic', sales_quote: 'professional',
+        sales_credit: 'elegant', sales_receipt: 'classic', purchase_order: 'classic', purchase_bill: 'modern',
+        purchase_payment: 'classic', purchase_receipt: 'classic', purchase_quote: 'classic', purchase_credit: 'classic'
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+        renderPrintCategories();
+    });
+
+    function renderPrintCategories() {
+        const container = document.getElementById('printCategoriesContainer');
+        container.innerHTML = '';
+
+        categoriesDb.forEach(cat => {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'document-row space-y-4';
+
+            let cardsHtml = '';
+            templatesDb.forEach(temp => {
+                const isActive = activeTemplates[cat.key] === temp.key;
+                cardsHtml += `
+                    <div class="template-card ${isActive ? 'active' : ''}" id="card-${cat.key}-${temp.key}">
+                        <div class="mock-thumbnail">
+                            <div class="w-full flex justify-between items-center mb-1 pb-1 border-b border-slate-200">
+                                <div class="w-8 h-1 bg-[var(--accent)] opacity-60"></div>
+                                <div class="w-10 h-1.5 bg-slate-300"></div>
+                            </div>
+                            <div class="space-y-1 flex-1 w-full">
+                                <div class="w-full h-1 bg-slate-200"></div>
+                                <div class="w-2/3 h-1 bg-slate-200"></div>
+                                <div class="w-full h-1 bg-slate-200"></div>
+                            </div>
+                            <div class="w-full pt-1 border-t border-slate-200 flex justify-between items-center">
+                                <div class="w-6 h-1 bg-slate-300"></div>
+                                <div class="w-8 h-1.5 bg-[var(--accent)] opacity-80"></div>
+                            </div>
+                            ${isActive ? `
+                                <div class="absolute top-2 right-2 bg-emerald-500 text-white rounded-full p-0.5 shadow">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                </div>
+                            ` : ''}
+                            <div class="card-overlay">
+                                <button onclick="setTemplateActive('${cat.key}', '${temp.key}')" class="px-3 py-1.5 bg-[var(--accent)] hover:brightness-110 text-white text-[11px] font-extrabold rounded shadow cursor-pointer">
+                                    Set Active
+                                </button>
+                                <button onclick="previewTemplate('${cat.key}', '${temp.key}')" class="px-3 py-1.5 bg-[var(--accent)] hover:brightness-110 text-white text-[11px] font-extrabold rounded shadow cursor-pointer">
+                                    Preview
+                                </button>
+                            </div>
+                        </div>
+                        <div class="p-2.5 text-center">
+                            <p class="text-[12px] font-bold text-[var(--text-secondary)]">${temp.name}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            rowDiv.innerHTML = `
+                <div class="flex items-center justify-between pb-2 border-b border-[var(--border)]">
+                    <span class="text-[14px] font-black text-[var(--text-primary)]">${cat.name}</span>
+                    <!-- Add Template button renamed to Customize Settings, styled in primary color -->
+                    <button onclick="openConfigModal('${cat.key}')" class="px-3 py-1.5 bg-[var(--accent)] hover:brightness-105 text-white rounded-lg text-[11px] font-extrabold cursor-pointer">
+                        Customize Settings
+                    </button>
+                </div>
+                <div class="templates-scroll no-scrollbar">${cardsHtml}</div>
+            `;
+            container.appendChild(rowDiv);
+        });
+    }
+
+    function setTemplateActive(catKey, tempKey) {
+        activeTemplates[catKey] = tempKey;
+        renderPrintCategories();
+        showToast(`Activated ${tempKey.toUpperCase()} layout template.`, false);
+        hideToast(1200);
+    }
+
+    function previewTemplate(catKey, tempKey) {
+        openConfigModal(catKey);
+    }
+
+    // Config Fullscreen Modal Actions
+    let currentConfigCategoryKey = null;
+
+    function openConfigModal(catKey) {
+        currentConfigCategoryKey = catKey;
+        const cat = categoriesDb.find(c => c.key === catKey);
+        
+        document.getElementById('modalConfigTitle').innerText = `Print Settings (${cat.name.replace('Sales ', '').replace('Purchase ', '').substring(0, 15)})`;
+        document.getElementById('cfgTitleText').value = cat.name.replace('Sales ', '').replace('Purchase ', '').substring(0, 15);
+
+        // Reset inputs
+        document.getElementById('cfgPrimaryColor').value = '#FF0000';
+        document.getElementById('cfgPrimaryColorText').value = '#FF0000';
+        document.getElementById('cfgGridHeaderText').value = 'You are a Valued Customer';
+
+        document.getElementById('fullscreenConfigModal').classList.remove('hidden');
+        
+        syncLiveInvoice();
+    }
+
+    function closeConfigModal() {
+        document.getElementById('fullscreenConfigModal').classList.add('hidden');
+    }
+
+    function selectPaperType(type) {
+        const a4 = document.getElementById('paperA4');
+        const a5 = document.getElementById('paperA5');
+        const sheet = document.getElementById('livePaperSheet');
+
+        if (type === 'A4') {
+            a4.className = 'border-2 border-accent bg-blue-50/20 dark:bg-blue-950/20 w-16 h-20 rounded-lg flex items-center justify-center font-bold text-[11px] cursor-pointer text-[var(--text-primary)]';
+            a5.className = 'border border-[var(--border)] w-14 h-16 rounded-lg flex items-center justify-center font-bold text-[11px] cursor-pointer text-[var(--text-primary)]';
+            sheet.style.width = '595px';
+            sheet.style.minHeight = '842px';
+        } else {
+            a5.className = 'border-2 border-accent bg-blue-50/20 dark:bg-blue-950/20 w-14 h-16 rounded-lg flex items-center justify-center font-bold text-[11px] cursor-pointer text-[var(--text-primary)]';
+            a4.className = 'border border-[var(--border)] w-16 h-20 rounded-lg flex items-center justify-center font-bold text-[11px] cursor-pointer text-[var(--text-primary)]';
+            sheet.style.width = '420px';
+            sheet.style.minHeight = '595px';
+        }
+    }
+
+    function syncLiveColorFromText(val) {
+        if (/^#[0-9A-F]{6}$/i.test(val)) {
+            document.getElementById('cfgPrimaryColor').value = val;
+            syncLiveInvoice();
+        }
+    }
+
+    // Dynamic Live invoice sheets sync
+    function syncLiveInvoice() {
+        const title = document.getElementById('cfgTitleText').value;
+        const color = document.getElementById('cfgPrimaryColor').value;
+        const fontSize = document.getElementById('cfgFontSize').value;
+        const incLogo = document.getElementById('cfgHeaderLogo').checked;
+        const incBank = document.getElementById('cfgFootBank').checked;
+        const headerText = document.getElementById('cfgGridHeaderText').value;
+
+        // Apply title & color text
+        document.getElementById('cfgPrimaryColorText').value = color.toUpperCase();
+        document.getElementById('liveTitleBlock').innerText = title;
+        document.getElementById('liveTitleBlock').style.backgroundColor = color;
+        document.getElementById('liveTotalRow').style.backgroundColor = color;
+        document.getElementById('livePaperSheet').style.fontSize = `${fontSize}px`;
+
+        // Logo
+        document.getElementById('liveCompName').style.display = incLogo ? 'block' : 'none';
+
+        // Bank details
+        document.getElementById('liveBankDetails').style.display = incBank ? 'block' : 'none';
+
+        // Grid header block text
+        const gridHeaderBlock = document.getElementById('liveGridHeaderBlock');
+        if (headerText.trim()) {
+            gridHeaderBlock.innerText = headerText;
+            gridHeaderBlock.classList.remove('hidden');
+        } else {
+            gridHeaderBlock.classList.add('hidden');
+        }
+
+        // Draw Table headers dynamically based on column checkboxes
+        const colSerial = document.getElementById('colSerial').checked;
+        const colDesc = document.getElementById('colDesc').checked;
+        const colSku = document.getElementById('colSku').checked;
+        const colHsn = document.getElementById('colHsn').checked;
+        const colQty = document.getElementById('colQty').checked;
+        const colRate = document.getElementById('colRate').checked;
+        const colTotal = document.getElementById('colTotal').checked;
+
+        let thsHtml = '';
+        if (colSerial) thsHtml += `<th class="p-2 border border-slate-300 text-center w-[40px]">SNo</th>`;
+        if (colDesc) thsHtml += `<th class="p-2 border border-slate-300">Item Description</th>`;
+        if (colSku) thsHtml += `<th class="p-2 border border-slate-300 w-[90px]">SKU</th>`;
+        if (colHsn) thsHtml += `<th class="p-2 border border-slate-300 w-[80px]">HSN/SAC</th>`;
+        if (colQty) thsHtml += `<th class="p-2 border border-slate-300 w-[50px] text-center">Qty</th>`;
+        if (colRate) thsHtml += `<th class="p-2 border border-slate-300 w-[70px] text-right">Rate</th>`;
+        if (colTotal) thsHtml += `<th class="p-2 border border-slate-300 w-[80px] text-right">Amount</th>`;
+
+        const headerTr = document.getElementById('liveGridHeader');
+        headerTr.innerHTML = thsHtml;
+        headerTr.style.backgroundColor = color;
+
+        // Draw Table Row Columns dynamically
+        let tdsHtml1 = '';
+        if (colSerial) tdsHtml1 += `<td class="p-2 border border-slate-300 text-center">1</td>`;
+        if (colDesc) tdsHtml1 += `<td class="p-2 border border-slate-300 font-bold">Item - 1</td>`;
+        if (colSku) tdsHtml1 += `<td class="p-2 border border-slate-300">SKU-A-09</td>`;
+        if (colHsn) tdsHtml1 += `<td class="p-2 border border-slate-300 text-center">48205000</td>`;
+        if (colQty) tdsHtml1 += `<td class="p-2 border border-slate-300 text-center">10 Kgs</td>`;
+        if (colRate) tdsHtml1 += `<td class="p-2 border border-slate-300 text-right">450.00</td>`;
+        if (colTotal) tdsHtml1 += `<td class="p-2 border border-slate-300 text-right font-semibold">4,050.00</td>`;
+
+        let tdsHtml2 = '';
+        if (colSerial) tdsHtml2 += `<td class="p-2 border border-slate-300 text-center">2</td>`;
+        if (colDesc) tdsHtml2 += `<td class="p-2 border border-slate-300 font-bold">Item - 2</td>`;
+        if (colSku) tdsHtml2 += `<td class="p-2 border border-slate-300">SKU-B-88</td>`;
+        if (colHsn) tdsHtml2 += `<td class="p-2 border border-slate-300 text-center">48205000</td>`;
+        if (colQty) tdsHtml2 += `<td class="p-2 border border-slate-300 text-center">20 Ltr</td>`;
+        if (colRate) tdsHtml2 += `<td class="p-2 border border-slate-300 text-right">275.00</td>`;
+        if (colTotal) tdsHtml2 += `<td class="p-2 border border-slate-300 text-right font-semibold">5,500.00</td>`;
+
+        document.getElementById('liveGridBody').innerHTML = `
+            <tr class="border-b border-slate-200 text-slate-800">${tdsHtml1}</tr>
+            <tr class="border-b border-slate-200 text-slate-800">${tdsHtml2}</tr>
+        `;
+    }
+
+    function saveConfigSettings() {
+        closeConfigModal();
+        showToast('Saving print configuration variables...', true);
+        setTimeout(() => {
+            showToast('Print layout configurations saved.', false);
+            hideToast(1500);
+        }, 1000);
+    }
+
+    // Toast helpers
+    let printToastTimeout = null;
+    function showToast(text, isLoader = true) {
+        const toast = document.getElementById('printToast');
+        const toastText = document.getElementById('printToastText');
+        const toastIcon = document.getElementById('printToastIcon');
+
+        if (printToastTimeout) clearTimeout(printToastTimeout);
+
+        if (isLoader) {
+            toastIcon.innerHTML = '<div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>';
+        } else {
+            toastIcon.innerHTML = '<svg class="w-4.5 h-4.5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
+        }
+
+        toastText.innerText = text;
+        toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+        toast.classList.add('opacity-100', 'translate-y-0');
+    }
+
+    function hideToast(delay = 1500) {
+        const toast = document.getElementById('printToast');
+        printToastTimeout = setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+            toast.classList.remove('opacity-100', 'translate-y-0');
+        }, delay);
+    }
+</script>
+{% endblock %}

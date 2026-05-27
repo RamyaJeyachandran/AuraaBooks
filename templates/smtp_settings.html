@@ -1,0 +1,302 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}SMTP Settings - Auraa Books{% endblock %}
+
+{% block breadcrumb_parent %}
+    <a href="{% url 'settings-dashboard' %}" class="hover:text-accent cursor-pointer">Settings</a>
+    <span class="opacity-50">/</span>
+{% endblock %}
+
+{% block breadcrumb_active %}E-Mail SMTP Settings{% endblock %}
+
+{% block content %}
+<div class="stagger-in">
+    <!-- Header & Action Panel -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-[var(--border)]">
+        <div>
+            <h1 class="text-[24px] font-extrabold text-[var(--text-primary)] mb-1 tracking-tight flex items-center gap-2">
+                <a href="{% url 'settings-dashboard' %}" class="text-accent hover:underline cursor-pointer">Settings</a>
+                <span class="text-[var(--text-muted)] font-medium mx-1">/</span>
+                SMTP settings
+                <span id="gmailHeaderExtra" class="hidden text-accent text-[20px] font-bold ml-2 flex items-center gap-1.5">
+                    <a href="https://support.google.com/mail/answer/185833" target="_blank" class="hover:underline text-[#2F80ED]">Gmail</a>
+                    <button type="button" onclick="toggleGmailHelp()" class="text-slate-400 hover:text-accent flex items-center focus:outline-none" title="Help Guide">
+                        <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/>
+                        </svg>
+                    </button>
+                </span>
+            </h1>
+            <p class="text-[13px] text-[var(--text-muted)]">To set up a mail client it's necessary to configure an SMTP server that will take care of the delivery of your emails</p>
+        </div>
+
+        <!-- Dynamic Action Buttons -->
+        <div class="flex items-center gap-3 self-start md:self-center">
+            <!-- View Mode Button -->
+            <button id="editBtn" onclick="switchToEditMode()" class="px-6 py-2.5 bg-[var(--accent)] text-white hover:brightness-110 rounded-xl text-[13px] font-bold transition-all shadow-md active:scale-[0.98] cursor-pointer">
+                Edit
+            </button>
+
+            <!-- Edit Mode Buttons (Hidden by default) -->
+            <button id="testSmtpBtn" onclick="testSmtpConnection()" class="hidden px-5 py-2.5 bg-[var(--accent)] text-white hover:brightness-110 rounded-xl text-[13px] font-bold transition-all shadow-md active:scale-[0.98] cursor-pointer">
+                Test SMTP
+            </button>
+            <button id="saveBtn" onclick="saveSmtpSettings()" class="hidden px-5 py-2.5 bg-[var(--accent)] text-white hover:brightness-110 rounded-xl text-[13px] font-bold transition-all shadow-md active:scale-[0.98] cursor-pointer">
+                Save
+            </button>
+            <button id="cancelBtn" onclick="switchToReadOnlyMode()" class="hidden px-5 py-2.5 bg-slate-700 hover:bg-slate-800 text-white rounded-xl text-[13px] font-bold transition-all shadow-md active:scale-[0.98] cursor-pointer">
+                Cancel
+            </button>
+        </div>
+    </div>
+
+    <!-- Gmail Help Guide (Expandable Panel) -->
+    <div id="gmailHelpBox" class="hidden p-5 bg-blue-50/80 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/60 rounded-2xl mb-6 transition-all duration-300">
+        <h3 class="text-[14px] font-bold text-accent mb-2.5 flex items-center gap-2">
+            <svg class="w-5 h-5 text-[var(--accent)]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Gmail SMTP Setup Instructions
+        </h3>
+        <ul class="text-[13px] text-[var(--text-muted)] space-y-2 list-disc pl-5">
+            <li>Set <b>Host</b> to <code class="bg-blue-100/60 dark:bg-blue-900/40 px-1.5 py-0.5 rounded text-accent font-semibold">smtp.gmail.com</code></li>
+            <li>Set <b>Connection</b> to <code class="bg-blue-100/60 dark:bg-blue-900/40 px-1.5 py-0.5 rounded text-accent font-semibold">TLS</code> (Port: 587) or <code class="bg-blue-100/60 dark:bg-blue-900/40 px-1.5 py-0.5 rounded text-accent font-semibold">SSL</code> (Port: 465).</li>
+            <li>Ensure 2-Step Verification is enabled in your Google Account.</li>
+            <li>Create an <b>App Password</b> in your Google Account Security section, and paste it into the <b>Password</b> field instead of your main password.</li>
+        </ul>
+    </div>
+
+    <!-- MAIN AREA -->
+    <!-- 1. Read-Only State Container -->
+    <div id="readOnlyContainer" class="p-4 space-y-4 text-[15px] text-[var(--text-primary)]">
+        <div id="smtpParametersList" class="space-y-3">
+            <p id="viewHost" class="hidden">Host : <span class="font-semibold" id="lblHost"></span></p>
+            <p id="viewConnection" class="hidden">Connection : <span class="font-semibold" id="lblConnection"></span></p>
+            <p id="viewPort">Port : <span class="font-semibold" id="lblPort">25</span></p>
+            <p id="viewEmail" class="hidden">Email : <span class="font-semibold" id="lblEmail"></span></p>
+            <p id="viewFromName" class="hidden">From Name : <span class="font-semibold" id="lblFromName"></span></p>
+            <p id="viewFromEmail" class="hidden">From Email : <span class="font-semibold" id="lblFromEmail"></span></p>
+        </div>
+    </div>
+
+    <!-- 2. Edit Form State Container (Hidden by default) -->
+    <div id="editFormContainer" class="hidden p-2">
+        <form id="smtpForm" onsubmit="event.preventDefault();" class="space-y-6">
+            <!-- Row 1: Host, Connection, Port -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <label class="block text-[13px] font-bold text-[var(--text-secondary)] mb-2">Host</label>
+                    <input type="text" id="smtpHost" placeholder="e.g. smtp.gmail.com" 
+                           class="w-full h-11 px-4 border border-[var(--border)] rounded-xl bg-[var(--surface)] outline-none text-[13px] focus:border-accent transition-all duration-200">
+                </div>
+                <div>
+                    <label class="block text-[13px] font-bold text-[var(--text-secondary)] mb-2">Connection</label>
+                    <select id="smtpConnection" 
+                            class="w-full h-11 px-4 border border-[var(--border)] rounded-xl bg-[var(--surface)] outline-none text-[13px] focus:border-accent transition-all duration-200">
+                        <option value="None">None</option>
+                        <option value="SSL">SSL</option>
+                        <option value="TLS">TLS</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[13px] font-bold text-[var(--text-secondary)] mb-2">Port</label>
+                    <input type="number" id="smtpPort" value="25"
+                           class="w-full h-11 px-4 border border-[var(--border)] rounded-xl bg-[var(--surface)] outline-none text-[13px] focus:border-accent transition-all duration-200">
+                </div>
+            </div>
+
+            <!-- Row 2: Email, Password -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-[13px] font-bold text-[var(--text-secondary)] mb-2">Email</label>
+                    <input type="email" id="smtpEmail" value="ramyaworkac@gmail.com"
+                           class="w-full h-11 px-4 border border-[var(--border)] rounded-xl bg-[#fffbeb] dark:bg-[#252010] outline-none text-[13px] focus:border-accent transition-all duration-200">
+                </div>
+                <div>
+                    <label class="block text-[13px] font-bold text-[var(--text-secondary)] mb-2">Password</label>
+                    <input type="password" id="smtpPassword" value="******"
+                           class="w-full h-11 px-4 border border-[var(--border)] rounded-xl bg-[#fffbeb] dark:bg-[#252010] outline-none text-[13px] focus:border-accent transition-all duration-200">
+                </div>
+            </div>
+
+            <!-- Row 3: From Name, From Email -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-[13px] font-bold text-[var(--text-secondary)] mb-2">From Name</label>
+                    <input type="text" id="smtpFromName" placeholder="e.g. Auraa Books" 
+                           class="w-full h-11 px-4 border border-[var(--border)] rounded-xl bg-[var(--surface)] outline-none text-[13px] focus:border-accent transition-all duration-200">
+                </div>
+                <div>
+                    <label class="block text-[13px] font-bold text-[var(--text-secondary)] mb-2">From Email</label>
+                    <input type="email" id="smtpFromEmail" placeholder="e.g. no-reply@auraabooks.com" 
+                           class="w-full h-11 px-4 border border-[var(--border)] rounded-xl bg-[var(--surface)] outline-none text-[13px] focus:border-accent transition-all duration-200">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- SMTP Status Toast Container -->
+<div id="smtpToast" class="fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3.5 bg-slate-900 text-white rounded-xl shadow-2xl opacity-0 translate-y-4 pointer-events-none transition-all duration-300">
+    <div id="smtpToastIcon" class="flex items-center justify-center">
+        <div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+    </div>
+    <span id="smtpToastText" class="text-[13px] font-semibold tracking-wide"></span>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // State Store
+    const smtpState = {
+        host: '',
+        connection: 'None',
+        port: '25',
+        email: 'ramyaworkac@gmail.com',
+        password: '******',
+        fromName: '',
+        fromEmail: ''
+    };
+
+    function switchToEditMode() {
+        // Toggle view containers
+        document.getElementById('readOnlyContainer').classList.add('hidden');
+        document.getElementById('editFormContainer').classList.remove('hidden');
+
+        // Toggle action buttons
+        document.getElementById('editBtn').classList.add('hidden');
+        document.getElementById('testSmtpBtn').classList.remove('hidden');
+        document.getElementById('saveBtn').classList.remove('hidden');
+        document.getElementById('cancelBtn').classList.remove('hidden');
+
+        // Show header helpers
+        document.getElementById('gmailHeaderExtra').classList.remove('hidden');
+
+        // Populate Form with state
+        document.getElementById('smtpHost').value = smtpState.host;
+        document.getElementById('smtpConnection').value = smtpState.connection;
+        document.getElementById('smtpPort').value = smtpState.port;
+        document.getElementById('smtpEmail').value = smtpState.email;
+        document.getElementById('smtpPassword').value = smtpState.password;
+        document.getElementById('smtpFromName').value = smtpState.fromName;
+        document.getElementById('smtpFromEmail').value = smtpState.fromEmail;
+    }
+
+    function switchToReadOnlyMode() {
+        // Toggle view containers
+        document.getElementById('readOnlyContainer').classList.remove('hidden');
+        document.getElementById('editFormContainer').classList.add('hidden');
+
+        // Toggle action buttons
+        document.getElementById('editBtn').classList.remove('hidden');
+        document.getElementById('testSmtpBtn').classList.add('hidden');
+        document.getElementById('saveBtn').classList.add('hidden');
+        document.getElementById('cancelBtn').classList.add('hidden');
+
+        // Hide header helpers
+        document.getElementById('gmailHeaderExtra').classList.add('hidden');
+        document.getElementById('gmailHelpBox').classList.add('hidden');
+
+        // Render parameters list based on active state
+        renderSmtpViewValues();
+    }
+
+    function renderSmtpViewValues() {
+        // Labels
+        document.getElementById('lblHost').innerText = smtpState.host;
+        document.getElementById('lblConnection').innerText = smtpState.connection;
+        document.getElementById('lblPort').innerText = smtpState.port;
+        document.getElementById('lblEmail').innerText = smtpState.email;
+        document.getElementById('lblFromName').innerText = smtpState.fromName;
+        document.getElementById('lblFromEmail').innerText = smtpState.fromEmail;
+
+        // Visibility Toggles
+        toggleParamRow('viewHost', smtpState.host);
+        toggleParamRow('viewConnection', smtpState.connection && smtpState.connection !== 'None');
+        toggleParamRow('viewPort', smtpState.port);
+        toggleParamRow('viewEmail', smtpState.email);
+        toggleParamRow('viewFromName', smtpState.fromName);
+        toggleParamRow('viewFromEmail', smtpState.fromEmail);
+    }
+
+    function toggleParamRow(elementId, value) {
+        const el = document.getElementById(elementId);
+        if (value && value !== '') {
+            el.classList.remove('hidden');
+        } else {
+            el.classList.add('hidden');
+        }
+    }
+
+    function toggleGmailHelp() {
+        const box = document.getElementById('gmailHelpBox');
+        box.classList.toggle('hidden');
+    }
+
+    let smtpToastTimeout = null;
+    function showSmtpToast(text, isLoader = true) {
+        const toast = document.getElementById('smtpToast');
+        const toastText = document.getElementById('smtpToastText');
+        const toastIcon = document.getElementById('smtpToastIcon');
+
+        if (smtpToastTimeout) clearTimeout(smtpToastTimeout);
+
+        if (isLoader) {
+            toastIcon.innerHTML = '<div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>';
+        } else {
+            toastIcon.innerHTML = '<svg class="w-4.5 h-4.5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
+        }
+
+        toastText.innerText = text;
+        toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+        toast.classList.add('opacity-100', 'translate-y-0');
+    }
+
+    function hideSmtpToast(delay = 1500) {
+        const toast = document.getElementById('smtpToast');
+        smtpToastTimeout = setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+            toast.classList.remove('opacity-100', 'translate-y-0');
+        }, delay);
+    }
+
+    function testSmtpConnection() {
+        const email = document.getElementById('smtpEmail').value || smtpState.email;
+        const host = document.getElementById('smtpHost').value || 'localhost';
+
+        showSmtpToast(`Testing SMTP connection to ${host}...`, true);
+
+        setTimeout(() => {
+            showSmtpToast(`Test email sent successfully to ${email}.`, false);
+            hideSmtpToast(1800);
+        }, 1500);
+    }
+
+    function saveSmtpSettings() {
+        // Collect Form values
+        smtpState.host = document.getElementById('smtpHost').value.trim();
+        smtpState.connection = document.getElementById('smtpConnection').value;
+        smtpState.port = document.getElementById('smtpPort').value.trim() || '25';
+        smtpState.email = document.getElementById('smtpEmail').value.trim();
+        smtpState.password = document.getElementById('smtpPassword').value;
+        smtpState.fromName = document.getElementById('smtpFromName').value.trim();
+        smtpState.fromEmail = document.getElementById('smtpFromEmail').value.trim();
+
+        showSmtpToast('Saving SMTP configurations...', true);
+
+        setTimeout(() => {
+            showSmtpToast('SMTP settings saved successfully!', false);
+            hideSmtpToast(1200);
+            
+            // Switch back to view mode
+            switchToReadOnlyMode();
+        }, 800);
+    }
+
+    // Initialize values on load
+    window.addEventListener('DOMContentLoaded', () => {
+        renderSmtpViewValues();
+    });
+</script>
+{% endblock %}

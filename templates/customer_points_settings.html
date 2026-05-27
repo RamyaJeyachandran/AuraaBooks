@@ -1,0 +1,414 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Customer Points Settings - Auraa Books{% endblock %}
+
+{% block breadcrumb_parent %}
+    <a href="{% url 'settings-dashboard' %}" class="hover:text-accent cursor-pointer">Settings</a>
+    <span class="opacity-50">/</span>
+{% endblock %}
+
+{% block breadcrumb_active %}Customer Points{% endblock %}
+
+{% block content %}
+<div class="stagger-in max-w-5xl mx-auto">
+    <!-- Header & Action Panel -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-[var(--border)]">
+        <div>
+            <h1 class="text-[24px] font-extrabold text-[var(--text-primary)] mb-1 tracking-tight flex items-center gap-2">
+                <a href="{% url 'settings-dashboard' %}" class="text-accent hover:underline cursor-pointer">Settings</a>
+                <span class="text-[var(--text-muted)] font-medium mx-1">/</span>
+                Customer Points
+            </h1>
+            <p class="text-[13px] text-[var(--text-muted)]">Configure earn rules, discount structures, and redemption criteria for customer points.</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-3">
+            <button id="savePointsBtn" onclick="saveCustomerPointsSettings()" class="px-6 py-2.5 bg-[var(--accent)] text-white hover:brightness-110 rounded-xl text-[13px] font-extrabold transition-all shadow-md active:scale-[0.98] cursor-pointer">
+                Save
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Form Box -->
+    <form id="customerPointsForm" onsubmit="event.preventDefault();" class="space-y-8">
+        
+        <!-- Applicability Settings -->
+        <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-sm space-y-6">
+            <h2 class="text-[15px] font-bold text-[var(--text-primary)] mb-4 pb-2 border-b border-[var(--border)]">Applicability Rules</h2>
+            
+            <!-- Points Applicable On -->
+            <div class="flex flex-col md:flex-row md:items-center gap-4 md:gap-12">
+                <span class="text-[13px] font-bold text-[var(--text-secondary)] min-w-[150px]">Points Applicable On :</span>
+                <div class="flex items-center gap-8">
+                    <label class="flex items-center gap-2.5 cursor-pointer text-[13px] font-medium text-[var(--text-primary)]">
+                        <input type="radio" name="pointsApplicableOn" value="total" checked
+                               class="w-4 h-4 text-accent border-[var(--border)] focus:ring-accent accent-[var(--accent)]">
+                        <span>Total Invoice Value</span>
+                    </label>
+                    <label class="flex items-center gap-2.5 cursor-pointer text-[13px] font-medium text-[var(--text-primary)]">
+                        <input type="radio" name="pointsApplicableOn" value="item"
+                               class="w-4 h-4 text-accent border-[var(--border)] focus:ring-accent accent-[var(--accent)]">
+                        <span>Item wise</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Calculate also On -->
+            <div class="flex flex-col md:flex-row md:items-center gap-4 md:gap-12">
+                <span class="text-[13px] font-bold text-[var(--text-secondary)] min-w-[150px]">Calculate also On :</span>
+                <div class="flex items-center gap-8">
+                    <label class="flex items-center gap-2.5 cursor-pointer text-[13px] font-medium text-[var(--text-primary)]">
+                        <input type="checkbox" id="calcOnCredit"
+                               class="w-4 h-4 text-accent border-[var(--border)] rounded focus:ring-accent accent-[var(--accent)]">
+                        <span>Credit Invoice</span>
+                    </label>
+                    <label class="flex items-center gap-2.5 text-[13px] font-medium text-[var(--text-muted)] opacity-60 cursor-not-allowed">
+                        <input type="checkbox" id="calcOnDiscount" disabled
+                               class="w-4 h-4 text-slate-300 border-[var(--border)] rounded cursor-not-allowed">
+                        <span>Discount Items</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Display in Print -->
+            <div class="pt-2 border-t border-[var(--border)]/60">
+                <label class="flex items-center gap-2.5 cursor-pointer text-[13px] font-bold text-[var(--text-secondary)]">
+                    <input type="checkbox" id="displayInPrint"
+                           class="w-4 h-4 text-accent border-[var(--border)] rounded focus:ring-accent accent-[var(--accent)]">
+                    <span>Display in Print</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Ranges Configuration Table -->
+        <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-4 pb-2 border-b border-[var(--border)]">
+                <h2 class="text-[15px] font-bold text-[var(--text-primary)]">Invoice Value Ranges & Points</h2>
+                <button type="button" onclick="addNewRangeRow()" class="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--accent-light)] text-[var(--accent)] hover:bg-[var(--accent)] hover:text-white rounded-lg text-[12px] font-bold transition-all">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                    </svg>
+                    Add Row
+                </button>
+            </div>
+
+            <div class="overflow-x-auto no-scrollbar">
+                <table class="w-full text-left border-collapse border border-[var(--border)] rounded-xl overflow-hidden">
+                    <thead>
+                        <tr class="bg-[var(--bg)] text-[12px] font-extrabold text-[var(--text-secondary)] uppercase tracking-wider">
+                            <th class="px-4 py-3 border border-[var(--border)] w-[22%]">Inv.Value From</th>
+                            <th class="px-4 py-3 border border-[var(--border)] w-[22%]">Inv.Value To</th>
+                            <th class="px-4 py-3 border border-[var(--border)] w-[18%]">Points</th>
+                            <th class="px-4 py-3 border border-[var(--border)] w-[16%]">Points Type</th>
+                            <th class="px-4 py-3 border border-[var(--border)] w-[16%]">Exp.Days</th>
+                            <th class="px-3 py-3 border border-[var(--border)] text-center w-[6%]">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rangeTableBody">
+                        <!-- Initial Rows -->
+                        <tr class="range-row transition-colors hover:bg-[var(--bg)]/30">
+                            <td class="p-2 border border-[var(--border)]">
+                                <input type="number" step="0.01" class="inv-from w-full h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent" placeholder="From">
+                            </td>
+                            <td class="p-2 border border-[var(--border)]">
+                                <input type="number" step="0.01" class="inv-to w-full h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent" placeholder="To">
+                            </td>
+                            <td class="p-2 border border-[var(--border)]">
+                                <input type="number" step="0.1" class="points-val w-full h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent" placeholder="Points">
+                            </td>
+                            <td class="p-2 border border-[var(--border)]">
+                                <select class="points-type w-full h-9 px-2 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent">
+                                    <option value="percent">%</option>
+                                    <option value="flat">Flat</option>
+                                </select>
+                            </td>
+                            <td class="p-2 border border-[var(--border)]">
+                                <input type="number" class="exp-days w-full h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent" placeholder="Days">
+                            </td>
+                            <td class="p-2 border border-[var(--border)] text-center">
+                                <button type="button" onclick="deleteRangeRow(this)" class="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/20 rounded-lg transition-colors cursor-pointer" title="Delete Row">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                        <!-- Initial Rows 2 -->
+                        <tr class="range-row transition-colors hover:bg-[var(--bg)]/30">
+                            <td class="p-2 border border-[var(--border)]">
+                                <input type="number" step="0.01" class="inv-from w-full h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent" placeholder="From">
+                            </td>
+                            <td class="p-2 border border-[var(--border)]">
+                                <input type="number" step="0.01" class="inv-to w-full h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent" placeholder="To">
+                            </td>
+                            <td class="p-2 border border-[var(--border)]">
+                                <input type="number" step="0.1" class="points-val w-full h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent" placeholder="Points">
+                            </td>
+                            <td class="p-2 border border-[var(--border)]">
+                                <select class="points-type w-full h-9 px-2 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent">
+                                    <option value="percent">%</option>
+                                    <option value="flat">Flat</option>
+                                </select>
+                            </td>
+                            <td class="p-2 border border-[var(--border)]">
+                                <input type="number" class="exp-days w-full h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent" placeholder="Days">
+                            </td>
+                            <td class="p-2 border border-[var(--border)] text-center">
+                                <button type="button" onclick="deleteRangeRow(this)" class="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/20 rounded-lg transition-colors cursor-pointer" title="Delete Row">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                        <!-- Initial Rows 3 -->
+                        <tr class="range-row transition-colors hover:bg-[var(--bg)]/30">
+                            <td class="p-2 border border-[var(--border)]">
+                                <input type="number" step="0.01" class="inv-from w-full h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent" placeholder="From">
+                            </td>
+                            <td class="p-2 border border-[var(--border)]">
+                                <input type="number" step="0.01" class="inv-to w-full h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent" placeholder="To">
+                            </td>
+                            <td class="p-2 border border-[var(--border)]">
+                                <input type="number" step="0.1" class="points-val w-full h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent" placeholder="Points">
+                            </td>
+                            <td class="p-2 border border-[var(--border)]">
+                                <select class="points-type w-full h-9 px-2 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent">
+                                    <option value="percent">%</option>
+                                    <option value="flat">Flat</option>
+                                </select>
+                            </td>
+                            <td class="p-2 border border-[var(--border)]">
+                                <input type="number" class="exp-days w-full h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent" placeholder="Days">
+                            </td>
+                            <td class="p-2 border border-[var(--border)] text-center">
+                                <button type="button" onclick="deleteRangeRow(this)" class="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/20 rounded-lg transition-colors cursor-pointer" title="Delete Row">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                        <!-- Initial Rows 4 -->
+                        <tr class="range-row transition-colors hover:bg-[var(--bg)]/30">
+                            <td class="p-2 border border-[var(--border)]">
+                                <input type="number" step="0.01" class="inv-from w-full h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent" placeholder="From">
+                            </td>
+                            <td class="p-2 border border-[var(--border)]">
+                                <input type="number" step="0.01" class="inv-to w-full h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent" placeholder="To">
+                            </td>
+                            <td class="p-2 border border-[var(--border)]">
+                                <input type="number" step="0.1" class="points-val w-full h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent" placeholder="Points">
+                            </td>
+                            <td class="p-2 border border-[var(--border)]">
+                                <select class="points-type w-full h-9 px-2 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent">
+                                    <option value="percent">%</option>
+                                    <option value="flat">Flat</option>
+                                </select>
+                            </td>
+                            <td class="p-2 border border-[var(--border)]">
+                                <input type="number" class="exp-days w-full h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent" placeholder="Days">
+                            </td>
+                            <td class="p-2 border border-[var(--border)] text-center">
+                                <button type="button" onclick="deleteRangeRow(this)" class="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/20 rounded-lg transition-colors cursor-pointer" title="Delete Row">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Redemption Settings -->
+        <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-sm space-y-6">
+            <h2 class="text-[15px] font-bold text-[var(--text-primary)] mb-4 pb-2 border-b border-[var(--border)]">Redeem Points</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Minimum Invoice Value -->
+                <div>
+                    <label class="block text-[13px] font-bold text-[var(--text-secondary)] mb-2">Minimum Invoice Value (with Tax)</label>
+                    <input type="number" id="minInvoiceValue" step="0.01" placeholder="e.g. 500.00"
+                           class="w-full h-11 px-4 border border-[var(--border)] rounded-xl bg-[var(--surface)] outline-none text-[13px] focus:border-accent transition-all duration-200">
+                </div>
+
+                <!-- Min Points -->
+                <div>
+                    <label class="block text-[13px] font-bold text-[var(--text-secondary)] mb-2">Min. Points</label>
+                    <input type="number" id="minPoints" placeholder="e.g. 10"
+                           class="w-full h-11 px-4 border border-[var(--border)] rounded-xl bg-[var(--surface)] outline-none text-[13px] focus:border-accent transition-all duration-200">
+                </div>
+
+                <!-- Max Points -->
+                <div>
+                    <label class="block text-[13px] font-bold text-[var(--text-secondary)] mb-2">Max. Points</label>
+                    <input type="number" id="maxPoints" placeholder="e.g. 1000"
+                           class="w-full h-11 px-4 border border-[var(--border)] rounded-xl bg-[var(--surface)] outline-none text-[13px] focus:border-accent transition-all duration-200">
+                </div>
+
+                <!-- Cash Discount Value per Point -->
+                <div>
+                    <label class="block text-[13px] font-bold text-[var(--text-secondary)] mb-2">Cash Discount Value per Point</label>
+                    <div class="relative flex items-stretch">
+                        <div class="flex items-center justify-center px-4 bg-[var(--bg)] border border-r-0 border-[var(--border)] rounded-l-xl text-[14px] font-bold text-[var(--text-secondary)]">
+                            ₹
+                        </div>
+                        <input type="number" id="cashDiscountValue" step="0.01" value="1.00"
+                               class="w-full h-11 px-4 border border-[var(--border)] rounded-r-xl bg-[var(--surface)] outline-none text-[13px] focus:border-accent transition-all duration-200">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Points Settings Toast -->
+<div id="pointsToast" class="fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3.5 bg-slate-900 text-white rounded-xl shadow-2xl opacity-0 translate-y-4 pointer-events-none transition-all duration-300">
+    <div id="pointsToastIcon" class="flex items-center justify-center">
+        <div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+    </div>
+    <span id="pointsToastText" class="text-[13px] font-semibold tracking-wide"></span>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // State Store for mock saving
+    const pointsState = {
+        applicableOn: 'total',
+        calcOnCredit: false,
+        displayInPrint: false,
+        minInvoiceValue: '',
+        minPoints: '',
+        maxPoints: '',
+        cashDiscountValue: '1.00',
+        ranges: []
+    };
+
+    function deleteRangeRow(button) {
+        const row = button.closest('tr');
+        const rowsCount = document.querySelectorAll('#rangeTableBody tr').length;
+        if (rowsCount > 1) {
+            row.remove();
+        } else {
+            // Keep at least one row, just clear values
+            row.querySelectorAll('input').forEach(input => input.value = '');
+            row.querySelector('select').selectedIndex = 0;
+        }
+    }
+
+    function addNewRangeRow() {
+        const tbody = document.getElementById('rangeTableBody');
+        const newRow = document.createElement('tr');
+        newRow.className = 'range-row transition-colors hover:bg-[var(--bg)]/30';
+        newRow.innerHTML = `
+            <td class="p-2 border border-[var(--border)]">
+                <input type="number" step="0.01" class="inv-from w-full h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent" placeholder="From">
+            </td>
+            <td class="p-2 border border-[var(--border)]">
+                <input type="number" step="0.01" class="inv-to w-full h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent" placeholder="To">
+            </td>
+            <td class="p-2 border border-[var(--border)]">
+                <input type="number" step="0.1" class="points-val w-full h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent" placeholder="Points">
+            </td>
+            <td class="p-2 border border-[var(--border)]">
+                <select class="points-type w-full h-9 px-2 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent">
+                    <option value="percent">%</option>
+                    <option value="flat">Flat</option>
+                </select>
+            </td>
+            <td class="p-2 border border-[var(--border)]">
+                <input type="number" class="exp-days w-full h-9 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] outline-none text-[13px] focus:border-accent" placeholder="Days">
+            </td>
+            <td class="p-2 border border-[var(--border)] text-center">
+                <button type="button" onclick="deleteRangeRow(this)" class="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/20 rounded-lg transition-colors cursor-pointer" title="Delete Row">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(newRow);
+    }
+
+    let pointsToastTimeout = null;
+    function showPointsToast(text, isLoader = true) {
+        const toast = document.getElementById('pointsToast');
+        const toastText = document.getElementById('pointsToastText');
+        const toastIcon = document.getElementById('pointsToastIcon');
+
+        if (pointsToastTimeout) clearTimeout(pointsToastTimeout);
+
+        if (isLoader) {
+            toastIcon.innerHTML = '<div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>';
+        } else {
+            toastIcon.innerHTML = '<svg class="w-4.5 h-4.5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
+        }
+
+        toastText.innerText = text;
+        toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+        toast.classList.add('opacity-100', 'translate-y-0');
+    }
+
+    function hidePointsToast(delay = 1500) {
+        const toast = document.getElementById('pointsToast');
+        pointsToastTimeout = setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+            toast.classList.remove('opacity-100', 'translate-y-0');
+        }, delay);
+    }
+
+    function saveCustomerPointsSettings() {
+        // Collect Radio state
+        const applicableRadios = document.getElementsByName('pointsApplicableOn');
+        let selectedApplicable = 'total';
+        for (const radio of applicableRadios) {
+            if (radio.checked) {
+                selectedApplicable = radio.value;
+                break;
+            }
+        }
+
+        pointsState.applicableOn = selectedApplicable;
+        pointsState.calcOnCredit = document.getElementById('calcOnCredit').checked;
+        pointsState.displayInPrint = document.getElementById('displayInPrint').checked;
+        pointsState.minInvoiceValue = document.getElementById('minInvoiceValue').value;
+        pointsState.minPoints = document.getElementById('minPoints').value;
+        pointsState.maxPoints = document.getElementById('maxPoints').value;
+        pointsState.cashDiscountValue = document.getElementById('cashDiscountValue').value;
+
+        // Collect Range values
+        pointsState.ranges = [];
+        const rows = document.querySelectorAll('#rangeTableBody tr');
+        rows.forEach(row => {
+            const invFrom = row.querySelector('.inv-from').value;
+            const invTo = row.querySelector('.inv-to').value;
+            const pointsVal = row.querySelector('.points-val').value;
+            const pointsType = row.querySelector('.points-type').value;
+            const expDays = row.querySelector('.exp-days').value;
+
+            if (invFrom || invTo || pointsVal || expDays) {
+                pointsState.ranges.push({
+                    invFrom,
+                    invTo,
+                    pointsVal,
+                    pointsType,
+                    expDays
+                });
+            }
+        });
+
+        // Trigger Success feedback
+        showPointsToast('Saving Customer Points configurations...', true);
+
+        setTimeout(() => {
+            showPointsToast('Customer Points settings saved successfully!', false);
+            hidePointsToast(1500);
+        }, 1000);
+    }
+</script>
+{% endblock %}

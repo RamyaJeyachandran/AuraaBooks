@@ -1,0 +1,608 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Settings - Company Settings - Auraa Books{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Tooltip popover styling */
+    .company-tooltip-icon {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+    }
+    .company-tooltip-box {
+        display: none;
+        position: absolute;
+        bottom: 125%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--surface);
+        border: 1px solid var(--border);
+        padding: 8px 12px;
+        border-radius: var(--radius);
+        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15);
+        z-index: 100;
+        width: 250px;
+        text-align: left;
+    }
+    .company-tooltip-icon:hover .company-tooltip-box {
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block breadcrumb_parent %}
+    <a href="{% url 'settings-dashboard' %}" class="hover:text-accent cursor-pointer">Settings</a>
+    <span class="opacity-50">/</span>
+{% endblock %}
+
+{% block breadcrumb_active %}Company Settings{% endblock %}
+
+{% block content %}
+<div class="stagger-in max-w-5xl mx-auto space-y-8 pb-12">
+    <!-- Header -->
+    <div class="pb-4 border-b border-[var(--border)] relative z-30">
+        <h1 class="text-[24px] font-extrabold text-[var(--text-primary)] tracking-tight flex items-center gap-2">
+            <a href="{% url 'settings-dashboard' %}" class="text-accent hover:underline cursor-pointer">Settings</a>
+            <span class="text-[var(--text-muted)] font-medium mx-1">/</span>
+            Company Settings
+        </h1>
+    </div>
+
+    <!-- 1. Company Profile Details Section -->
+    <div id="sectionProfile" class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-sm transition-all duration-200">
+        <!-- View Mode -->
+        <div id="profileViewMode" class="flex justify-between items-start gap-4">
+            <div class="space-y-4">
+                <div>
+                    <h2 id="viewCompName" class="text-[18px] font-extrabold text-[var(--text-primary)]">Auraa Crackers</h2>
+                    <p id="viewCompAddress" class="text-[13px] text-[var(--text-secondary)] mt-1 max-w-2xl leading-relaxed">
+                        S.No.226/5, D.No.1/177_5_20, Sivakasi Vembakottai Main Road, Pernaikenpatti Village, Sivakasi Taluk, Tamilnadu - 626 189., Sivakasi - 626 189, Tamil Nadu, India
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-12 text-[13px] text-[var(--text-secondary)]">
+                    <p>Phone : <span id="viewCompPhone" class="font-medium text-[var(--text-primary)]">-</span></p>
+                    <p>E-mail : <span id="viewCompEmail" class="font-medium text-[var(--text-primary)]">-</span></p>
+                    <p class="md:col-span-2">Time Zone : <span id="viewCompTimeZone" class="font-medium text-[var(--text-primary)]">(UTC +5:30) Indian Standard Time, Sri Lanka Time</span></p>
+                    <p class="md:col-span-2">Business Type : <span id="viewCompBusinessType" class="font-medium text-[var(--text-primary)]">Retail Shop</span></p>
+                </div>
+            </div>
+            <button onclick="toggleProfileEdit(true)" class="px-5 py-1.5 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-sm transition-all cursor-pointer">
+                Edit
+            </button>
+        </div>
+
+        <!-- Edit Mode -->
+        <div id="profileEditMode" class="hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <h3 class="text-[14px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Edit Company Details</h3>
+                <div class="flex items-center gap-2">
+                    <button onclick="saveProfile()" class="px-5 py-1.5 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-sm cursor-pointer">Save</button>
+                    <button onclick="toggleProfileEdit(false)" class="px-5 py-1.5 bg-slate-600 hover:bg-slate-700 text-white rounded-lg text-[12px] font-bold shadow-sm cursor-pointer">Cancel</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-[13px]">
+                <div class="md:col-span-2 space-y-1.5">
+                    <label class="block font-bold text-[var(--text-primary)]">Name <span class="text-rose-500">*</span></label>
+                    <input type="text" id="editCompName" value="Auraa Crackers" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-[var(--text-primary)]">Address Line 1</label>
+                    <input type="text" id="editCompAddr1" value="S.No.226/5, D.No.1/177_5_20, Sivakasi Vembakottai Main Road" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-[var(--text-primary)]">Address Line 2</label>
+                    <input type="text" id="editCompAddr2" value="Pernaikenpatti Village, Sivakasi Taluk, Tamilnadu - 626 189." class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 md:col-span-2">
+                    <div class="space-y-1.5">
+                        <label class="block font-bold text-[var(--text-primary)]">City</label>
+                        <input type="text" id="editCompCity" value="Sivakasi" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="block font-bold text-[var(--text-primary)]">Postal code</label>
+                        <input type="text" id="editCompPostal" value="626 189" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 md:col-span-2">
+                    <div class="space-y-1.5">
+                        <label class="block font-bold text-[var(--text-primary)]">Country <span class="text-rose-500">*</span></label>
+                        <select id="editCompCountry" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                            <option value="India" selected>India</option>
+                            <option value="Sri Lanka">Sri Lanka</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="block font-bold text-[var(--text-primary)]">State <span class="text-rose-500">*</span></label>
+                        <select id="editCompState" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                            <option value="Tamil Nadu" selected>Tamil Nadu</option>
+                            <option value="Karnataka">Karnataka</option>
+                            <option value="Kerala">Kerala</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-[var(--text-primary)]">Phone</label>
+                    <input type="text" id="editCompPhone" value="" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-[var(--text-primary)]">E-Mail</label>
+                    <input type="email" id="editCompEmail" value="" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-[var(--text-primary)]">Theme</label>
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded bg-[#2185d0] border border-slate-300"></div>
+                        <span class="font-mono text-slate-600">#2185d0</span>
+                    </div>
+                </div>
+
+                <div class="space-y-1.5 md:col-span-2">
+                    <label class="block font-bold text-[var(--text-primary)] flex items-center gap-1">
+                        Additional Info
+                        <span class="company-tooltip-icon text-slate-400">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/>
+                            </svg>
+                            <span class="company-tooltip-box text-[11px] font-semibold text-[var(--text-secondary)] leading-normal">
+                                Extra details shown on footer of document.
+                            </span>
+                        </span>
+                    </label>
+                    <textarea id="editCompAddInfo" rows="2" class="w-full p-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none resize-none"></textarea>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-[var(--text-primary)]">Business Type</label>
+                    <select id="editCompBusType" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                        <option value="Retail Shop" selected>Retail Shop</option>
+                        <option value="Wholesale">Wholesale</option>
+                        <option value="Manufacturing">Manufacturing</option>
+                    </select>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-[var(--text-primary)]">Time Zone</label>
+                    <select id="editCompTimeZone" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                        <option value="(UTC +5:30) Indian Standard Time, Sri Lanka Time" selected>(UTC +5:30) Indian Standard Time, Sri Lanka Time</option>
+                        <option value="(UTC +0:00) Greenwich Mean Time">(UTC +0:00) Greenwich Mean Time</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. GST & Tax Configurations -->
+    <div id="sectionTaxation" class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-sm">
+        <!-- View Mode -->
+        <div id="taxViewMode" class="flex justify-between items-start gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 w-full">
+                <div class="space-y-1">
+                    <span class="text-[12px] font-bold text-[var(--text-muted)] flex items-center gap-1">
+                        GSTIN
+                        <span class="company-tooltip-icon text-slate-400">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/>
+                            </svg>
+                            <span class="company-tooltip-box text-[11px] font-semibold text-[var(--text-secondary)]">Goods and Services Tax Identification Number.</span>
+                        </span>
+                    </span>
+                    <p id="viewTaxGSTIN" class="text-[14px] font-bold text-[var(--text-secondary)]">00XXXXX0000X0Z0</p>
+                </div>
+                <div class="space-y-1">
+                    <span class="text-[12px] font-bold text-[var(--text-muted)] flex items-center gap-1">
+                        PAN
+                        <span class="company-tooltip-icon text-slate-400">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/>
+                            </svg>
+                            <span class="company-tooltip-box text-[11px] font-semibold text-[var(--text-secondary)]">Permanent Account Number.</span>
+                        </span>
+                    </span>
+                    <p id="viewTaxPAN" class="text-[14px] font-bold text-[var(--text-secondary)]">XXXXX0000X</p>
+                </div>
+                <div class="md:col-span-2 py-1 flex items-center gap-2">
+                    <input type="checkbox" id="viewTaxMSME" disabled class="rounded border-slate-300">
+                    <span class="text-[13px] text-[var(--text-secondary)] flex items-center gap-1">
+                        Registered in MSME/Udyam
+                        <span class="company-tooltip-icon text-slate-400">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/>
+                            </svg>
+                            <span class="company-tooltip-box text-[11px] font-semibold text-[var(--text-secondary)]">Micro, Small and Medium Enterprises configuration.</span>
+                        </span>
+                    </span>
+                </div>
+                <div class="space-y-1">
+                    <span class="text-[12px] font-bold text-[var(--text-muted)]">Default Goods HSN Code</span>
+                    <p class="text-[13px] text-accent font-semibold hover:underline cursor-pointer">Default Goods HSN Code</p>
+                </div>
+                <div class="space-y-1">
+                    <span class="text-[12px] font-bold text-[var(--text-muted)]">Default Tax Rate</span>
+                    <p id="viewTaxRate" class="text-[13px] font-bold text-[var(--text-primary)]">GST 18%</p>
+                </div>
+                <div class="md:col-span-2 space-y-1">
+                    <span class="text-[12px] font-bold text-[var(--text-muted)]">Main Branch Name</span>
+                    <p id="viewTaxBranch" class="text-[13px] font-bold text-[var(--text-primary)]">Main Branch</p>
+                </div>
+            </div>
+            <button onclick="toggleTaxationEdit(true)" class="px-5 py-1.5 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-sm transition-all cursor-pointer">
+                Edit
+            </button>
+        </div>
+
+        <!-- Edit Mode -->
+        <div id="taxEditMode" class="hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <h3 class="text-[14px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Edit GST & Taxation Settings</h3>
+                <div class="flex items-center gap-2">
+                    <button onclick="saveTaxation()" class="px-5 py-1.5 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-sm cursor-pointer">Save</button>
+                    <button onclick="toggleTaxationEdit(false)" class="px-5 py-1.5 bg-slate-600 hover:bg-slate-700 text-white rounded-lg text-[12px] font-bold shadow-sm cursor-pointer">Cancel</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-[13px]">
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-[var(--text-primary)]">GSTIN</label>
+                    <input type="text" id="editTaxGSTIN" value="00XXXXX0000X0Z0" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-[var(--text-primary)]">PAN</label>
+                    <input type="text" id="editTaxPAN" value="XXXXX0000X" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                </div>
+                <div class="md:col-span-2 flex items-center gap-2 py-1">
+                    <input type="checkbox" id="editTaxMSME" class="rounded border-slate-300">
+                    <label for="editTaxMSME" class="font-bold text-[var(--text-primary)] cursor-pointer">Registered in MSME/Udyam</label>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-[var(--text-primary)]">Default Goods HSN Code</label>
+                    <input type="text" id="editTaxHSN" value="Default Goods HSN Code" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-[var(--text-primary)]">Default Tax Rate</label>
+                    <select id="editTaxRate" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                        <option value="GST 18%" selected>GST 18%</option>
+                        <option value="GST 12%">GST 12%</option>
+                        <option value="GST 5%">GST 5%</option>
+                        <option value="None">None</option>
+                    </select>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-[var(--text-primary)]">Main Branch Name</label>
+                    <input type="text" id="editTaxBranch" value="Main Branch" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-[var(--text-primary)]">Company Short Name</label>
+                    <input type="text" id="editTaxShortName" value="" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Logo Management -->
+    <div id="sectionLogo" class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-sm">
+        <div class="flex justify-between items-start gap-4">
+            <div class="space-y-2">
+                <span class="block text-[13px] font-bold text-[var(--text-primary)]">Logo <span class="text-[11px] text-[var(--text-muted)] font-normal">120*120 pixels (recommended)</span></span>
+                <div class="w-32 h-32 bg-slate-100 border border-dashed border-[var(--border)] rounded-xl flex items-center justify-center text-slate-400 overflow-hidden relative group">
+                    <!-- Virtual image display -->
+                    <svg id="logoSvg" class="w-12 h-12 text-slate-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/>
+                    </svg>
+                    <input type="file" id="logoUploadInput" class="hidden" onchange="previewLogo(event)">
+                </div>
+            </div>
+            <button onclick="triggerLogoUpload()" class="px-5 py-1.5 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-sm transition-all cursor-pointer">
+                Edit
+            </button>
+        </div>
+    </div>
+
+    <!-- 4. Date Settings Section -->
+    <div id="sectionDate" class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-sm">
+        <!-- View Mode -->
+        <div id="dateViewMode" class="flex justify-between items-start gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 w-full">
+                <div class="space-y-1">
+                    <span class="text-[12px] font-bold text-[var(--text-muted)]">Date Format</span>
+                    <p id="viewDateFormat" class="text-[13px] font-bold text-[var(--text-primary)]">dd/mm/yyyy</p>
+                </div>
+                <div class="space-y-1">
+                    <span class="text-[12px] font-bold text-[var(--text-muted)]">Freeze Date Till</span>
+                    <p id="viewFreezeDate" class="text-[13px] font-bold text-slate-400">dd/mm/yyyy</p>
+                    <p class="text-[11px] text-[var(--text-muted)] leading-relaxed max-w-sm">
+                        System will not allow to modify transactions or make any accounting entries before the below set date.
+                    </p>
+                </div>
+            </div>
+            <button onclick="toggleDateEdit(true)" class="px-5 py-1.5 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-sm transition-all cursor-pointer">
+                Edit
+            </button>
+        </div>
+
+        <!-- Edit Mode -->
+        <div id="dateEditMode" class="hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <h3 class="text-[14px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Edit Date Settings</h3>
+                <div class="flex items-center gap-2">
+                    <button onclick="saveDateSettings()" class="px-5 py-1.5 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-sm cursor-pointer">Save</button>
+                    <button onclick="toggleDateEdit(false)" class="px-5 py-1.5 bg-slate-600 hover:bg-slate-700 text-white rounded-lg text-[12px] font-bold shadow-sm cursor-pointer">Cancel</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-[13px]">
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-[var(--text-primary)]">Date Format</label>
+                    <select id="editDateFormat" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                        <option value="dd/mm/yyyy" selected>dd/mm/yyyy</option>
+                        <option value="mm/dd/yyyy">mm/dd/yyyy</option>
+                        <option value="yyyy-mm-dd">yyyy-mm-dd</option>
+                    </select>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-[var(--text-primary)]">Freeze Date Till</label>
+                    <input type="text" id="editFreezeDate" placeholder="dd/mm/yyyy" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Messaging Gateways Section (SMS / Whatsapp Tabs) -->
+    <div id="sectionMessaging" class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-sm">
+        <!-- View Mode -->
+        <div id="messagingViewMode" class="space-y-6">
+            <div class="flex justify-between items-center border-b border-[var(--border)]/60 pb-3">
+                <!-- Navigation Tabs -->
+                <div class="flex gap-6 text-[13px] font-bold">
+                    <button onclick="switchTab('sms')" id="tabBtnSMS" class="pb-3 border-b-2 border-accent text-accent transition-all cursor-pointer">
+                        SMS settings
+                    </button>
+                    <button onclick="switchTab('whatsapp')" id="tabBtnWhatsapp" class="pb-3 border-b-2 border-transparent text-[var(--text-muted)] hover:text-accent transition-all cursor-pointer">
+                        Whatsapp settings
+                    </button>
+                </div>
+                <button onclick="toggleMessagingEdit(true)" class="px-5 py-1.5 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-sm transition-all cursor-pointer">
+                    Edit
+                </button>
+            </div>
+
+            <!-- SMS content -->
+            <div id="smsTabContent" class="space-y-2 text-[13px]">
+                <p class="text-[var(--text-secondary)]">To set up a sms configure an SMS server that will take care of the delivery of your sms</p>
+                <p class="font-bold text-[var(--text-primary)]">Gateway : <span id="viewSmsGateway" class="font-normal text-slate-500">-None-</span></p>
+            </div>
+
+            <!-- Whatsapp content -->
+            <div id="whatsappTabContent" class="hidden space-y-2 text-[13px]">
+                <p class="text-[var(--text-secondary)]">To set up a whatsapp configure an Whatsapp server that will take care of the delivery of your message</p>
+                <p class="font-bold text-[var(--text-primary)]">Gateway : <span id="viewWhatsappGateway" class="font-normal text-slate-500">OutputBooks (only invoice)</span></p>
+            </div>
+        </div>
+
+        <!-- Edit Mode -->
+        <div id="messagingEditMode" class="hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <h3 class="text-[14px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Edit Messaging Gateway</h3>
+                <div class="flex items-center gap-2">
+                    <button onclick="saveMessaging()" class="px-5 py-1.5 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-sm cursor-pointer">Save</button>
+                    <button onclick="toggleMessagingEdit(false)" class="px-5 py-1.5 bg-slate-600 hover:bg-slate-700 text-white rounded-lg text-[12px] font-bold shadow-sm cursor-pointer">Cancel</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-[13px]">
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-[var(--text-primary)]">SMS Gateway</label>
+                    <select id="editSmsGateway" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                        <option value="-None-" selected>-None-</option>
+                        <option value="Twilio">Twilio SMS</option>
+                        <option value="Plivo">Plivo SMS</option>
+                    </select>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-[var(--text-primary)]">Whatsapp Gateway</label>
+                    <select id="editWhatsappGateway" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                        <option value="OutputBooks (only invoice)" selected>OutputBooks (only invoice)</option>
+                        <option value="Twilio Whatsapp">Twilio Business API</option>
+                        <option value="-None-">-None-</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Status Toast -->
+<div id="compToast" class="fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3.5 bg-slate-900 text-white rounded-xl shadow-2xl opacity-0 translate-y-4 pointer-events-none transition-all duration-300">
+    <div id="compToastIcon" class="flex items-center justify-center"></div>
+    <span id="compToastText" class="text-[13px] font-semibold tracking-wide"></span>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentTab = 'sms';
+
+    // 1. Profile section helpers
+    function toggleProfileEdit(show) {
+        document.getElementById('profileViewMode').classList.toggle('hidden', show);
+        document.getElementById('profileEditMode').classList.toggle('hidden', !show);
+    }
+
+    function saveProfile() {
+        const name = document.getElementById('editCompName').value.trim();
+        if (!name) {
+            showToast('Please specify a company name.', 'error');
+            return;
+        }
+
+        showToast('Saving profile details...', 'loading');
+        setTimeout(() => {
+            document.getElementById('viewCompName').innerText = name;
+            
+            const addr1 = document.getElementById('editCompAddr1').value.trim();
+            const addr2 = document.getElementById('editCompAddr2').value.trim();
+            const city = document.getElementById('editCompCity').value.trim();
+            const postal = document.getElementById('editCompPostal').value.trim();
+            const country = document.getElementById('editCompCountry').value;
+            const state = document.getElementById('editCompState').value;
+            
+            document.getElementById('viewCompAddress').innerText = `${addr1}, ${addr2}, ${city} - ${postal}, ${state}, ${country}`;
+            
+            const phone = document.getElementById('editCompPhone').value.trim();
+            document.getElementById('viewCompPhone').innerText = phone || '-';
+            
+            const email = document.getElementById('editCompEmail').value.trim();
+            document.getElementById('viewCompEmail').innerText = email || '-';
+            
+            document.getElementById('viewCompTimeZone').innerText = document.getElementById('editCompTimeZone').value;
+            document.getElementById('viewCompBusinessType').innerText = document.getElementById('editCompBusType').value;
+
+            toggleProfileEdit(false);
+            showToast('Company profile updated!', 'success');
+            hideToast(1500);
+        }, 600);
+    }
+
+    // 2. Taxation section helpers
+    function toggleTaxationEdit(show) {
+        document.getElementById('taxViewMode').classList.toggle('hidden', show);
+        document.getElementById('taxEditMode').classList.toggle('hidden', !show);
+    }
+
+    function saveTaxation() {
+        showToast('Saving taxation settings...', 'loading');
+        setTimeout(() => {
+            document.getElementById('viewTaxGSTIN').innerText = document.getElementById('editTaxGSTIN').value.trim() || '-';
+            document.getElementById('viewTaxPAN').innerText = document.getElementById('editTaxPAN').value.trim() || '-';
+            document.getElementById('viewTaxMSME').checked = document.getElementById('editTaxMSME').checked;
+            document.getElementById('viewTaxRate').innerText = document.getElementById('editTaxRate').value;
+            document.getElementById('viewTaxBranch').innerText = document.getElementById('editTaxBranch').value.trim() || 'Main Branch';
+
+            toggleTaxationEdit(false);
+            showToast('Taxation settings updated!', 'success');
+            hideToast(1500);
+        }, 600);
+    }
+
+    // 3. Logo preview logic
+    function triggerLogoUpload() {
+        document.getElementById('logoUploadInput').click();
+    }
+
+    function previewLogo(event) {
+        const input = event.target;
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const logoContainer = document.getElementById('logoSvg').parentElement;
+                logoContainer.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                showToast('Logo uploaded successfully!', 'success');
+                hideToast(1500);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // 4. Date settings helpers
+    function toggleDateEdit(show) {
+        document.getElementById('dateViewMode').classList.toggle('hidden', show);
+        document.getElementById('dateEditMode').classList.toggle('hidden', !show);
+    }
+
+    function saveDateSettings() {
+        showToast('Saving date format configurations...', 'loading');
+        setTimeout(() => {
+            document.getElementById('viewDateFormat').innerText = document.getElementById('editDateFormat').value;
+            const freeze = document.getElementById('editFreezeDate').value.trim();
+            const freezeEl = document.getElementById('viewFreezeDate');
+            freezeEl.innerText = freeze || 'dd/mm/yyyy';
+            if (freeze) {
+                freezeEl.classList.remove('text-slate-400');
+                freezeEl.classList.add('text-[var(--text-primary)]');
+            } else {
+                freezeEl.classList.add('text-slate-400');
+            }
+
+            toggleDateEdit(false);
+            showToast('Date settings updated!', 'success');
+            hideToast(1500);
+        }, 600);
+    }
+
+    // 5. Messaging tab & edit switch helpers
+    function switchTab(tab) {
+        currentTab = tab;
+        const smsBtn = document.getElementById('tabBtnSMS');
+        const whatsappBtn = document.getElementById('tabBtnWhatsapp');
+        const smsContent = document.getElementById('smsTabContent');
+        const whatsappContent = document.getElementById('whatsappTabContent');
+
+        if (tab === 'sms') {
+            smsBtn.className = 'pb-3 border-b-2 border-accent text-accent transition-all cursor-pointer';
+            whatsappBtn.className = 'pb-3 border-b-2 border-transparent text-[var(--text-muted)] hover:text-accent transition-all cursor-pointer';
+            smsContent.classList.remove('hidden');
+            whatsappContent.classList.add('hidden');
+        } else {
+            smsBtn.className = 'pb-3 border-b-2 border-transparent text-[var(--text-muted)] hover:text-accent transition-all cursor-pointer';
+            whatsappBtn.className = 'pb-3 border-b-2 border-accent text-accent transition-all cursor-pointer';
+            smsContent.classList.add('hidden');
+            whatsappContent.classList.remove('hidden');
+        }
+    }
+
+    function toggleMessagingEdit(show) {
+        document.getElementById('messagingViewMode').classList.toggle('hidden', show);
+        document.getElementById('messagingEditMode').classList.toggle('hidden', !show);
+    }
+
+    function saveMessaging() {
+        showToast('Configuring gateways...', 'loading');
+        setTimeout(() => {
+            document.getElementById('viewSmsGateway').innerText = document.getElementById('editSmsGateway').value;
+            document.getElementById('viewWhatsappGateway').innerText = document.getElementById('editWhatsappGateway').value;
+
+            toggleMessagingEdit(false);
+            showToast('Messaging configurations updated!', 'success');
+            hideToast(1500);
+        }, 600);
+    }
+
+    // Toast helpers
+    let compToastTimeout = null;
+    function showToast(text, type = 'loading') {
+        const toast = document.getElementById('compToast');
+        const textSpan = document.getElementById('compToastText');
+        const iconDiv = document.getElementById('compToastIcon');
+
+        if (compToastTimeout) clearTimeout(compToastTimeout);
+
+        textSpan.innerText = text;
+
+        if (type === 'loading') {
+            iconDiv.innerHTML = '<div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>';
+        } else if (type === 'success') {
+            iconDiv.innerHTML = '<svg class="w-4.5 h-4.5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
+        } else {
+            iconDiv.innerHTML = '<svg class="w-4.5 h-4.5 text-rose-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>';
+        }
+
+        toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+        toast.classList.add('opacity-100', 'translate-y-0');
+    }
+
+    function hideToast(delay = 1500) {
+        const toast = document.getElementById('compToast');
+        compToastTimeout = setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+            toast.classList.remove('opacity-100', 'translate-y-0');
+        }, delay);
+    }
+</script>
+{% endblock %}

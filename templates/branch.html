@@ -241,9 +241,13 @@
                         <input type="text" required class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white border-l-4 border-l-red-500 shadow-inner transition-all">
                     </div>
                     <div class="space-y-1 relative">
-                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1 relative">
                             GSTIN 
-                            <svg class="w-3.5 h-3.5 text-blue-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2.5"/></svg>
+                            <svg onclick="toggleHelpTooltip(this)" class="w-3.5 h-3.5 text-slate-400 cursor-pointer hover:scale-110 active:scale-95 transition-all drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/></svg>
+                            <div onclick="event.stopPropagation()" class="help-tooltip absolute bottom-full left-0 mb-2 w-72 bg-white border border-slate-100 shadow-2xl rounded-2xl p-4 hidden z-[110] animate-in fade-in zoom-in-95">
+                                <div class="absolute -bottom-2 left-4 w-4 h-4 bg-white border-b border-r border-slate-100 rotate-45"></div>
+                                <p class="text-[13px] font-bold text-slate-600 leading-relaxed normal-case tracking-normal">15-digit Goods and Services Tax Identification Number assigned to every GST registered client or supplier</p>
+                            </div>
                             <button type="button" onclick="toggleGstMenu()" class="ml-auto text-slate-400 hover:text-slate-600 focus:outline-none transition-all">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v.01M12 12v.01M12 19v.01"/></svg>
                             </button>

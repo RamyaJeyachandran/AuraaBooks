@@ -1,0 +1,451 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Settings - Units - Auraa Books{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Tooltip popover styles */
+    .help-tooltip-icon {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+    }
+    .help-tooltip-box {
+        display: none;
+        position: absolute;
+        bottom: 125%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--surface);
+        border: 1px solid var(--border);
+        padding: 8px 12px;
+        border-radius: var(--radius);
+        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+        z-index: 100;
+        width: 220px;
+        text-align: left;
+    }
+    .help-tooltip-icon:hover .help-tooltip-box {
+        display: block;
+    }
+
+    /* Primary Color Header Style */
+    .table-primary-header th {
+        background-color: var(--accent) !important;
+        color: #ffffff !important;
+    }
+
+    /* Modal Styling */
+    .modal-header-primary {
+        background-color: var(--accent) !important;
+        color: #ffffff !important;
+    }
+</style>
+{% endblock %}
+
+{% block breadcrumb_parent %}
+    <a href="{% url 'settings-dashboard' %}" class="hover:text-accent cursor-pointer">Settings</a>
+    <span class="opacity-50">/</span>
+{% endblock %}
+
+{% block breadcrumb_active %}Units{% endblock %}
+
+{% block content %}
+<div class="stagger-in max-w-5xl mx-auto space-y-6">
+    <!-- Header & Action Panel -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-[var(--border)] relative z-30">
+        <div>
+            <h1 class="text-[24px] font-extrabold text-[var(--text-primary)] mb-1 tracking-tight flex items-center gap-2">
+                <a href="{% url 'settings-dashboard' %}" class="text-accent hover:underline cursor-pointer">Settings</a>
+                <span class="text-[var(--text-muted)] font-medium mx-1">/</span>
+                Units
+                
+                <!-- Help Tooltip -->
+                <span class="help-tooltip-icon text-slate-400 hover:text-accent flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/>
+                    </svg>
+                    <div class="help-tooltip-box text-[11px] font-semibold text-[var(--text-secondary)] leading-normal">
+                        Units to be used in items to Track inventory
+                    </div>
+                </span>
+            </h1>
+            <p class="text-[13px] text-[var(--text-muted)]">Configure measurement metrics and stock unit configurations.</p>
+        </div>
+
+        <!-- Add Unit button with primary background color -->
+        <div class="flex items-center gap-3">
+            <button onclick="openUnitModal()" class="px-6 py-2.5 bg-[var(--accent)] hover:brightness-110 text-white rounded-xl text-[13px] font-extrabold transition-all shadow-md active:scale-[0.98] cursor-pointer">
+                Add Unit
+            </button>
+        </div>
+    </div>
+
+    <!-- Grid / Table Container -->
+    <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto no-scrollbar">
+            <table class="w-full text-left border-collapse border border-[var(--border)] rounded-xl overflow-hidden">
+                <thead>
+                    <!-- Table header styled with primary color -->
+                    <tr class="table-primary-header text-[12px] font-extrabold uppercase tracking-wider">
+                        <th class="px-6 py-3 border border-[var(--border)]">Unit Name</th>
+                        <th class="px-6 py-3 border border-[var(--border)]">Unit Description</th>
+                        <th class="px-6 py-3 border border-[var(--border)] text-center w-[12%]">Default</th>
+                        <th class="px-6 py-3 border border-[var(--border)] text-center w-[15%]">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="unitsGridBody" class="text-[13px] text-[var(--text-primary)]">
+                    <!-- Dynamic Rows Injected by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ==============================================
+     MODALS SECTION
+     ============================================== -->
+
+<!-- Backdrop overlay -->
+<div id="unitModalOverlay" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-xl w-full max-w-lg overflow-hidden relative">
+        
+        <!-- Modal Header with primary color background -->
+        <div class="modal-header-primary px-5 py-4 flex items-center justify-between border-b border-[var(--border)]">
+            <h3 class="text-[15px] font-extrabold tracking-wide" id="modalTitle">Unit Details</h3>
+            <!-- Close X button with red color background -->
+            <button onclick="closeUnitModal()" class="w-7 h-7 bg-rose-500 hover:bg-rose-600 text-white font-extrabold flex items-center justify-center rounded-lg transition-all cursor-pointer" title="Close">
+                &times;
+            </button>
+        </div>
+
+        <form id="unitForm" onsubmit="event.preventDefault(); submitUnitForm();" class="p-6 space-y-5">
+            <!-- Row 1: Name and Abbreviation -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="sm:col-span-2">
+                    <label class="block text-[12px] font-bold text-rose-500 mb-1.5">Unit Name *</label>
+                    <input type="text" id="unitName" required placeholder="e.g. Box"
+                           class="w-full h-10 px-3 border border-[var(--border)] rounded-xl bg-[var(--surface)] outline-none text-[13px] focus:border-accent">
+                </div>
+                <div>
+                    <label class="block text-[12px] font-bold text-rose-500 mb-1.5">Abbreviation *</label>
+                    <input type="text" id="unitAbbreviation" required placeholder="e.g. BOX"
+                           class="w-full h-10 px-3 border border-[var(--border)] rounded-xl bg-[var(--surface)] outline-none text-[13px] focus:border-accent">
+                </div>
+            </div>
+
+            <!-- Row 2: Quantity code & Conversion -->
+            <div>
+                <label class="block text-[12px] font-bold text-[var(--text-secondary)] mb-1.5">Unit Quantity code</label>
+                <div class="flex items-center gap-3">
+                    <select id="unitQtyCode" onchange="syncQuantityCode()"
+                            class="h-10 px-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] outline-none text-[13px] focus:border-accent min-w-[140px]">
+                        <option value="">Select Code</option>
+                        <option value="BAG">BAG</option>
+                        <option value="BOX">BOX</option>
+                        <option value="CASE">CASE</option>
+                        <option value="PCS">PCS</option>
+                    </select>
+
+                    <!-- Conversion Link with Primary Color Text -->
+                    <button type="button" id="conversionFactorBtn" onclick="toggleConversionInput()" class="hidden text-[12px] font-extrabold text-[var(--accent)] hover:underline cursor-pointer">
+                        Conversion factor
+                    </button>
+                </div>
+            </div>
+
+            <!-- Conversion factor inputs -->
+            <div id="conversionContainer" class="hidden p-3 bg-[var(--bg)]/50 border border-[var(--border)] rounded-xl items-center gap-2 text-[13px]">
+                <span class="font-bold text-[var(--text-secondary)]">1</span>
+                <span class="font-bold text-[var(--text-primary)]" id="lblConvSource">BOX</span>
+                <span class="font-bold text-[var(--text-secondary)]">=</span>
+                <input type="number" id="convVal" placeholder="e.g. 12" class="w-20 h-8 px-2 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none">
+                <span class="text-[12px] text-[var(--text-muted)]">Base Units</span>
+            </div>
+
+            <!-- Collapsible: Related Units -->
+            <div class="pt-2 border-t border-[var(--border)]/60">
+                <button type="button" onclick="toggleRelatedUnits()" class="w-full flex items-center justify-between text-[13px] font-bold text-[var(--text-primary)] focus:outline-none cursor-pointer">
+                    <span>Related Units</span>
+                    <svg id="relatedArrow" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
+                    </svg>
+                </button>
+                <div id="relatedUnitsContainer" class="hidden mt-3 p-3 bg-[var(--bg)]/30 border border-[var(--border)] rounded-xl text-[12px] text-[var(--text-muted)]">
+                    Configure related conversions and packing configurations.
+                </div>
+            </div>
+
+            <!-- Footer Checkboxes & Actions -->
+            <div class="pt-4 border-t border-[var(--border)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-6">
+                    <label class="flex items-center gap-2 cursor-pointer text-[12px] text-[var(--text-secondary)]">
+                        <input type="checkbox" id="unitActive" checked class="w-4 h-4 text-accent border-[var(--border)] rounded accent-[var(--accent)]">
+                        <span>Active</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-[12px] text-[var(--text-secondary)]">
+                        <input type="checkbox" id="unitDefault" class="w-4 h-4 text-accent border-[var(--border)] rounded accent-[var(--accent)]">
+                        <span>Default</span>
+                    </label>
+                </div>
+
+                <div class="flex items-center gap-2 self-end sm:self-auto">
+                    <!-- Cancel button with dark gray color background -->
+                    <button type="button" onclick="closeUnitModal()" class="px-4 py-2 bg-slate-700 hover:bg-slate-800 text-white rounded-lg text-[12px] font-bold transition-all active:scale-[0.98] cursor-pointer">
+                        Cancel
+                    </button>
+                    <!-- Save button with primary color background -->
+                    <button type="submit" class="px-4 py-2 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold transition-all active:scale-[0.98] cursor-pointer">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Toast notifications -->
+<div id="unitToast" class="fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3.5 bg-slate-900 text-white rounded-xl shadow-2xl opacity-0 translate-y-4 pointer-events-none transition-all duration-300">
+    <div id="unitToastIcon" class="flex items-center justify-center">
+        <div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+    </div>
+    <span id="unitToastText" class="text-[13px] font-semibold tracking-wide"></span>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // State Store for mock Units
+    let unitsList = [
+        { id: 1, name: 'Bag', desc: 'Bag', isDefault: false, active: true, qtyCode: 'BAG', conversionVal: '' },
+        { id: 2, name: 'Box', desc: 'Box', isDefault: true, active: true, qtyCode: 'BOX', conversionVal: '12' },
+        { id: 3, name: 'CASE', desc: 'CASE', isDefault: false, active: true, qtyCode: 'CASE', conversionVal: '' }
+    ];
+
+    let currentEditingUnitId = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+        renderUnitsTable();
+    });
+
+    function renderUnitsTable() {
+        const tbody = document.getElementById('unitsGridBody');
+        tbody.innerHTML = '';
+
+        unitsList.forEach(u => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-[var(--bg)]/20 transition-colors duration-150 align-middle';
+
+            const defaultCheck = u.isDefault 
+                ? `<div class="flex justify-center"><svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>`
+                : '—';
+
+            tr.innerHTML = `
+                <td class="px-6 py-4 border border-[var(--border)] font-bold text-[var(--text-secondary)]">${u.name}</td>
+                <td class="px-6 py-4 border border-[var(--border)] text-[var(--text-muted)]">${u.desc}</td>
+                <td class="px-6 py-4 border border-[var(--border)] text-center">${defaultCheck}</td>
+                <td class="px-6 py-4 border border-[var(--border)] text-center relative">
+                    <div class="inline-flex items-center justify-center gap-1.5">
+                        <!-- Edit text colored as primary color -->
+                        <button onclick="editUnit(${u.id})" class="text-[13px] font-extrabold text-[var(--accent)] hover:underline cursor-pointer">Edit</button>
+                        <button onclick="toggleRowMenu(event, ${u.id})" class="p-0.5 border border-transparent hover:border-[var(--border)] hover:bg-[var(--bg)] rounded cursor-pointer">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+                        </button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function toggleRowMenu(e, id) {
+        e.stopPropagation();
+        closeRowMenu();
+
+        const rect = e.currentTarget.getBoundingClientRect();
+        const menu = document.createElement('div');
+        menu.id = 'activeRowMenu';
+        menu.className = 'absolute bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-lg z-50 py-1 w-24';
+        menu.style.top = `${rect.bottom + window.scrollY}px`;
+        menu.style.left = `${rect.left + window.scrollX - 70}px`;
+
+        menu.innerHTML = `
+            <button onclick="editUnit(${id})" class="w-full text-left px-3 py-1.5 hover:bg-[var(--bg)] text-[12px] font-medium text-[var(--text-primary)]">Edit</button>
+            <button onclick="deleteUnit(${id})" class="w-full text-left px-3 py-1.5 hover:bg-rose-50 dark:hover:bg-rose-950/20 text-[12px] font-bold text-rose-500">Delete</button>
+        `;
+
+        document.body.appendChild(menu);
+        document.addEventListener('click', closeRowMenu);
+    }
+
+    function closeRowMenu() {
+        const menu = document.getElementById('activeRowMenu');
+        if (menu) {
+            menu.remove();
+            document.removeEventListener('click', closeRowMenu);
+        }
+    }
+
+    // Modal Handling
+    function openUnitModal(id = null) {
+        currentEditingUnitId = id;
+        const modal = document.getElementById('unitModalOverlay');
+        const form = document.getElementById('unitForm');
+        form.reset();
+
+        // Reset elements visibility
+        document.getElementById('conversionFactorBtn').classList.add('hidden');
+        document.getElementById('conversionContainer').classList.add('hidden');
+        
+        // Reset Related section
+        document.getElementById('relatedUnitsContainer').classList.add('hidden');
+        document.getElementById('relatedArrow').style.transform = 'rotate(0deg)';
+
+        if (id) {
+            document.getElementById('modalTitle').innerText = 'Edit Unit Details';
+            const u = unitsList.find(x => x.id === id);
+            document.getElementById('unitName').value = u.name;
+            document.getElementById('unitAbbreviation').value = u.name.toUpperCase();
+            document.getElementById('unitQtyCode').value = u.qtyCode;
+            document.getElementById('unitActive').checked = u.active;
+            document.getElementById('unitDefault').checked = u.isDefault;
+            
+            syncQuantityCode();
+            if (u.conversionVal) {
+                document.getElementById('conversionContainer').classList.remove('hidden');
+                document.getElementById('convVal').value = u.conversionVal;
+            }
+        } else {
+            document.getElementById('modalTitle').innerText = 'Unit Details';
+            document.getElementById('unitActive').checked = true;
+            document.getElementById('unitDefault').checked = false;
+        }
+
+        modal.classList.remove('hidden');
+    }
+
+    function closeUnitModal() {
+        document.getElementById('unitModalOverlay').classList.add('hidden');
+    }
+
+    // Quantity Code display checks
+    function syncQuantityCode() {
+        const codeSelect = document.getElementById('unitQtyCode');
+        const factorBtn = document.getElementById('conversionFactorBtn');
+        const convContainer = document.getElementById('conversionContainer');
+
+        if (codeSelect.value) {
+            factorBtn.classList.remove('hidden');
+            document.getElementById('lblConvSource').innerText = codeSelect.value;
+        } else {
+            factorBtn.classList.add('hidden');
+            convContainer.classList.add('hidden');
+        }
+    }
+
+    function toggleConversionInput() {
+        const container = document.getElementById('conversionContainer');
+        container.classList.toggle('hidden');
+    }
+
+    // Collapsible related units toggle
+    function toggleRelatedUnits() {
+        const container = document.getElementById('relatedUnitsContainer');
+        const arrow = document.getElementById('relatedArrow');
+        
+        const isHidden = container.classList.contains('hidden');
+        if (isHidden) {
+            container.classList.remove('hidden');
+            arrow.style.transform = 'rotate(90deg)';
+        } else {
+            container.classList.add('hidden');
+            arrow.style.transform = 'rotate(0deg)';
+        }
+    }
+
+    // Submit actions
+    function submitUnitForm() {
+        const name = document.getElementById('unitName').value.trim();
+        const abbr = document.getElementById('unitAbbreviation').value.trim();
+        const qtyCode = document.getElementById('unitQtyCode').value;
+        const active = document.getElementById('unitActive').checked;
+        const isDefault = document.getElementById('unitDefault').checked;
+
+        const isConvVisible = !document.getElementById('conversionContainer').classList.contains('hidden');
+        const conversionVal = isConvVisible ? document.getElementById('convVal').value.trim() : '';
+
+        if (isDefault) {
+            // Force other units isDefault = false
+            unitsList.forEach(u => u.isDefault = false);
+        }
+
+        if (currentEditingUnitId) {
+            // Edit
+            const u = unitsList.find(x => x.id === currentEditingUnitId);
+            u.name = name;
+            u.desc = name;
+            u.qtyCode = qtyCode;
+            u.active = active;
+            u.isDefault = isDefault;
+            u.conversionVal = conversionVal;
+            showToast('Unit configurations updated.', false);
+        } else {
+            // Add
+            unitsList.push({
+                id: Date.now(),
+                name,
+                desc: name,
+                isDefault,
+                active,
+                qtyCode,
+                conversionVal
+            });
+            showToast('Unit created successfully.', false);
+        }
+
+        renderUnitsTable();
+        closeUnitModal();
+        hideToast(1500);
+    }
+
+    function editUnit(id) {
+        openUnitModal(id);
+    }
+
+    function deleteUnit(id) {
+        unitsList = unitsList.filter(u => u.id !== id);
+        renderUnitsTable();
+        showToast('Unit deleted.', false);
+        hideToast(1500);
+    }
+
+    // Toast helpers
+    let unitToastTimeout = null;
+    function showToast(text, isLoader = true) {
+        const toast = document.getElementById('unitToast');
+        const toastText = document.getElementById('unitToastText');
+        const toastIcon = document.getElementById('unitToastIcon');
+
+        if (unitToastTimeout) clearTimeout(unitToastTimeout);
+
+        if (isLoader) {
+            toastIcon.innerHTML = '<div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>';
+        } else {
+            toastIcon.innerHTML = '<svg class="w-4.5 h-4.5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
+        }
+
+        toastText.innerText = text;
+        toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+        toast.classList.add('opacity-100', 'translate-y-0');
+    }
+
+    function hideToast(delay = 1500) {
+        const toast = document.getElementById('unitToast');
+        unitToastTimeout = setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+            toast.classList.remove('opacity-100', 'translate-y-0');
+        }, delay);
+    }
+</script>
+{% endblock %}

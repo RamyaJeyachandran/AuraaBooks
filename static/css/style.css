@@ -181,3 +181,56 @@ select option:checked {
     scrollbar-width: thin;
     scrollbar-color: var(--accent) #ffffff !important;
 }
+
+/* Global Table Rounded Corners */
+table {
+    border-radius: var(--radius);
+}
+table thead tr:first-child th:first-child {
+    border-top-left-radius: var(--radius);
+}
+table thead tr:first-child th:last-child {
+    border-top-right-radius: var(--radius);
+}
+table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: var(--radius);
+}
+table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: var(--radius);
+}
+/* If the table has a border, ensure the corners look smooth */
+.bg-white > .overflow-x-auto > table {
+    border-radius: 16px;
+}
+.bg-white > .overflow-x-auto > table thead tr:first-child th:first-child {
+    border-top-left-radius: 16px;
+}
+.bg-white > .overflow-x-auto > table thead tr:first-child th:last-child {
+    border-top-right-radius: 16px;
+}
+.bg-white > .overflow-x-auto > table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 16px;
+}
+.bg-white > .overflow-x-auto > table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 16px;
+}
+
+/* Global Table Borders (Row and Column) */
+table {
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    border: 1px solid #cbd5e1 !important; /* slate-300 */
+}
+table th, table td {
+    border-right: 1px solid #cbd5e1 !important;
+    border-bottom: 1px solid #cbd5e1 !important;
+}
+table th:last-child, table td:last-child {
+    border-right: none !important;
+}
+table tbody tr:last-child td {
+    border-bottom: none !important;
+}
+table thead tr:last-child th {
+    border-bottom: 1px solid #cbd5e1 !important;
+}

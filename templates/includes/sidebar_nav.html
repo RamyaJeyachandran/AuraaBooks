@@ -113,8 +113,17 @@
         </div>
     </div>
 
-    <!-- Add other groups (Purchase, Expenses, Accounting, etc.) similarly -->
+    <div class="h-1"></div>
+
+    <!-- Settings -->
+    <a href="{% url 'settings-dashboard' %}" class="nav-item flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl {% if '/settings/' in request.path %}active{% endif %}">
+        <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+        <span class="text-[13px] flex-1 font-medium">Settings</span>
+    </a>
 </div>
+
 
 <style>
     /* 3D Sidebar Active Styles - Purely for mirroring React UI exactly */

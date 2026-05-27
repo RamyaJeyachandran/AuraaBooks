@@ -1,0 +1,1138 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Settings - QR Code - Auraa Books{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Thin rounded ERP scrollbar */
+    .custom-scroll::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+        background-color: var(--surface) !important;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+        background-color: var(--surface) !important;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+        background-color: var(--text-muted) !important;
+        opacity: 0.5;
+        border-radius: 3px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+        background-color: var(--accent) !important;
+    }
+    .custom-scroll {
+        scrollbar-width: thin;
+        scrollbar-color: var(--text-muted) var(--surface) !important;
+    }
+
+    /* Badge Colors */
+    .badge-active {
+        background-color: rgba(34, 197, 94, 0.15);
+        color: #16a34a;
+        border: 1px solid rgba(34, 197, 94, 0.25);
+    }
+    .badge-printed {
+        background-color: rgba(59, 130, 246, 0.15);
+        color: #2563eb;
+        border: 1px solid rgba(59, 130, 246, 0.25);
+    }
+    .badge-scanned {
+        background-color: rgba(168, 85, 247, 0.15);
+        color: #9333ea;
+        border: 1px solid rgba(168, 85, 247, 0.25);
+    }
+    .badge-expired {
+        background-color: rgba(239, 68, 68, 0.15);
+        color: #dc2626;
+        border: 1px solid rgba(239, 68, 68, 0.25);
+    }
+
+    /* Modal Animation */
+    .modal-backdrop-custom {
+        background-color: rgba(15, 23, 42, 0.55);
+        backdrop-filter: blur(3px);
+        transition: opacity 0.2s ease-out;
+    }
+    .modal-container-custom {
+        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease-out;
+    }
+</style>
+{% endblock %}
+
+{% block breadcrumb_parent %}
+    <span class="hover:text-accent cursor-pointer">Inventory</span>
+    <span class="opacity-50">/</span>
+{% endblock %}
+
+{% block breadcrumb_active %}QR Codes{% endblock %}
+
+{% block content %}
+<div class="stagger-in flex flex-col h-full space-y-4">
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--border)] relative z-30">
+        <div>
+            <h1 class="text-[20px] font-extrabold text-[var(--text-primary)] mb-0.5 tracking-tight flex items-center gap-1.5">
+                <a href="{% url 'settings-dashboard' %}" class="text-accent hover:underline cursor-pointer">Settings</a>
+                <span class="text-[var(--text-muted)] font-medium">/</span>
+                QR Code
+            </h1>
+            <p class="text-[12px] text-[var(--text-muted)]">Generate, print, scan, and manage item inventory QR codes.</p>
+        </div>
+
+        <!-- Header Actions -->
+        <div class="flex flex-wrap items-center gap-2">
+            <button onclick="openGenerateModal()" class="px-4 py-2 bg-[var(--accent)] hover:brightness-105 text-white rounded-lg text-[12px] font-bold shadow transition-all flex items-center gap-1.5 cursor-pointer">
+                Generate QR
+            </button>
+            <button onclick="openBulkModal()" class="px-4 py-2 bg-[var(--accent)] hover:brightness-105 text-white rounded-lg text-[12px] font-bold shadow transition-all flex items-center gap-1.5 cursor-pointer">
+                Bulk Generate
+            </button>
+            <button onclick="openPrintDialog()" class="px-4 py-2 bg-[var(--accent)] hover:brightness-105 text-white rounded-lg text-[12px] font-bold shadow transition-all flex items-center gap-1.5 cursor-pointer">
+                Print QR
+            </button>
+            <button onclick="openScanner()" class="px-4 py-2 bg-[var(--accent)] hover:brightness-105 text-white rounded-lg text-[12px] font-bold shadow transition-all flex items-center gap-1.5 cursor-pointer">
+                Scan QR
+            </button>
+            
+            <!-- Export Dropdown -->
+            <div class="relative inline-block text-left" id="exportDropdownGroup">
+                <button onclick="toggleExportMenu(event)" class="px-3 py-2 bg-[var(--surface)] hover:bg-[var(--bg)] border border-[var(--border)] rounded-lg text-[12px] font-bold text-[var(--text-primary)] flex items-center gap-1 cursor-pointer">
+                    Export
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+                </button>
+                <div id="exportMenu" class="hidden absolute right-0 mt-1.5 w-32 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-lg z-50 py-1">
+                    <button onclick="exportData('PDF')" class="w-full text-left px-3 py-1.5 hover:bg-[var(--bg)] text-[12px] font-medium text-[var(--text-primary)]">Export PDF</button>
+                    <button onclick="exportData('XLS')" class="w-full text-left px-3 py-1.5 hover:bg-[var(--bg)] text-[12px] font-medium text-[var(--text-primary)]">Export XLS</button>
+                    <button onclick="exportData('CSV')" class="w-full text-left px-3 py-1.5 hover:bg-[var(--bg)] text-[12px] font-medium text-[var(--text-primary)]">Export CSV</button>
+                </div>
+            </div>
+
+            <!-- Settings Button -->
+            <button onclick="toggleSettingsPopover(event)" id="settingsBtn" class="p-2 bg-[var(--surface)] hover:bg-[var(--bg)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] cursor-pointer" title="QR Configurations">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.43l-1.003.828c-.293.241-.438.613-.43.992a7.723 7.723 0 010 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.43l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.991l-1.004-.827a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.28z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-3 shadow-sm">
+        <form id="filterForm" onsubmit="event.preventDefault(); applyGridFilters();" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2">
+            <input type="text" id="filterSearch" placeholder="Search Item/SKU/QR" class="w-full h-8 px-2 border border-[var(--border)] rounded bg-[var(--surface)] outline-none text-[12px] focus:border-accent">
+            
+            <select id="filterCategory" class="w-full h-8 px-1 border border-[var(--border)] rounded bg-[var(--surface)] outline-none text-[12px] focus:border-accent">
+                <option value="">Category</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Raw Materials">Raw Materials</option>
+                <option value="Packaging">Packaging</option>
+            </select>
+            
+            <select id="filterBrand" class="w-full h-8 px-1 border border-[var(--border)] rounded bg-[var(--surface)] outline-none text-[12px] focus:border-accent">
+                <option value="">Brand</option>
+                <option value="Auraa">Auraa</option>
+                <option value="Apex">Apex</option>
+                <option value="Prime">Prime</option>
+            </select>
+
+            <input type="text" id="filterBatch" placeholder="Batch No" class="w-full h-8 px-2 border border-[var(--border)] rounded bg-[var(--surface)] outline-none text-[12px] focus:border-accent">
+            
+            <select id="filterStatus" class="w-full h-8 px-1 border border-[var(--border)] rounded bg-[var(--surface)] outline-none text-[12px] focus:border-accent">
+                <option value="">QR Status</option>
+                <option value="Active">Active</option>
+                <option value="Printed">Printed</option>
+                <option value="Scanned">Scanned</option>
+                <option value="Expired">Expired</option>
+            </select>
+
+            <input type="date" id="filterDate" class="w-full h-8 px-2 border border-[var(--border)] rounded bg-[var(--surface)] outline-none text-[12px] focus:border-accent">
+
+            <select id="filterBranch" class="w-full h-8 px-1 border border-[var(--border)] rounded bg-[var(--surface)] outline-none text-[12px] focus:border-accent">
+                <option value="">Branch</option>
+                <option value="Main Branch">Main Branch</option>
+                <option value="Warehouse A">Warehouse A</option>
+                <option value="Branch B">Branch B</option>
+            </select>
+
+            <div class="flex items-center gap-1">
+                <button type="submit" class="flex-1 h-8 bg-[var(--accent)] hover:brightness-105 text-white text-[12px] font-bold rounded cursor-pointer">Search</button>
+                <button type="button" onclick="clearFilters()" class="h-8 px-2 border border-[var(--border)] hover:bg-[var(--bg)] text-[12px] font-bold rounded cursor-pointer">Clear</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Grid / Table Section -->
+    <div class="flex-1 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-sm flex flex-col overflow-hidden min-h-[300px]">
+        <div class="flex-1 overflow-auto custom-scroll relative">
+            <table class="w-full text-left border-collapse border border-[var(--border)]">
+                <thead class="sticky top-0 bg-[var(--bg)] z-10">
+                    <tr class="text-[11px] font-extrabold text-[var(--text-secondary)] uppercase tracking-wider">
+                        <th class="p-2 border border-[var(--border)] text-center w-[40px]">
+                            <input type="checkbox" id="selectAllCheckbox" onchange="toggleAllRowSelections(this)" class="w-3.5 h-3.5 accent-[var(--accent)]">
+                        </th>
+                        <th class="p-2 border border-[var(--border)] text-center w-[70px]">QR Preview</th>
+                        <th class="p-2 border border-[var(--border)] w-[110px]">QR Code</th>
+                        <th class="p-2 border border-[var(--border)]">Item Name</th>
+                        <th class="p-2 border border-[var(--border)] w-[90px]">SKU</th>
+                        <th class="p-2 border border-[var(--border)] w-[90px]">Batch No</th>
+                        <th class="p-2 border border-[var(--border)] w-[90px]">Serial No</th>
+                        <th class="p-2 border border-[var(--border)] w-[60px] text-right">Qty</th>
+                        <th class="p-2 border border-[var(--border)] w-[50px] text-center">Unit</th>
+                        <th class="p-2 border border-[var(--border)] w-[80px] text-center">Status</th>
+                        <th class="p-2 border border-[var(--border)] w-[90px] text-center">Created</th>
+                        <th class="p-2 border border-[var(--border)] w-[110px] text-center">Last Scanned</th>
+                        <th class="p-2 border border-[var(--border)] text-center w-[50px]">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="qrGridBody" class="text-[12px]">
+                    <!-- Rows will be injected by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="h-10 px-4 border-t border-[var(--border)] flex items-center justify-between text-[11px] text-[var(--text-muted)] bg-[var(--bg)]/40">
+            <div id="paginationInfo">Showing 1-10 of 10 items</div>
+            <div class="flex items-center gap-1">
+                <button class="px-2 py-1 border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--bg)] rounded disabled:opacity-50" disabled>Previous</button>
+                <button class="px-2 py-1 border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--bg)] rounded disabled:opacity-50" disabled>Next</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==============================================
+     MODALS SECTION
+     ============================================== -->
+
+<!-- Backdrop overlay -->
+<div id="modalOverlay" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop-custom">
+    <!-- Dynamic Modal Containers injected here -->
+</div>
+
+<!-- Settings Popover Menu (Floating) -->
+<div id="settingsPopover" class="hidden absolute w-64 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-lg z-50 p-4 space-y-4">
+    <div class="pb-2 border-b border-[var(--border)] flex items-center justify-between">
+        <span class="text-[13px] font-bold text-[var(--text-primary)]">QR Settings</span>
+        <button onclick="toggleSettingsPopover()" class="text-slate-400 hover:text-slate-600"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <div class="space-y-3">
+        <label class="flex items-center gap-2 cursor-pointer text-[12px] text-[var(--text-secondary)]">
+            <input type="checkbox" id="settAutoQR" checked class="accent-[var(--accent)]">
+            <span>Enable Auto QR</span>
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer text-[12px] text-[var(--text-secondary)]">
+            <input type="checkbox" id="settBatchQR" checked class="accent-[var(--accent)]">
+            <span>Enable Batch QR</span>
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer text-[12px] text-[var(--text-secondary)]">
+            <input type="checkbox" id="settSerialQR" class="accent-[var(--accent)]">
+            <span>Enable Serial QR</span>
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer text-[12px] text-[var(--text-secondary)]">
+            <input type="checkbox" id="settPrintAfter" checked class="accent-[var(--accent)]">
+            <span>Enable QR Printing</span>
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer text-[12px] text-[var(--text-secondary)]">
+            <input type="checkbox" id="settDynamic" class="accent-[var(--accent)]">
+            <span>Enable Dynamic QR</span>
+        </label>
+
+        <div class="pt-2 border-t border-[var(--border)]/60">
+            <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Default QR Size</label>
+            <select id="settDefaultSize" class="w-full h-7 px-1 border border-[var(--border)] rounded text-[11px] bg-[var(--surface)] outline-none">
+                <option value="Small">Small</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="Large">Large</option>
+            </select>
+        </div>
+    </div>
+    <div class="flex gap-2 justify-end pt-2 border-t border-[var(--border)]">
+        <button onclick="toggleSettingsPopover()" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold rounded">Cancel</button>
+        <button onclick="saveSettingsPopover()" class="px-3 py-1 bg-[var(--accent)] hover:brightness-105 text-white text-[11px] font-bold rounded">Save</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // In-memory Database Store for Items & Generated QRs
+    const itemsDb = [
+        { name: 'Intel i7 Processor', sku: 'CPU-I7-12K', category: 'Electronics', brand: 'Auraa', unit: 'PCS' },
+        { name: 'Micro USB Cable', sku: 'USB-C-6FT', category: 'Electronics', brand: 'Apex', unit: 'PCS' },
+        { name: 'Cardboard Box Medium', sku: 'PKG-BX-M', category: 'Packaging', brand: 'Prime', unit: 'PCS' },
+        { name: 'Aluminium Plate 5mm', sku: 'RAW-AL-5', category: 'Raw Materials', brand: 'Auraa', unit: 'KG' }
+    ];
+
+    let qrRecords = [
+        { id: 1, code: 'QR-CPU-129', itemName: 'Intel i7 Processor', sku: 'CPU-I7-12K', batch: 'BT-009', serial: 'SN-90112', qty: 10, unit: 'PCS', status: 'Active', created: '2026-05-12', lastScanned: '2026-05-24 14:02' },
+        { id: 2, code: 'QR-USB-441', itemName: 'Micro USB Cable', sku: 'USB-C-6FT', batch: 'BT-010', serial: 'SN-56832', qty: 120, unit: 'PCS', status: 'Printed', created: '2026-05-14', lastScanned: '2026-05-25 11:20' },
+        { id: 3, code: 'QR-PKG-772', itemName: 'Cardboard Box Medium', sku: 'PKG-BX-M', batch: 'BT-001', serial: '', qty: 500, unit: 'PCS', status: 'Scanned', created: '2026-05-15', lastScanned: '2026-05-26 09:15' },
+        { id: 4, code: 'QR-ALM-089', itemName: 'Aluminium Plate 5mm', sku: 'RAW-AL-5', batch: 'BT-887', serial: '', qty: 45, unit: 'KG', status: 'Expired', created: '2026-04-01', lastScanned: '' }
+    ];
+
+    let activePopover = null;
+
+    // Load table records on startup
+    window.addEventListener('DOMContentLoaded', () => {
+        renderGridRows(qrRecords);
+    });
+
+    function renderGridRows(records) {
+        const tbody = document.getElementById('qrGridBody');
+        tbody.innerHTML = '';
+
+        if (records.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="13" class="text-center p-6 text-[var(--text-muted)]">No matching records found.</td></tr>`;
+            return;
+        }
+
+        records.forEach(r => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-[var(--bg)]/20 transition-colors duration-150 align-middle';
+
+            let badgeClass = 'badge-active';
+            if (r.status === 'Printed') badgeClass = 'badge-printed';
+            if (r.status === 'Scanned') badgeClass = 'badge-scanned';
+            if (r.status === 'Expired') badgeClass = 'badge-expired';
+
+            tr.innerHTML = `
+                <td class="p-2 border border-[var(--border)] text-center">
+                    <input type="checkbox" class="row-checkbox w-3.5 h-3.5 accent-[var(--accent)]" value="${r.id}">
+                </td>
+                <td class="p-2 border border-[var(--border)] text-center">
+                    <div class="flex items-center justify-center">
+                        <svg class="w-7 h-7 text-black cursor-pointer hover:scale-105 transition-transform" onclick="openViewModal(${r.id})" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3 3h6v6H3V3zm2 2v2h2V5H5zm8-2h6v6h-6V3zm2 2v2h2V5h-2zM3 13h6v6H3v-6zm2 2v2h2v-2H5zm13-2h1v2h-1v-2zm-2 2h2v1h-2v-1zm2 2h1v2h-1v-2zm-2 2h2v1h-2v-1zm-2-6h2v2h-2v-2zm0 4h2v2h-2v-2zm-2-2h2v2h-2v-2zm0-4h2v2h-2v-2zm2-2h1v1h-1V7zm-2 2h1v1h-1V9zm4 0h1v1h-1V9zm-2 2h1v1h-1v-1zm4 2h1v2h-1v-2zm-2 2h1v2h-1v-2zm0-4h1v1h-1v-1zm2 2h1v1h-1v-1zm0 2h1v1h-1v-1z"/>
+                        </svg>
+                    </div>
+                </td>
+                <td class="p-2 border border-[var(--border)] font-bold text-[var(--text-secondary)]">${r.code}</td>
+                <td class="p-2 border border-[var(--border)] font-medium text-[var(--text-primary)]">${r.itemName}</td>
+                <td class="p-2 border border-[var(--border)]">${r.sku}</td>
+                <td class="p-2 border border-[var(--border)]">${r.batch || '—'}</td>
+                <td class="p-2 border border-[var(--border)]">${r.serial || '—'}</td>
+                <td class="p-2 border border-[var(--border)] text-right font-semibold">${r.qty}</td>
+                <td class="p-2 border border-[var(--border)] text-center text-[var(--text-muted)]">${r.unit}</td>
+                <td class="p-2 border border-[var(--border)] text-center">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${badgeClass}">${r.status}</span>
+                </td>
+                <td class="p-2 border border-[var(--border)] text-center text-[var(--text-muted)]">${r.created}</td>
+                <td class="p-2 border border-[var(--border)] text-center">${r.lastScanned || '—'}</td>
+                <td class="p-2 border border-[var(--border)] text-center relative">
+                    <button onclick="toggleActionMenu(event, ${r.id})" class="p-1 border border-transparent hover:border-[var(--border)] hover:bg-[var(--bg)] rounded cursor-pointer">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"/></svg>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById('paginationInfo').innerText = `Showing 1-${records.length} of ${records.length} items`;
+    }
+
+    // Grid Selections
+    function toggleAllRowSelections(masterCheckbox) {
+        document.querySelectorAll('.row-checkbox').forEach(cb => {
+            cb.checked = masterCheckbox.checked;
+        });
+    }
+
+    // Filters Logic
+    function applyGridFilters() {
+        const query = document.getElementById('filterSearch').value.toLowerCase().trim();
+        const cat = document.getElementById('filterCategory').value;
+        const brand = document.getElementById('filterBrand').value;
+        const batch = document.getElementById('filterBatch').value.toLowerCase().trim();
+        const status = document.getElementById('filterStatus').value;
+        const date = document.getElementById('filterDate').value;
+        const branch = document.getElementById('filterBranch').value;
+
+        const filtered = qrRecords.filter(r => {
+            const matchesQuery = !query || r.itemName.toLowerCase().includes(query) || r.sku.toLowerCase().includes(query) || r.code.toLowerCase().includes(query);
+            const matchesBatch = !batch || (r.batch && r.batch.toLowerCase().includes(batch));
+            const matchesStatus = !status || r.status === status;
+            const matchesDate = !date || r.created === date;
+
+            // Mock categories, brands, branches checks mapping
+            const itemMatch = itemsDb.find(i => i.sku === r.sku);
+            const matchesCat = !cat || (itemMatch && itemMatch.category === cat);
+            const matchesBrand = !brand || (itemMatch && itemMatch.brand === brand);
+
+            return matchesQuery && matchesBatch && matchesStatus && matchesDate && matchesCat && matchesBrand;
+        });
+
+        renderGridRows(filtered);
+    }
+
+    function clearFilters() {
+        document.getElementById('filterForm').reset();
+        renderGridRows(qrRecords);
+    }
+
+    // Row Action Menu popup
+    function toggleActionMenu(e, id) {
+        e.stopPropagation();
+        closeActionMenu();
+
+        const rect = e.currentTarget.getBoundingClientRect();
+        const menu = document.createElement('div');
+        menu.id = 'activeActionMenu';
+        menu.className = 'absolute bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-lg z-50 py-1 w-32';
+        menu.style.top = `${rect.bottom + window.scrollY}px`;
+        menu.style.left = `${rect.left + window.scrollX - 100}px`;
+
+        menu.innerHTML = `
+            <button onclick="openViewModal(${id})" class="w-full text-left px-3 py-1.5 hover:bg-[var(--bg)] text-[12px] font-medium text-[var(--text-primary)]">View QR</button>
+            <button onclick="printRow(${id})" class="w-full text-left px-3 py-1.5 hover:bg-[var(--bg)] text-[12px] font-medium text-[var(--text-primary)]">Print QR</button>
+            <button onclick="downloadRow(${id})" class="w-full text-left px-3 py-1.5 hover:bg-[var(--bg)] text-[12px] font-medium text-[var(--text-primary)]">Download QR</button>
+            <button onclick="editRow(${id})" class="w-full text-left px-3 py-1.5 hover:bg-[var(--bg)] text-[12px] font-medium text-[var(--text-primary)]">Edit</button>
+            <button onclick="cloneRow(${id})" class="w-full text-left px-3 py-1.5 hover:bg-[var(--bg)] text-[12px] font-medium text-[var(--text-primary)]">Clone</button>
+            <button onclick="setStatus(${id}, 'Printed')" class="w-full text-left px-3 py-1.5 hover:bg-[var(--bg)] text-[12px] font-medium text-[var(--text-primary)]">Mark Printed</button>
+            <button onclick="setStatus(${id}, 'Active')" class="w-full text-left px-3 py-1.5 hover:bg-[var(--bg)] text-[12px] font-medium text-[var(--text-primary)]">Mark Active</button>
+            <button onclick="deleteRow(${id})" class="w-full text-left px-3 py-1.5 hover:bg-rose-50 dark:hover:bg-rose-950/20 text-[12px] font-bold text-rose-500">Delete</button>
+        `;
+
+        document.body.appendChild(menu);
+
+        // Close on clicking elsewhere
+        document.addEventListener('click', closeActionMenu);
+    }
+
+    function closeActionMenu() {
+        const menu = document.getElementById('activeActionMenu');
+        if (menu) {
+            menu.remove();
+            document.removeEventListener('click', closeActionMenu);
+        }
+    }
+
+    // Action Methods
+    function setStatus(id, status) {
+        const record = qrRecords.find(r => r.id === id);
+        if (record) {
+            record.status = status;
+            applyGridFilters();
+            showToast(`Status updated to ${status}.`, false);
+            hideToast(1500);
+        }
+    }
+
+    function cloneRow(id) {
+        const record = qrRecords.find(r => r.id === id);
+        if (record) {
+            const clone = {
+                ...record,
+                id: Date.now(),
+                code: `QR-${Math.floor(100 + Math.random() * 900)}`,
+                created: new Date().toISOString().split('T')[0]
+            };
+            qrRecords.push(clone);
+            applyGridFilters();
+            showToast('QR Code record cloned successfully.', false);
+            hideToast(1500);
+        }
+    }
+
+    function deleteRow(id) {
+        qrRecords = qrRecords.filter(r => r.id !== id);
+        applyGridFilters();
+        showToast('QR Code record deleted.', false);
+        hideToast(1500);
+    }
+
+    // Modal Manager Helpers
+    function showModal(contentHtml) {
+        const overlay = document.getElementById('modalOverlay');
+        overlay.innerHTML = contentHtml;
+        overlay.classList.remove('hidden');
+    }
+
+    function closeModalCustom() {
+        const overlay = document.getElementById('modalOverlay');
+        overlay.classList.add('hidden');
+        overlay.innerHTML = '';
+    }
+
+    // 1. Generate Modal
+    function openGenerateModal(id = null) {
+        let isEdit = id !== null;
+        let record = isEdit ? qrRecords.find(r => r.id === id) : null;
+
+        const optionsHtml = itemsDb.map(i => `<option value="${i.sku}" ${record && record.sku === i.sku ? 'selected' : ''}>${i.name} [${i.sku}]</option>`).join('');
+
+        const content = `
+            <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-xl w-full max-w-4xl p-6 relative flex flex-col md:flex-row gap-6 max-h-[90vh] overflow-y-auto custom-scroll">
+                
+                <!-- Form Area -->
+                <div class="flex-1 space-y-5">
+                    <h2 class="text-[16px] font-black text-[var(--text-primary)] border-b border-[var(--border)] pb-2">
+                        ${isEdit ? 'Edit Item QR Code' : 'Generate Item QR Code'}
+                    </h2>
+                    
+                    <!-- Section 1: Item Details -->
+                    <div class="space-y-3">
+                        <h3 class="text-[12px] font-black uppercase text-[var(--text-muted)] tracking-wider">Section 1 — Item Details</h3>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="col-span-2">
+                                <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Item</label>
+                                <select id="genItem" onchange="syncItemDetails()" class="w-full h-8 px-1 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none">
+                                    <option value="">Select Item</option>
+                                    ${optionsHtml}
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">SKU</label>
+                                <input type="text" id="genSku" value="${record ? record.sku : ''}" readonly class="w-full h-8 px-2 border border-[var(--border)] rounded bg-slate-50 dark:bg-slate-800 text-[12px] outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Category</label>
+                                <input type="text" id="genCategory" readonly class="w-full h-8 px-2 border border-[var(--border)] rounded bg-slate-50 dark:bg-slate-800 text-[12px] outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Brand</label>
+                                <input type="text" id="genBrand" readonly class="w-full h-8 px-2 border border-[var(--border)] rounded bg-slate-50 dark:bg-slate-800 text-[12px] outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Batch No</label>
+                                <input type="text" id="genBatch" value="${record ? record.batch : ''}" oninput="updateLivePreview()" class="w-full h-8 px-2 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Serial No</label>
+                                <input type="text" id="genSerial" value="${record ? record.serial : ''}" oninput="updateLivePreview()" class="w-full h-8 px-2 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Warehouse</label>
+                                <select id="genWarehouse" class="w-full h-8 px-1 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none">
+                                    <option>Warehouse A</option>
+                                    <option>Warehouse B</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Quantity</label>
+                                <input type="number" id="genQty" value="${record ? record.qty : '1'}" class="w-full h-8 px-2 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Unit</label>
+                                <input type="text" id="genUnit" readonly class="w-full h-8 px-2 border border-[var(--border)] rounded bg-slate-50 dark:bg-slate-800 text-[12px] outline-none">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: QR Config -->
+                    <div class="space-y-3 pt-2 border-t border-[var(--border)]/60">
+                        <h3 class="text-[12px] font-black uppercase text-[var(--text-muted)] tracking-wider">Section 2 — QR Configuration</h3>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">QR Type</label>
+                                <select id="genQrType" class="w-full h-8 px-1 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none">
+                                    <option>Item QR</option>
+                                    <option>Batch QR</option>
+                                    <option>Serial QR</option>
+                                    <option>URL QR</option>
+                                    <option>Dynamic QR</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">QR Format</label>
+                                <select class="w-full h-8 px-1 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none">
+                                    <option>PNG</option>
+                                    <option>SVG</option>
+                                    <option>PDF</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">QR Size</label>
+                                <select id="genQrSize" onchange="updateLivePreview()" class="w-full h-8 px-1 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none">
+                                    <option>Small</option>
+                                    <option selected>Medium</option>
+                                    <option>Large</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Label Template</label>
+                                <select class="w-full h-8 px-1 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none">
+                                    <option>Default Sticker</option>
+                                    <option>Standard Roll</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: QR Content -->
+                    <div class="space-y-2 pt-2 border-t border-[var(--border)]/60">
+                        <h3 class="text-[12px] font-black uppercase text-[var(--text-muted)] tracking-wider">Section 3 — QR Content</h3>
+                        <div class="grid grid-cols-3 gap-2">
+                            <label class="flex items-center gap-1.5 text-[11px] text-[var(--text-secondary)] cursor-pointer">
+                                <input type="checkbox" id="incName" checked onchange="updateLivePreview()" class="accent-[var(--accent)]"> Include Name
+                            </label>
+                            <label class="flex items-center gap-1.5 text-[11px] text-[var(--text-secondary)] cursor-pointer">
+                                <input type="checkbox" id="incSku" checked onchange="updateLivePreview()" class="accent-[var(--accent)]"> Include SKU
+                            </label>
+                            <label class="flex items-center gap-1.5 text-[11px] text-[var(--text-secondary)] cursor-pointer">
+                                <input type="checkbox" id="incBatch" onchange="updateLivePreview()" class="accent-[var(--accent)]"> Include Batch
+                            </label>
+                            <label class="flex items-center gap-1.5 text-[11px] text-[var(--text-secondary)] cursor-pointer">
+                                <input type="checkbox" id="incSerial" onchange="updateLivePreview()" class="accent-[var(--accent)]"> Include Serial
+                            </label>
+                            <label class="flex items-center gap-1.5 text-[11px] text-[var(--text-secondary)] cursor-pointer">
+                                <input type="checkbox" id="incPrice" onchange="updateLivePreview()" class="accent-[var(--accent)]"> Include Price
+                            </label>
+                            <label class="flex items-center gap-1.5 text-[11px] text-[var(--text-secondary)] cursor-pointer">
+                                <input type="checkbox" id="incMrp" onchange="updateLivePreview()" class="accent-[var(--accent)]"> Include MRP
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side Preview Panel -->
+                <div class="w-full md:w-[260px] border-t md:border-t-0 md:border-l border-[var(--border)] pt-4 md:pt-0 md:pl-6 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-[12px] font-black uppercase text-[var(--text-muted)] tracking-wider mb-4">Section 4 — Preview</h3>
+                        <div class="border border-[var(--border)] bg-white p-4 rounded-xl flex flex-col items-center text-center shadow-inner min-h-[220px] justify-center text-black">
+                            <!-- Live QR preview -->
+                            <div id="prevQrSvg">
+                                <svg class="w-24 h-24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M3 3h6v6H3V3zm2 2v2h2V5H5zm8-2h6v6h-6V3zm2 2v2h2V5h-2zM3 13h6v6H3v-6zm2 2v2h2v-2H5zm13-2h1v2h-1v-2zm-2 2h2v1h-2v-1zm2 2h1v2h-1v-2zm-2 2h2v1h-2v-1zm-2-6h2v2h-2v-2zm0 4h2v2h-2v-2zm-2-2h2v2h-2v-2zm0-4h2v2h-2v-2zm2-2h1v1h-1V7zm-2 2h1v1h-1V9zm4 0h1v1h-1V9zm-2 2h1v1h-1v-1zm4 2h1v2h-1v-2zm-2 2h1v2h-1v-2zm0-4h1v1h-1v-1zm2 2h1v1h-1v-1zm0 2h1v1h-1v-1z"/>
+                                </svg>
+                            </div>
+                            <div id="prevInfoText" class="mt-3 text-[11px] space-y-0.5">
+                                <p class="font-bold text-[12px]" id="lblPrevName">Intel i7 Processor</p>
+                                <p class="text-slate-500" id="lblPrevSku">CPU-I7-12K</p>
+                                <p class="text-slate-500 hidden" id="lblPrevBatch"></p>
+                                <p class="text-slate-500 hidden" id="lblPrevSerial"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Actions -->
+                    <div class="flex flex-col gap-2 mt-6">
+                        <button onclick="submitGenerateForm(${isEdit ? record.id : 'null'})" class="w-full py-2 bg-[var(--accent)] hover:brightness-105 text-white text-[12px] font-bold rounded-lg cursor-pointer">Generate QR</button>
+                        <button onclick="submitGenerateForm(${isEdit ? record.id : 'null'}, true)" class="w-full py-2 bg-[var(--accent)] hover:brightness-105 text-white text-[12px] font-bold rounded-lg cursor-pointer">Save & Print</button>
+                        <button onclick="closeModalCustom()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[12px] font-bold rounded-lg cursor-pointer">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        showModal(content);
+        if (isEdit) {
+            syncItemDetails();
+            updateLivePreview();
+        }
+    }
+
+    // Auto populate item properties on selection
+    function syncItemDetails() {
+        const select = document.getElementById('genItem');
+        const sku = select.value;
+        const item = itemsDb.find(i => i.sku === sku);
+
+        if (item) {
+            document.getElementById('genSku').value = item.sku;
+            document.getElementById('genCategory').value = item.category;
+            document.getElementById('genBrand').value = item.brand;
+            document.getElementById('genUnit').value = item.unit;
+        } else {
+            document.getElementById('genSku').value = '';
+            document.getElementById('genCategory').value = '';
+            document.getElementById('genBrand').value = '';
+            document.getElementById('genUnit').value = '';
+        }
+        updateLivePreview();
+    }
+
+    // Update Section 4 Live Preview
+    function updateLivePreview() {
+        const select = document.getElementById('genItem');
+        const itemText = select.options[select.selectedIndex]?.text.split(' [')[0] || 'Item Name';
+        const sku = document.getElementById('genSku').value || 'SKU-000';
+        const batch = document.getElementById('genBatch').value;
+        const serial = document.getElementById('genSerial').value;
+        const size = document.getElementById('genQrSize').value;
+
+        // Content toggles
+        const incName = document.getElementById('incName').checked;
+        const incSku = document.getElementById('incSku').checked;
+        const incBatch = document.getElementById('incBatch').checked;
+        const incSerial = document.getElementById('incSerial').checked;
+
+        // Labels UI
+        const nameEl = document.getElementById('lblPrevName');
+        const skuEl = document.getElementById('lblPrevSku');
+        const batchEl = document.getElementById('lblPrevBatch');
+        const serialEl = document.getElementById('lblPrevSerial');
+
+        nameEl.innerText = itemText;
+        nameEl.style.display = incName ? 'block' : 'none';
+
+        skuEl.innerText = sku;
+        skuEl.style.display = incSku ? 'block' : 'none';
+
+        if (incBatch && batch) {
+            batchEl.innerText = `Batch: ${batch}`;
+            batchEl.classList.remove('hidden');
+        } else {
+            batchEl.classList.add('hidden');
+        }
+
+        if (incSerial && serial) {
+            serialEl.innerText = `Serial: ${serial}`;
+            serialEl.classList.remove('hidden');
+        } else {
+            serialEl.classList.add('hidden');
+        }
+
+        // Adjust SVG Size class
+        const svg = document.querySelector('#prevQrSvg svg');
+        svg.className = 'text-black transition-all';
+        if (size === 'Small') svg.style.width = '64px';
+        else if (size === 'Medium') svg.style.width = '96px';
+        else svg.style.width = '140px';
+    }
+
+    // Create / Save Action
+    function submitGenerateForm(editId = null, runPrint = false) {
+        const select = document.getElementById('genItem');
+        if (!select.value) {
+            showToast('Please select an item.', true);
+            hideToast(1500);
+            return;
+        }
+
+        const itemName = select.options[select.selectedIndex].text.split(' [')[0];
+        const sku = document.getElementById('genSku').value;
+        const batch = document.getElementById('genBatch').value;
+        const serial = document.getElementById('genSerial').value;
+        const qty = parseInt(document.getElementById('genQty').value) || 1;
+        const unit = document.getElementById('genUnit').value || 'PCS';
+
+        if (editId) {
+            // Edit save
+            const index = qrRecords.findIndex(r => r.id === editId);
+            if (index > -1) {
+                qrRecords[index].itemName = itemName;
+                qrRecords[index].sku = sku;
+                qrRecords[index].batch = batch;
+                qrRecords[index].serial = serial;
+                qrRecords[index].qty = qty;
+                qrRecords[index].unit = unit;
+            }
+            showToast('QR Code saved.', false);
+        } else {
+            // New record
+            const newRec = {
+                id: Date.now(),
+                code: `QR-${Math.floor(100 + Math.random() * 900)}`,
+                itemName,
+                sku,
+                batch,
+                serial,
+                qty,
+                unit,
+                status: 'Active',
+                created: new Date().toISOString().split('T')[0],
+                lastScanned: ''
+            };
+            qrRecords.unshift(newRec);
+            showToast('QR Code generated.', false);
+        }
+
+        applyGridFilters();
+        closeModalCustom();
+        hideToast(1500);
+
+        if (runPrint) {
+            setTimeout(() => {
+                openPrintDialog();
+            }, 500);
+        }
+    }
+
+    function editRow(id) {
+        openGenerateModal(id);
+    }
+
+    // 2. Bulk Generate Modal
+    function openBulkModal() {
+        const itemCheckboxes = itemsDb.map(i => `
+            <label class="flex items-center gap-2 p-1.5 hover:bg-[var(--bg)]/40 rounded cursor-pointer text-[12px]">
+                <input type="checkbox" class="bulk-item-check accent-[var(--accent)]" value="${i.sku}">
+                <span>${i.name} [${i.sku}]</span>
+            </label>
+        `).join('');
+
+        const content = `
+            <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-xl w-full max-w-lg p-6 relative space-y-4">
+                <h2 class="text-[16px] font-black text-[var(--text-primary)] border-b border-[var(--border)] pb-2">Bulk Generate QR Codes</h2>
+                
+                <div class="space-y-3 max-h-[60vh] overflow-y-auto custom-scroll pr-1">
+                    <div>
+                        <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Category</label>
+                        <select class="w-full h-8 px-1 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none">
+                            <option value="">All Categories</option>
+                            <option>Electronics</option>
+                            <option>Packaging</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Brand</label>
+                        <select class="w-full h-8 px-1 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none">
+                            <option value="">All Brands</option>
+                            <option>Auraa</option>
+                            <option>Apex</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Multi item list -->
+                    <div>
+                        <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Select Items</label>
+                        <div class="border border-[var(--border)] rounded p-2 max-h-[120px] overflow-y-auto custom-scroll space-y-1 bg-[var(--surface)]">
+                            ${itemCheckboxes}
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Batch Number</label>
+                            <input type="text" id="bulkBatch" class="w-full h-8 px-2 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Quantity Per Item</label>
+                            <input type="number" id="bulkQty" value="10" class="w-full h-8 px-2 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">QR Label Template</label>
+                        <select class="w-full h-8 px-1 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none">
+                            <option>Default Sticker</option>
+                            <option>Standard Roll</option>
+                        </select>
+                    </div>
+
+                    <label class="flex items-center gap-2 text-[11px] text-[var(--text-secondary)] cursor-pointer">
+                        <input type="checkbox" id="bulkPrintAfter" checked class="accent-[var(--accent)]">
+                        <span>Print After Generate</span>
+                    </label>
+                </div>
+
+                <div class="flex gap-2 justify-end pt-3 border-t border-[var(--border)]">
+                    <button onclick="closeModalCustom()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[12px] font-bold rounded-lg">Cancel</button>
+                    <button onclick="submitBulkGenerate()" class="px-4 py-2 bg-[var(--accent)] hover:brightness-105 text-white text-[12px] font-bold rounded-lg">Generate</button>
+                </div>
+            </div>
+        `;
+        showModal(content);
+    }
+
+    function submitBulkGenerate() {
+        const itemCbs = document.querySelectorAll('.bulk-item-check:checked');
+        if (itemCbs.length === 0) {
+            showToast('Please select at least one item.', true);
+            hideToast(1500);
+            return;
+        }
+
+        const batch = document.getElementById('bulkBatch').value || 'BT-BLK';
+        const qty = parseInt(document.getElementById('bulkQty').value) || 1;
+        const autoPrint = document.getElementById('bulkPrintAfter').checked;
+
+        itemCbs.forEach(cb => {
+            const sku = cb.value;
+            const item = itemsDb.find(i => i.sku === sku);
+            if (item) {
+                const newRec = {
+                    id: Date.now() + Math.random(),
+                    code: `QR-${Math.floor(100 + Math.random() * 900)}`,
+                    itemName: item.name,
+                    sku: item.sku,
+                    batch,
+                    serial: '',
+                    qty,
+                    unit: item.unit,
+                    status: 'Active',
+                    created: new Date().toISOString().split('T')[0],
+                    lastScanned: ''
+                };
+                qrRecords.unshift(newRec);
+            }
+        });
+
+        applyGridFilters();
+        closeModalCustom();
+        showToast('Bulk QR Codes generated.', false);
+        hideToast(1500);
+
+        if (autoPrint) {
+            setTimeout(() => {
+                openPrintDialog();
+            }, 500);
+        }
+    }
+
+    // 3. View QR Modal
+    function openViewModal(id) {
+        const record = qrRecords.find(r => r.id === id);
+        if (!record) return;
+
+        const content = `
+            <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-xl w-full max-w-md p-6 relative space-y-6 text-center">
+                <h2 class="text-[15px] font-black text-[var(--text-primary)] border-b border-[var(--border)] pb-2 text-left">View Item QR Code</h2>
+                
+                <div class="flex flex-col items-center space-y-4">
+                    <div class="bg-white p-5 border border-[var(--border)] rounded-2xl shadow-sm">
+                        <svg class="w-36 h-36 text-black" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3 3h6v6H3V3zm2 2v2h2V5H5zm8-2h6v6h-6V3zm2 2v2h2V5h-2zM3 13h6v6H3v-6zm2 2v2h2v-2H5zm13-2h1v2h-1v-2zm-2 2h2v1h-2v-1zm2 2h1v2h-1v-2zm-2 2h2v1h-2v-1zm-2-6h2v2h-2v-2zm0 4h2v2h-2v-2zm-2-2h2v2h-2v-2zm0-4h2v2h-2v-2zm2-2h1v1h-1V7zm-2 2h1v1h-1V9zm4 0h1v1h-1V9zm-2 2h1v1h-1v-1zm4 2h1v2h-1v-2zm-2 2h1v2h-1v-2zm0-4h1v1h-1v-1zm2 2h1v1h-1v-1zm0 2h1v1h-1v-1z"/>
+                        </svg>
+                    </div>
+                    
+                    <div class="text-[13px] text-left w-full space-y-2 border-t border-[var(--border)] pt-4">
+                        <div class="flex justify-between"><span class="text-[var(--text-muted)]">Code:</span><span class="font-bold text-[var(--text-primary)]">${record.code}</span></div>
+                        <div class="flex justify-between"><span class="text-[var(--text-muted)]">Item Name:</span><span class="font-bold text-[var(--text-primary)]">${record.itemName}</span></div>
+                        <div class="flex justify-between"><span class="text-[var(--text-muted)]">SKU:</span><span>${record.sku}</span></div>
+                        <div class="flex justify-between"><span class="text-[var(--text-muted)]">Batch No:</span><span>${record.batch || '—'}</span></div>
+                        <div class="flex justify-between"><span class="text-[var(--text-muted)]">Serial No:</span><span>${record.serial || '—'}</span></div>
+                        <div class="flex justify-between"><span class="text(--text-muted)">Status:</span><span class="font-bold text-emerald-500 uppercase text-[11px]">${record.status}</span></div>
+                        <div class="flex justify-between"><span class="text-[var(--text-muted)]">Generated:</span><span>${record.created}</span></div>
+                        <div class="flex justify-between"><span class="text-[var(--text-muted)]">Last Scanned:</span><span>${record.lastScanned || '—'}</span></div>
+                    </div>
+                </div>
+
+                <div class="flex gap-2 justify-end pt-3 border-t border-[var(--border)]">
+                    <button onclick="closeModalCustom()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[12px] font-bold rounded-lg">Close</button>
+                    <button onclick="printRow(${record.id})" class="px-4 py-2 bg-[var(--accent)] hover:brightness-105 text-white text-[12px] font-bold rounded-lg">Print</button>
+                    <button onclick="downloadRow(${record.id})" class="px-4 py-2 bg-[var(--accent)] hover:brightness-105 text-white text-[12px] font-bold rounded-lg">Download</button>
+                </div>
+            </div>
+        `;
+        showModal(content);
+    }
+
+    function printRow(id) {
+        showToast('Preparing label print layout...', true);
+        setTimeout(() => {
+            showToast('Print command sent successfully.', false);
+            hideToast(1500);
+        }, 1000);
+    }
+
+    function downloadRow(id) {
+        showToast('Downloading SVG QR Code file...', true);
+        setTimeout(() => {
+            showToast('QR Code file downloaded.', false);
+            hideToast(1500);
+        }, 800);
+    }
+
+    // 4. Print Dialog Modal
+    function openPrintDialog() {
+        const content = `
+            <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-xl w-full max-w-md p-6 relative space-y-4">
+                <h2 class="text-[16px] font-black text-[var(--text-primary)] border-b border-[var(--border)] pb-2">Print QR Labels</h2>
+                
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Printer Target</label>
+                        <select class="w-full h-8 px-1 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none">
+                            <option>Thermal Printer (Stickers)</option>
+                            <option>A4 Sheet Laser</option>
+                            <option>Sticker Label Paper</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Label Size Width (mm)</label>
+                            <input type="number" value="40" class="w-full h-8 px-2 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Height (mm)</label>
+                            <input type="number" value="25" class="w-full h-8 px-2 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Rows Selection</label>
+                            <input type="number" value="2" class="w-full h-8 px-2 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Columns Selection</label>
+                            <input type="number" value="3" class="w-full h-8 px-2 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-2 justify-end pt-3 border-t border-[var(--border)]">
+                    <button onclick="closeModalCustom()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[12px] font-bold rounded-lg">Cancel</button>
+                    <button onclick="submitPrintJobs()" class="px-4 py-2 bg-[var(--accent)] hover:brightness-105 text-white text-[12px] font-bold rounded-lg">Print Labels</button>
+                </div>
+            </div>
+        `;
+        showModal(content);
+    }
+
+    function submitPrintJobs() {
+        closeModalCustom();
+        showToast('Initiating printer connection...', true);
+        setTimeout(() => {
+            showToast('Labels printed successfully!', false);
+            hideToast(1500);
+        }, 1200);
+    }
+
+    // 5. Scan QR Popup Modal
+    function openScanner() {
+        const content = `
+            <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-xl w-full max-w-lg p-6 relative space-y-4">
+                <h2 class="text-[16px] font-black text-[var(--text-primary)] border-b border-[var(--border)] pb-2">Webcam & Barcode QR Scanner</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Scanner camera frame mock -->
+                    <div class="bg-slate-900 border border-slate-700 rounded-xl relative flex items-center justify-center min-h-[160px] text-slate-500 overflow-hidden">
+                        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-950 via-slate-900 to-black opacity-80"></div>
+                        <div class="relative z-10 flex flex-col items-center gap-2">
+                            <span class="w-2.5 h-2.5 bg-rose-500 rounded-full animate-ping"></span>
+                            <span class="text-[10px] font-bold tracking-widest text-slate-400 uppercase">Live Webcam Feed</span>
+                            <div class="w-32 h-32 border-2 border-emerald-400/50 rounded flex items-center justify-center opacity-70 mt-1">
+                                <div class="w-full h-[1.5px] bg-emerald-400 animate-[bounce_2s_infinite]"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Scan inputs / history -->
+                    <div class="space-y-3 flex flex-col justify-between">
+                        <div>
+                            <label class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Manual QR Code Entry</label>
+                            <div class="flex gap-1.5">
+                                <input type="text" id="manualQrVal" placeholder="e.g. QR-CPU-129" class="flex-1 h-8 px-2 border border-[var(--border)] rounded bg-[var(--surface)] text-[12px] outline-none focus:border-accent">
+                                <button onclick="submitManualScan()" class="px-3 h-8 bg-[var(--accent)] hover:brightness-105 text-white text-[12px] font-bold rounded">Scan</button>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-[var(--border)]/60">
+                            <span class="block text-[11px] font-bold text-[var(--text-secondary)] mb-1">Scanner History Log</span>
+                            <div id="scanLog" class="border border-[var(--border)] rounded p-2 bg-[var(--bg)]/40 h-24 overflow-y-auto custom-scroll text-[10px] space-y-1 text-slate-500">
+                                <p>System scanner initialized...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-2 justify-end pt-3 border-t border-[var(--border)]">
+                    <button onclick="closeModalCustom()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[12px] font-bold rounded-lg">Close</button>
+                </div>
+            </div>
+        `;
+        showModal(content);
+    }
+
+    function submitManualScan() {
+        const input = document.getElementById('manualQrVal');
+        const code = input.value.trim();
+        if (!code) return;
+
+        const record = qrRecords.find(r => r.code.toLowerCase() === code.toLowerCase());
+        const log = document.getElementById('scanLog');
+
+        if (record) {
+            const time = new Date().toLocaleTimeString();
+            record.lastScanned = new Date().toISOString().split('T')[0] + ' ' + time.substring(0, 5);
+            record.status = 'Scanned';
+            applyGridFilters();
+
+            const p = document.createElement('p');
+            p.className = 'text-emerald-500 font-bold';
+            p.innerText = `[${time}] Successfully scanned QR Code for ${record.itemName}`;
+            log.appendChild(p);
+            log.scrollTop = log.scrollHeight;
+
+            showToast(`Item Detected: ${record.itemName}`, false);
+            hideToast(1500);
+        } else {
+            const time = new Date().toLocaleTimeString();
+            const p = document.createElement('p');
+            p.className = 'text-rose-500 font-bold';
+            p.innerText = `[${time}] Scan failed: Invalid QR Code identifier.`;
+            log.appendChild(p);
+            log.scrollTop = log.scrollHeight;
+
+            showToast('Scan Error: Invalid QR Code', true);
+            hideToast(1500);
+        }
+        input.value = '';
+    }
+
+    // Export Handler
+    function toggleExportMenu(e) {
+        e.stopPropagation();
+        document.getElementById('exportMenu').classList.toggle('hidden');
+        document.addEventListener('click', closeExportMenu);
+    }
+
+    function closeExportMenu() {
+        document.getElementById('exportMenu').classList.add('hidden');
+        document.removeEventListener('click', closeExportMenu);
+    }
+
+    function exportData(format) {
+        showToast(`Preparing ${format} spreadsheet export...`, true);
+        setTimeout(() => {
+            showToast(`Spreadsheet exported in ${format} format.`, false);
+            hideToast(1500);
+        }, 1000);
+    }
+
+    // Floating Settings popover
+    function toggleSettingsPopover(e) {
+        if (e) {
+            e.stopPropagation();
+            const rect = e.currentTarget.getBoundingClientRect();
+            const popover = document.getElementById('settingsPopover');
+            
+            popover.style.top = `${rect.bottom + window.scrollY + 6}px`;
+            popover.style.left = `${rect.left + window.scrollX - 220}px`;
+            popover.classList.toggle('hidden');
+        } else {
+            document.getElementById('settingsPopover').classList.add('hidden');
+        }
+    }
+
+    function saveSettingsPopover() {
+        toggleSettingsPopover();
+        showToast('Settings saved successfully.', false);
+        hideToast(1500);
+    }
+
+    // Toast Notifications
+    let qrToastTimeout = null;
+    function showToast(text, isLoader = true) {
+        const toast = document.getElementById('qrToast');
+        const toastText = document.getElementById('qrToastText');
+        const toastIcon = document.getElementById('qrToastIcon');
+
+        if (qrToastTimeout) clearTimeout(qrToastTimeout);
+
+        if (isLoader) {
+            toastIcon.innerHTML = '<div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>';
+        } else {
+            toastIcon.innerHTML = '<svg class="w-4.5 h-4.5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
+        }
+
+        toastText.innerText = text;
+        toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+        toast.classList.add('opacity-100', 'translate-y-0');
+    }
+
+    function hideToast(delay = 1500) {
+        const toast = document.getElementById('qrToast');
+        qrToastTimeout = setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+            toast.classList.remove('opacity-100', 'translate-y-0');
+        }, delay);
+    }
+</script>
+{% endblock %}

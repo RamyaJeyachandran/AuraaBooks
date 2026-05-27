@@ -124,3 +124,86 @@ class PurchaseBillView(TemplateView):
 class PurchasePaymentView(TemplateView):
     template_name = 'purchase_payment.html'
 
+
+class AccountsListView(TemplateView):
+    template_name = 'accounts.html'
+
+
+class OpeningBalanceListView(TemplateView):
+    template_name = 'opening_balance.html'
+
+
+class SettingsDashboardView(TemplateView):
+    template_name = 'settings_dashboard.html'
+
+
+class SmtpSettingsView(TemplateView):
+    template_name = 'smtp_settings.html'
+
+
+class StorageLocationView(TemplateView):
+    template_name = 'storage_location.html'
+
+
+class CustomerPointsSettingsView(TemplateView):
+    template_name = 'customer_points_settings.html'
+
+
+class QrCodeSettingsView(TemplateView):
+    template_name = 'qr_code_settings.html'
+
+
+class UnitsSettingsView(TemplateView):
+    template_name = 'units_settings.html'
+
+
+class PrintSettingsView(TemplateView):
+    template_name = 'print_settings.html'
+
+
+class ModulesSettingsView(TemplateView):
+    template_name = 'modules_settings.html'
+
+
+class SerialNumbersView(TemplateView):
+    template_name = 'serial_numbers_settings.html'
+
+
+class CompanySettingsView(TemplateView):
+    template_name = 'company_settings.html'
+
+
+class DefaultContentView(TemplateView):
+    template_name = 'default_content_settings.html'
+
+
+class TaxRatesSettingsView(TemplateView):
+    template_name = 'tax_rates_settings.html'
+
+
+class CustomFieldsView(TemplateView):
+    template_name = 'custom_fields_settings.html'
+
+
+class GeneralSettingsView(TemplateView):
+    template_name = 'general_settings.html'
+
+
+class UsersSettingsView(TemplateView):
+    template_name = 'users_settings.html'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Storage Location - Settings - Auraa Books{% endblock %}
+
+{% block breadcrumb_parent %}
+    <a href="{% url 'settings-dashboard' %}" class="hover:text-accent cursor-pointer">Settings</a>
+    <span class="opacity-50">/</span>
+{% endblock %}
+
+{% block breadcrumb_active %}Storage Location{% endblock %}
+
+{% block content %}
+<div class="stagger-in">
+
+    <!-- Page Header -->
+    <div class="flex items-center justify-between mb-5">
+        <div>
+            <h1 class="text-[22px] font-extrabold text-[var(--text-primary)] tracking-tight flex items-center gap-2 mb-1">
+                <a href="{% url 'settings-dashboard' %}" class="text-accent hover:underline cursor-pointer font-extrabold">Settings</a>
+                <span class="text-[var(--text-muted)] font-medium">/</span>
+                Storage
+            </h1>
+            <p class="text-[12px] text-[var(--text-muted)]">Manage storage locations, codes, and suffix number ranges for your inventory.</p>
+        </div>
+        <button onclick="openAddModal()"
+                class="flex items-center gap-2 px-4 py-2 rounded-xl text-white text-[13px] font-semibold shadow-sm hover:opacity-90 active:scale-95 transition-all duration-150"
+                style="background-color: var(--accent);">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            </svg>
+            Add Storage
+        </button>
+    </div>
+
+    <!-- Data Table -->
+    <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl overflow-hidden shadow-sm">
+        <table class="w-full text-[13px]" id="storageTable">
+            <thead>
+                <tr style="background-color: var(--accent);" class="border-b border-[var(--border)]">
+                    <th class="text-left px-5 py-3 font-semibold text-white w-[200px]">Storage Code</th>
+                    <th class="text-left px-5 py-3 font-semibold text-white">Name</th>
+                    <th class="text-left px-5 py-3 font-semibold text-white w-[200px]">Number Range</th>
+                    <th class="px-5 py-3 w-[80px]"></th>
+                </tr>
+            </thead>
+            <tbody id="storageTableBody">
+                <!-- Populated by JS -->
+            </tbody>
+        </table>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="flex flex-col items-center justify-center py-16 text-center">
+            <div class="w-14 h-14 rounded-full bg-[var(--bg)] flex items-center justify-center mb-3">
+                <svg class="w-7 h-7 text-[var(--text-muted)]" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M2 17h20v2H2z"/>
+                    <rect x="3" y="19" width="3" height="3"/><rect x="10.5" y="19" width="3" height="3"/><rect x="18" y="19" width="3" height="3"/>
+                    <path d="M6 7h12v9H6z"/>
+                </svg>
+            </div>
+            <p class="text-[13px] font-semibold text-[var(--text-muted)]">No storage locations found.</p>
+            <p class="text-[12px] text-[var(--text-muted)] mt-1">Click <span class="font-semibold">"Add Storage"</span> to create one.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ──────────────────────────────────────────────
+     MODAL OVERLAY
+────────────────────────────────────────────── -->
+<div id="storageModal" class="fixed inset-0 z-[9998] flex items-center justify-center hidden">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onclick="closeModal()"></div>
+
+    <!-- Dialog -->
+    <div class="relative z-10 w-full max-w-[560px] rounded-2xl overflow-hidden shadow-2xl mx-4">
+
+        <!-- Modal Header — primary color -->
+        <div class="flex items-center justify-between px-6 py-4" style="background-color: var(--accent);">
+            <h2 class="text-[15px] font-bold text-white tracking-tight">Storage Location Details</h2>
+            <!-- × Close — red background -->
+            <button onclick="closeModal()"
+                    class="w-7 h-7 flex items-center justify-center rounded-lg bg-red-500 hover:bg-red-600 text-white text-[16px] font-bold transition-colors duration-150 leading-none">
+                &times;
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="bg-white px-6 py-6 space-y-5">
+
+            <!-- Storage Code -->
+            <div class="flex items-center gap-4">
+                <label class="text-[13px] font-semibold text-slate-700 w-[170px] shrink-0">Storage Code:</label>
+                <input id="modalStorageCode" type="text" placeholder=""
+                       class="w-48 h-9 border border-slate-300 rounded-lg px-3 text-[13px] text-slate-800 outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]/30 transition-all duration-150"/>
+            </div>
+
+            <!-- Storage Name -->
+            <div class="flex items-start gap-4">
+                <label class="text-[13px] font-semibold text-slate-700 w-[170px] shrink-0 pt-2">Storage Name :</label>
+                <div class="flex-1 space-y-2">
+                    <input id="modalStorageName" type="text" placeholder=""
+                           class="w-full h-9 border border-slate-300 rounded-lg px-3 text-[13px] text-slate-800 outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]/30 transition-all duration-150"/>
+                    <!-- Help Text -->
+                    <div class="text-[11.5px] text-slate-500 leading-relaxed space-y-0.5 pl-0.5">
+                        <p>To maintain multiple level storage please provide "-" as separator</p>
+                        <p>Ex: For Building-Chamber-Floor-Pallet, Enter: "B1-C1-GF-A"</p>
+                        <p>Ex: Floor-Pallet, "GF-A" (or)</p>
+                        <p>Ex: Just Pallet alone, "A"</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suffix Number Range -->
+            <div class="flex items-center gap-4">
+                <label class="text-[13px] font-semibold text-slate-700 w-[170px] shrink-0">Suffix Number Range<br><span class="font-normal text-slate-400">(optional):</span></label>
+                <div class="flex items-center gap-3">
+                    <span class="text-[13px] text-slate-600 font-medium">From</span>
+                    <input id="modalRangeFrom" type="number" min="0" placeholder=""
+                           class="w-24 h-9 border border-slate-300 rounded-lg px-3 text-[13px] text-slate-800 outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]/30 transition-all duration-150"/>
+                    <span class="text-[13px] text-slate-600 font-medium">To</span>
+                    <input id="modalRangeTo" type="number" min="0" placeholder=""
+                           class="w-24 h-9 border border-slate-300 rounded-lg px-3 text-[13px] text-slate-800 outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]/30 transition-all duration-150"/>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="bg-slate-50 border-t border-slate-200 px-6 py-4 flex justify-end gap-3">
+            <!-- Cancel — dark grey -->
+            <button onclick="closeModal()"
+                    class="px-5 py-2 rounded-lg text-[13px] font-semibold text-white bg-slate-700 hover:bg-slate-800 active:scale-95 transition-all duration-150">
+                Cancel
+            </button>
+            <!-- Save — primary color -->
+            <button onclick="saveStorage()"
+                    class="px-5 py-2 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 active:scale-95 transition-all duration-150"
+                    style="background-color: var(--accent);">
+                Save
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="storageToast" class="fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3 bg-slate-900 text-white rounded-xl shadow-2xl opacity-0 translate-y-4 pointer-events-none transition-all duration-300">
+    <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+    </svg>
+    <span id="storageToastText" class="text-[12px] font-semibold tracking-wide"></span>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // ── State ──────────────────────────────────────────
+    let storageList = [];
+    let editIndex = -1;
+
+    // ── Render Table ───────────────────────────────────
+    function renderTable() {
+        const tbody = document.getElementById('storageTableBody');
+        const empty = document.getElementById('emptyState');
+
+        if (storageList.length === 0) {
+            tbody.innerHTML = '';
+            empty.classList.remove('hidden');
+            return;
+        }
+        empty.classList.add('hidden');
+
+        tbody.innerHTML = storageList.map((row, i) => {
+            const range = (row.from !== '' && row.to !== '') ? `${row.from} – ${row.to}` : (row.from || row.to || '—');
+            return `
+            <tr class="border-b border-[var(--border)] hover:bg-[var(--bg)] transition-colors duration-100 group">
+                <td class="px-5 py-3 font-mono text-[13px] text-[var(--text-primary)]">${escHtml(row.code)}</td>
+                <td class="px-5 py-3 text-[13px] text-[var(--text-primary)]">${escHtml(row.name)}</td>
+                <td class="px-5 py-3 text-[13px] text-[var(--text-muted)]">${escHtml(range)}</td>
+                <td class="px-5 py-3">
+                    <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                        <button onclick="editStorage(${i})" title="Edit"
+                                class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-[var(--bg)] text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors duration-150">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                        </button>
+                        <button onclick="deleteStorage(${i})" title="Delete"
+                                class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-50 text-[var(--text-muted)] hover:text-red-500 transition-colors duration-150">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                        </button>
+                    </div>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    // ── Modal ──────────────────────────────────────────
+    function openAddModal() {
+        editIndex = -1;
+        document.getElementById('modalStorageCode').value = '';
+        document.getElementById('modalStorageName').value = '';
+        document.getElementById('modalRangeFrom').value = '';
+        document.getElementById('modalRangeTo').value = '';
+        document.getElementById('storageModal').classList.remove('hidden');
+    }
+
+    function editStorage(i) {
+        editIndex = i;
+        const row = storageList[i];
+        document.getElementById('modalStorageCode').value = row.code;
+        document.getElementById('modalStorageName').value = row.name;
+        document.getElementById('modalRangeFrom').value = row.from;
+        document.getElementById('modalRangeTo').value = row.to;
+        document.getElementById('storageModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document.getElementById('storageModal').classList.add('hidden');
+    }
+
+    function saveStorage() {
+        const code = document.getElementById('modalStorageCode').value.trim();
+        const name = document.getElementById('modalStorageName').value.trim();
+        const from = document.getElementById('modalRangeFrom').value.trim();
+        const to   = document.getElementById('modalRangeTo').value.trim();
+
+        if (!code || !name) {
+            showToast('Please fill in Storage Code and Name.', true);
+            return;
+        }
+
+        const entry = { code, name, from, to };
+        if (editIndex >= 0) {
+            storageList[editIndex] = entry;
+        } else {
+            storageList.push(entry);
+        }
+
+        renderTable();
+        closeModal();
+        showToast(editIndex >= 0 ? 'Storage location updated.' : 'Storage location added.');
+    }
+
+    function deleteStorage(i) {
+        storageList.splice(i, 1);
+        renderTable();
+        showToast('Storage location deleted.');
+    }
+
+    // ── Toast ──────────────────────────────────────────
+    let toastTimer = null;
+    function showToast(msg, isError = false) {
+        const toast = document.getElementById('storageToast');
+        document.getElementById('storageToastText').innerText = msg;
+        toast.classList.toggle('bg-red-700', isError);
+        toast.classList.toggle('bg-slate-900', !isError);
+        toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+        toast.classList.add('opacity-100', 'translate-y-0');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+            toast.classList.remove('opacity-100', 'translate-y-0');
+        }, 2200);
+    }
+
+    // ── Utils ──────────────────────────────────────────
+    function escHtml(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ── Init ───────────────────────────────────────────
+    renderTable();
+</script>
+{% endblock %}

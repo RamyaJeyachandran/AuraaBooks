@@ -1,0 +1,518 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Settings - Custom Fields - Auraa Books{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Dropdown arrow rotation */
+    .edit-dropdown-btn.active svg {
+        transform: rotate(180deg);
+    }
+</style>
+{% endblock %}
+
+{% block breadcrumb_parent %}
+    <a href="{% url 'settings-dashboard' %}" class="hover:text-accent cursor-pointer">Settings</a>
+    <span class="opacity-50">/</span>
+{% endblock %}
+
+{% block breadcrumb_active %}Custom Fields{% endblock %}
+
+{% block content %}
+<div class="stagger-in max-w-5xl mx-auto space-y-6 pb-12">
+    <!-- Header -->
+    <div class="pb-4 border-b border-[var(--border)] relative z-30">
+        <h1 class="text-[24px] font-extrabold text-[var(--text-primary)] tracking-tight flex items-center gap-2">
+            <a href="{% url 'settings-dashboard' %}" class="text-accent hover:underline cursor-pointer">Settings</a>
+            <span class="text-[var(--text-muted)] font-medium mx-1">/</span>
+            Custom Fields
+        </h1>
+    </div>
+
+    <!-- Top Controls -->
+    <div class="flex justify-between items-center border-b border-[var(--border)]/60 pb-3 relative z-30">
+        <span class="text-[14px] font-bold text-[var(--text-primary)]">Custom Field Details</span>
+        <!-- Add Item button styled in primary color -->
+        <button onclick="openFieldDetailsModal(null)" class="px-5 py-2 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-sm cursor-pointer transition-all">
+            Add Item
+        </button>
+    </div>
+
+    <!-- Custom Fields Grid -->
+    <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-sm overflow-hidden">
+        <table class="w-full text-left border-collapse text-[13px]">
+            <thead>
+                <!-- Styled table headers in primary color -->
+                <tr class="bg-[var(--accent)] text-white text-[12px] font-bold border-b border-[var(--border)]/60 select-none">
+                    <th class="py-3.5 px-6 w-12 text-center"></th> <!-- Drag handle col -->
+                    <th class="py-3.5 px-6">Name</th>
+                    <th class="py-3.5 px-6">Type</th>
+                    <th class="py-3.5 px-6 text-center">Grid</th>
+                    <th class="py-3.5 px-6 text-center">Active</th>
+                    <th class="py-3.5 px-6 text-right pr-12 w-28">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="customFieldsTableBody" class="divide-y divide-[var(--border)]/60 text-[var(--text-primary)]">
+                <!-- Injected via JS -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- FIELD DETAILS MODAL -->
+<div id="fieldDetailsModal" class="fixed inset-0 z-[999] bg-black/45 backdrop-blur-sm flex items-center justify-center hidden">
+    <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl w-[600px] shadow-2xl overflow-hidden flex flex-col">
+        <!-- Header with Close button styled in RED -->
+        <div class="px-6 py-4 border-b border-[var(--border)] flex justify-between items-center bg-[var(--accent)] text-white animate-fade-in">
+            <h3 class="text-[15px] font-extrabold text-white">Field Details</h3>
+            <button onclick="closeFieldDetailsModal()" class="w-7 h-7 flex items-center justify-center bg-rose-600 hover:bg-rose-700 text-white rounded-lg transition-colors cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="p-6 space-y-4 text-[13px] overflow-y-auto max-h-[500px]">
+            <!-- Module Dropdown and Sub-type selector -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-[var(--text-primary)]">Module <span class="text-rose-500">*</span></label>
+                    <select id="modalModule" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] focus:border-accent outline-none font-semibold">
+                        <option value="Invoice">Invoice</option>
+                        <option value="Delivery Challan">Delivery Challan</option>
+                        <option value="Customer">Customer</option>
+                        <option value="Supplier">Supplier</option>
+                    </select>
+                </div>
+                <div class="space-y-1.5 relative">
+                    <label class="block font-bold text-[var(--text-primary)]">Sub-type</label>
+                    <button type="button" onclick="toggleSubtypeDropdown(event)" id="subtypeDropdownBtn" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] focus:border-accent outline-none text-left flex justify-between items-center font-semibold">
+                        <span id="subtypeSelectionText">All</span>
+                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
+                        </svg>
+                    </button>
+                    <!-- Sub-type Menu options -->
+                    <div id="subtypeDropdownMenu" class="hidden absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl py-2 z-50 max-h-52 overflow-y-auto">
+                        <label class="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-50 cursor-pointer">
+                            <input type="checkbox" value="All" checked onchange="handleSubtypeCheckboxChange(this)" class="rounded border-slate-300">
+                            <span class="text-[12px] font-semibold text-slate-700">All</span>
+                        </label>
+                        <label class="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-50 cursor-pointer">
+                            <input type="checkbox" value="Regular" onchange="handleSubtypeCheckboxChange(this)" class="rounded border-slate-300">
+                            <span class="text-[12px] font-semibold text-slate-700">Regular</span>
+                        </label>
+                        <label class="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-50 cursor-pointer">
+                            <input type="checkbox" value="Export with Tax Payment" onchange="handleSubtypeCheckboxChange(this)" class="rounded border-slate-300">
+                            <span class="text-[12px] font-semibold text-slate-700">Export with Tax Payment</span>
+                        </label>
+                        <label class="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-50 cursor-pointer">
+                            <input type="checkbox" value="Export without Tax Payment (bond/LUT)" onchange="handleSubtypeCheckboxChange(this)" class="rounded border-slate-300">
+                            <span class="text-[12px] font-semibold text-slate-700">Export without Tax Payment (bond/LUT)</span>
+                        </label>
+                        <label class="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-50 cursor-pointer">
+                            <input type="checkbox" value="SEZ supplies with Tax payment" onchange="handleSubtypeCheckboxChange(this)" class="rounded border-slate-300">
+                            <span class="text-[12px] font-semibold text-slate-700">SEZ supplies with Tax payment</span>
+                        </label>
+                        <label class="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-50 cursor-pointer">
+                            <input type="checkbox" value="SEZ supplies without Tax payment" onchange="handleSubtypeCheckboxChange(this)" class="rounded border-slate-300">
+                            <span class="text-[12px] font-semibold text-slate-700">SEZ supplies without Tax payment</span>
+                        </label>
+                        <label class="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-50 cursor-pointer">
+                            <input type="checkbox" value="Bill Of Supply" onchange="handleSubtypeCheckboxChange(this)" class="rounded border-slate-300">
+                            <span class="text-[12px] font-semibold text-slate-700">Bill Of Supply</span>
+                        </label>
+                        <label class="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-50 cursor-pointer">
+                            <input type="checkbox" value="Deemed Export" onchange="handleSubtypeCheckboxChange(this)" class="rounded border-slate-300">
+                            <span class="text-[12px] font-semibold text-slate-700">Deemed Export</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Field Name -->
+            <div class="space-y-1.5">
+                <label class="block font-bold text-[var(--text-primary)]">Field Name <span class="text-rose-500">*</span></label>
+                <input type="text" id="modalFieldName" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] focus:border-accent outline-none">
+            </div>
+
+            <!-- Field Type and Default Values -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-[var(--text-primary)]">Field Type</label>
+                    <select id="modalFieldType" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] focus:border-accent outline-none font-semibold">
+                        <option value="Text">Text</option>
+                        <option value="Dropdown">Dropdown</option>
+                        <option value="Date">Date</option>
+                        <option value="Time">Time</option>
+                        <option value="Date Time">Date Time</option>
+                        <option value="Status">Status</option>
+                    </select>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-[var(--text-primary)]">Default Values</label>
+                    <input type="text" id="modalDefaultValues" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] focus:border-accent outline-none">
+                </div>
+            </div>
+
+            <!-- Checkbox options (Item Grid, Required, Display in Print, Include Total) -->
+            <div class="space-y-3 pt-3 border-t border-[var(--border)]/60">
+                <div class="flex flex-wrap gap-6">
+                    <label class="flex items-center gap-2 font-bold text-[var(--text-primary)] cursor-pointer">
+                        <input type="checkbox" id="modalItemGrid" onchange="toggleItemGridCheckbox()" class="rounded border-slate-300">
+                        Item Grid
+                    </label>
+                    <label class="flex items-center gap-2 font-bold text-[var(--text-primary)] cursor-pointer">
+                        <input type="checkbox" id="modalRequired" class="rounded border-slate-300">
+                        Required
+                    </label>
+                    <label class="flex items-center gap-2 font-bold text-[var(--text-primary)] cursor-pointer">
+                        <input type="checkbox" id="modalDisplayInPrint" class="rounded border-slate-300">
+                        Display in Print
+                    </label>
+                </div>
+
+                <!-- Conditional Include Total Checkbox -->
+                <div id="modalIncludeTotalWrapper" class="hidden pl-2">
+                    <label class="flex items-center gap-2 font-bold text-[var(--text-primary)] cursor-pointer">
+                        <input type="checkbox" id="modalIncludeTotal" class="rounded border-slate-300">
+                        Include Total
+                    </label>
+                </div>
+            </div>
+
+            <!-- Active Checkbox -->
+            <div class="pt-3 border-t border-[var(--border)]/60">
+                <label class="flex items-center gap-2 font-bold text-[var(--text-primary)] cursor-pointer">
+                    <input type="checkbox" id="modalActive" checked class="rounded border-slate-300">
+                    Active
+                </label>
+            </div>
+        </div>
+
+        <!-- Modal Footer Actions -->
+        <div class="px-6 py-4 bg-slate-50 border-t border-[var(--border)] flex justify-end gap-2">
+            <!-- Save styled in primary, Cancel in dark gray -->
+            <button onclick="saveFieldDetails()" class="px-5 py-2 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-sm cursor-pointer">Save</button>
+            <button onclick="closeFieldDetailsModal()" class="px-5 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg text-[12px] font-bold shadow-sm cursor-pointer">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Status Toast -->
+<div id="fieldsToast" class="fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3.5 bg-slate-900 text-white rounded-xl shadow-2xl opacity-0 translate-y-4 pointer-events-none transition-all duration-300">
+    <div id="fieldsToastIcon" class="flex items-center justify-center"></div>
+    <span id="fieldsToastText" class="text-[13px] font-semibold tracking-wide"></span>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // State Databases (Default mockup data)
+    let customFieldsData = [
+        { id: 1, name: 'Delivery Note No#', module: 'Invoice', fieldType: 'Text', defaultVal: '', itemGrid: false, includeTotal: false, required: false, displayInPrint: true, subtypes: ['All'], active: true },
+        { id: 2, name: 'Delivery Note Date', module: 'Invoice', fieldType: 'Date', defaultVal: '', itemGrid: false, includeTotal: false, required: false, displayInPrint: true, subtypes: ['All'], active: true },
+        { id: 3, name: 'Despatch Method', module: 'Invoice', fieldType: 'Text', defaultVal: '', itemGrid: false, includeTotal: false, required: false, displayInPrint: true, subtypes: ['All'], active: true },
+        { id: 4, name: 'Despatch Date', module: 'Invoice', fieldType: 'Date', defaultVal: '', itemGrid: false, includeTotal: false, required: false, displayInPrint: true, subtypes: ['All'], active: true },
+        { id: 5, name: 'Transportation Mode', module: 'Invoice', fieldType: 'Text', defaultVal: '', itemGrid: false, includeTotal: false, required: false, displayInPrint: true, subtypes: ['All'], active: true }
+    ];
+
+    let activeEditingFieldId = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+        renderCustomFields();
+    });
+
+    function renderCustomFields() {
+        const body = document.getElementById('customFieldsTableBody');
+        body.innerHTML = '';
+
+        customFieldsData.forEach(field => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-slate-50/50 transition-colors duration-150 relative';
+            tr.innerHTML = `
+                <td class="py-4 px-6 text-center text-slate-400 font-bold select-none text-[16px] cursor-grab">⋮</td>
+                <td class="py-4 px-6 font-semibold text-[13.5px]">${field.name}</td>
+                <td class="py-4 px-6 text-slate-600 font-medium">${field.module}</td>
+                <td class="py-4 px-6 text-center">
+                    ${field.itemGrid ? `
+                        <span class="inline-flex items-center text-[var(--accent)] font-extrabold">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                            </svg>
+                        </span>
+                    ` : '<span class="text-slate-300">-</span>'}
+                </td>
+                <td class="py-4 px-6 text-center">
+                    ${field.active ? `
+                        <span class="inline-flex items-center text-[var(--accent)] font-extrabold">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                            </svg>
+                        </span>
+                    ` : '<span class="text-slate-300">-</span>'}
+                </td>
+                <td class="py-4 px-6 text-right pr-12 relative">
+                    <div class="inline-block relative text-left">
+                        <button onclick="toggleActionDropdown(${field.id}, event)" class="edit-dropdown-btn flex items-center gap-1.5 px-3 py-1 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[11px] font-bold shadow-sm transition-all cursor-pointer">
+                            Edit
+                            <svg class="w-3 h-3 transition-transform" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
+                            </svg>
+                        </button>
+                        <div id="dropdown-menu-${field.id}" class="hidden absolute right-0 mt-1.5 w-24 bg-white border border-slate-200 rounded-lg shadow-xl py-1 z-50">
+                            <button onclick="openFieldDetailsModal(${field.id})" class="w-full text-left px-3 py-1.5 text-[12px] font-semibold text-slate-700 hover:bg-slate-100 cursor-pointer">Edit</button>
+                            <button onclick="deleteField(${field.id})" class="w-full text-left px-3 py-1.5 text-[12px] font-semibold text-rose-600 hover:bg-rose-50 cursor-pointer">Delete</button>
+                        </div>
+                    </div>
+                </td>
+            `;
+            body.appendChild(tr);
+        });
+    }
+
+    function toggleActionDropdown(id, e) {
+        e.stopPropagation();
+        
+        // Close others
+        document.querySelectorAll('[id^="dropdown-menu-"]').forEach(menu => {
+            if (menu.id !== `dropdown-menu-${id}`) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        const menu = document.getElementById(`dropdown-menu-${id}`);
+        menu.classList.toggle('hidden');
+    }
+
+    // Close action dropdowns on clicking window
+    window.addEventListener('click', () => {
+        document.querySelectorAll('[id^="dropdown-menu-"]').forEach(menu => menu.classList.add('hidden'));
+        document.getElementById('subtypeDropdownMenu').classList.add('hidden');
+    });
+
+    function deleteField(id) {
+        showToast('Deleting custom field...', 'loading');
+        setTimeout(() => {
+            customFieldsData = customFieldsData.filter(f => f.id !== id);
+            renderCustomFields();
+            showToast('Custom field deleted successfully!', 'success');
+            hideToast(1500);
+        }, 500);
+    }
+
+    // Modal helpers
+    function openFieldDetailsModal(fieldId = null) {
+        activeEditingFieldId = fieldId;
+        const modal = document.getElementById('fieldDetailsModal');
+        
+        if (fieldId !== null) {
+            // Edit mode
+            const field = customFieldsData.find(f => f.id === fieldId);
+            document.getElementById('modalFieldName').value = field.name;
+            document.getElementById('modalModule').value = field.module;
+            document.getElementById('modalFieldType').value = field.fieldType;
+            document.getElementById('modalDefaultValues').value = field.defaultVal || '';
+            document.getElementById('modalItemGrid').checked = field.itemGrid;
+            document.getElementById('modalRequired').checked = field.required;
+            document.getElementById('modalDisplayInPrint').checked = field.displayInPrint;
+            document.getElementById('modalIncludeTotal').checked = field.includeTotal;
+            document.getElementById('modalActive').checked = field.active;
+
+            // Load sub-types checkboxes
+            const subtypes = field.subtypes || ['All'];
+            const checkboxes = document.querySelectorAll('#subtypeDropdownMenu input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                cb.checked = subtypes.includes(cb.value);
+            });
+            updateSubtypeSelectionText();
+        } else {
+            // Add mode
+            document.getElementById('modalFieldName').value = '';
+            document.getElementById('modalModule').value = 'Invoice';
+            document.getElementById('modalFieldType').value = 'Text';
+            document.getElementById('modalDefaultValues').value = '';
+            document.getElementById('modalItemGrid').checked = false;
+            document.getElementById('modalRequired').checked = false;
+            document.getElementById('modalDisplayInPrint').checked = true;
+            document.getElementById('modalIncludeTotal').checked = false;
+            document.getElementById('modalActive').checked = true;
+
+            const checkboxes = document.querySelectorAll('#subtypeDropdownMenu input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                cb.checked = (cb.value === 'All');
+            });
+            updateSubtypeSelectionText();
+        }
+
+        toggleItemGridCheckbox();
+        modal.classList.remove('hidden');
+    }
+
+    function closeFieldDetailsModal() {
+        document.getElementById('fieldDetailsModal').classList.add('hidden');
+    }
+
+    // Item Grid checkbox changes visibility of Include Total
+    function toggleItemGridCheckbox() {
+        const isChecked = document.getElementById('modalItemGrid').checked;
+        const wrapper = document.getElementById('modalIncludeTotalWrapper');
+        if (isChecked) {
+            wrapper.classList.remove('hidden');
+        } else {
+            wrapper.classList.add('hidden');
+            document.getElementById('modalIncludeTotal').checked = false;
+        }
+    }
+
+    // Sub-type Dropdown toggle
+    function toggleSubtypeDropdown(event) {
+        event.stopPropagation();
+        const menu = document.getElementById('subtypeDropdownMenu');
+        menu.classList.toggle('hidden');
+    }
+
+    function handleSubtypeCheckboxChange(cb) {
+        const checkboxes = document.querySelectorAll('#subtypeDropdownMenu input[type="checkbox"]');
+        if (cb.value === 'All') {
+            if (cb.checked) {
+                // If "All" is selected, uncheck everything else
+                checkboxes.forEach(otherCb => {
+                    if (otherCb.value !== 'All') otherCb.checked = false;
+                });
+            }
+        } else {
+            if (cb.checked) {
+                // If any specific subtype is selected, uncheck "All"
+                checkboxes.forEach(otherCb => {
+                    if (otherCb.value === 'All') otherCb.checked = false;
+                });
+            }
+        }
+
+        // If none is checked, check "All"
+        let anyChecked = false;
+        checkboxes.forEach(c => {
+            if (c.checked) anyChecked = true;
+        });
+        if (!anyChecked) {
+            document.querySelector('#subtypeDropdownMenu input[value="All"]').checked = true;
+        }
+
+        updateSubtypeSelectionText();
+    }
+
+    function updateSubtypeSelectionText() {
+        const checkboxes = document.querySelectorAll('#subtypeDropdownMenu input[type="checkbox"]');
+        let selected = [];
+        checkboxes.forEach(cb => {
+            if (cb.checked) selected.push(cb.value);
+        });
+        
+        const selectionText = document.getElementById('subtypeSelectionText');
+        if (selected.length === 0 || selected.includes('All')) {
+            selectionText.innerText = 'All';
+        } else if (selected.length === 1) {
+            selectionText.innerText = selected[0];
+        } else {
+            selectionText.innerText = `${selected.length} items`;
+        }
+    }
+
+    function saveFieldDetails() {
+        const name = document.getElementById('modalFieldName').value.trim();
+        if (!name) {
+            showToast('Please enter a Field Name.', 'error');
+            return;
+        }
+
+        const module = document.getElementById('modalModule').value;
+        const fieldType = document.getElementById('modalFieldType').value;
+        const defaultVal = document.getElementById('modalDefaultValues').value.trim();
+        const itemGrid = document.getElementById('modalItemGrid').checked;
+        const required = document.getElementById('modalRequired').checked;
+        const displayInPrint = document.getElementById('modalDisplayInPrint').checked;
+        const includeTotal = itemGrid ? document.getElementById('modalIncludeTotal').checked : false;
+        const active = document.getElementById('modalActive').checked;
+
+        // Subtypes list
+        const subtypes = [];
+        const checkboxes = document.querySelectorAll('#subtypeDropdownMenu input[type="checkbox"]');
+        checkboxes.forEach(cb => {
+            if (cb.checked) subtypes.push(cb.value);
+        });
+
+        showToast('Saving custom field...', 'loading');
+
+        setTimeout(() => {
+            if (activeEditingFieldId !== null) {
+                // Update
+                const field = customFieldsData.find(f => f.id === activeEditingFieldId);
+                field.name = name;
+                field.module = module;
+                field.fieldType = fieldType;
+                field.defaultVal = defaultVal;
+                field.itemGrid = itemGrid;
+                field.required = required;
+                field.displayInPrint = displayInPrint;
+                field.includeTotal = includeTotal;
+                field.subtypes = subtypes;
+                field.active = active;
+            } else {
+                // Add new
+                const nextId = customFieldsData.length > 0 ? Math.max(...customFieldsData.map(f => f.id)) + 1 : 1;
+                customFieldsData.push({
+                    id: nextId,
+                    name,
+                    module,
+                    fieldType,
+                    defaultVal,
+                    itemGrid,
+                    required,
+                    displayInPrint,
+                    includeTotal,
+                    subtypes,
+                    active
+                });
+            }
+
+            closeFieldDetailsModal();
+            renderCustomFields();
+            showToast('Custom field saved successfully!', 'success');
+            hideToast(1500);
+        }, 700);
+    }
+
+    // Toast helpers
+    let toastTimeout = null;
+    function showToast(text, type = 'loading') {
+        const toast = document.getElementById('fieldsToast');
+        const textSpan = document.getElementById('fieldsToastText');
+        const iconDiv = document.getElementById('fieldsToastIcon');
+
+        if (toastTimeout) clearTimeout(toastTimeout);
+
+        textSpan.innerText = text;
+
+        if (type === 'loading') {
+            iconDiv.innerHTML = '<div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>';
+        } else if (type === 'success') {
+            iconDiv.innerHTML = '<svg class="w-4.5 h-4.5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
+        } else {
+            iconDiv.innerHTML = '<svg class="w-4.5 h-4.5 text-rose-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>';
+        }
+
+        toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+        toast.classList.add('opacity-100', 'translate-y-0');
+    }
+
+    function hideToast(delay = 1500) {
+        const toast = document.getElementById('fieldsToast');
+        toastTimeout = setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+            toast.classList.remove('opacity-100', 'translate-y-0');
+        }, delay);
+    }
+</script>
+{% endblock %}

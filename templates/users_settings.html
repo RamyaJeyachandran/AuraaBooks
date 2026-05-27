@@ -1,0 +1,1045 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Settings - Users - Auraa Books{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Tab Styling */
+    .tab-btn.active {
+        border-bottom-color: var(--accent);
+        color: var(--accent);
+    }
+    .sub-tab-btn.active {
+        border-bottom-color: var(--accent);
+        color: var(--accent);
+        font-weight: 700;
+    }
+    /* Modal styles */
+    .modal-overlay {
+        backdrop-filter: blur(4px);
+    }
+</style>
+{% endblock %}
+
+{% block breadcrumb_parent %}
+    <a href="{% url 'settings-dashboard' %}" class="hover:text-[var(--accent)] cursor-pointer">Settings</a>
+    <span class="opacity-50">/</span>
+{% endblock %}
+
+{% block breadcrumb_active %}Users{% endblock %}
+
+{% block content %}
+<div class="stagger-in max-w-6xl mx-auto space-y-6 pb-12">
+    <!-- Breadcrumbs Navigation Header -->
+    <div class="pb-4 border-b border-[var(--border)] flex justify-between items-center relative z-30">
+        <h1 class="text-[22px] font-extrabold text-[var(--text-primary)] tracking-tight flex items-center gap-2">
+            <a href="{% url 'settings-dashboard' %}" class="text-[var(--accent)] hover:underline cursor-pointer">Settings</a>
+            <span class="text-[var(--text-muted)] font-medium mx-1">&gt;</span>
+            Users
+        </h1>
+    </div>
+
+    <!-- Main Navigation Tabs & Action Buttons -->
+    <div class="flex justify-between items-center border-b border-[var(--border)]/60 relative z-30">
+        <div class="flex text-[14px] font-bold gap-6">
+            <button onclick="switchTab('users')" id="tabBtnUsers" class="tab-btn pb-3 border-b-2 border-[var(--accent)] text-[var(--accent)] transition-all cursor-pointer">
+                Users
+            </button>
+            <button onclick="switchTab('roles')" id="tabBtnRoles" class="tab-btn pb-3 border-b-2 border-transparent text-[var(--text-muted)] hover:text-[var(--accent)] transition-all cursor-pointer flex items-center gap-1">
+                User Roles
+                <span class="relative group cursor-pointer inline-flex items-center text-slate-400 hover:text-slate-600">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/>
+                    </svg>
+                    <!-- Tooltip text box -->
+                    <span class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-48 p-2 bg-slate-900 text-white text-[11px] rounded shadow-lg text-center font-normal leading-normal">
+                        Role of an individual(user) in an organisation can be added here
+                    </span>
+                </span>
+            </button>
+            <button onclick="switchTab('activity')" id="tabBtnActivity" class="tab-btn pb-3 border-b-2 border-transparent text-[var(--text-muted)] hover:text-[var(--accent)] transition-all cursor-pointer">
+                User Activity
+            </button>
+            <button onclick="switchTab('devices')" id="tabBtnDevices" class="tab-btn pb-3 border-b-2 border-transparent text-[var(--text-muted)] hover:text-[var(--accent)] transition-all cursor-pointer">
+                Access Devices
+            </button>
+        </div>
+
+        <!-- Dynamic Context Buttons (Add User, Add Role) -->
+        <div>
+            <button id="btnAddUser" onclick="openUserModal()" class="px-5 py-2 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-md cursor-pointer transition-all">
+                Add User
+            </button>
+            <button id="btnAddRole" onclick="openRoleModal()" class="hidden px-5 py-2 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-md cursor-pointer transition-all">
+                Add Role
+            </button>
+            <div id="activityHeaderControls" class="hidden">
+                <button onclick="toggleActivityFilterPanel()" class="p-2 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[13px] shadow-md cursor-pointer transition-all flex items-center justify-center">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/>
+                    </svg>
+                </button>
+            </div>
+            <div id="devicesHeaderControls" class="hidden flex items-center gap-4">
+                <div class="flex items-center gap-2 text-[12px] font-semibold text-[var(--text-muted)] select-none">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="toggleDeviceAuth" class="sr-only peer" checked>
+                        <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[var(--accent)]"></div>
+                    </label>
+                    <span>Enable Device Authentication to Login</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== TAB 1: USERS LIST ==================== -->
+    <div id="tabContentUsers" class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-[13px]">
+                <thead>
+                    <tr class="bg-[var(--accent)] text-white text-[12px] font-bold border-b border-[var(--border)]/60 select-none">
+                        <th class="py-3.5 px-6">Name</th>
+                        <th class="py-3.5 px-6">Email</th>
+                        <th class="py-3.5 px-6">Role</th>
+                        <th class="py-3.5 px-6">Phone</th>
+                        <th class="py-3.5 px-6 text-center w-24">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody" class="divide-y divide-[var(--border)]/60 text-[var(--text-primary)]">
+                    <!-- Loaded via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ==================== TAB 2: ROLES LIST ==================== -->
+    <div id="tabContentRoles" class="hidden bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-[13px]">
+                <thead>
+                    <tr class="bg-[var(--accent)] text-white text-[12px] font-bold border-b border-[var(--border)]/60 select-none">
+                        <th class="py-3.5 px-6">Role Name</th>
+                        <th class="py-3.5 px-6 text-center w-28">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="rolesTableBody" class="divide-y divide-[var(--border)]/60 text-[var(--text-primary)]">
+                    <!-- Loaded via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ==================== TAB 3: USER ACTIVITY ==================== -->
+    <div id="tabContentActivity" class="hidden flex gap-6 relative">
+        <!-- Log panel -->
+        <div class="flex-1 bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-sm p-6 overflow-hidden">
+            <div id="activityLogsList" class="space-y-3.5 text-[13px]">
+                <!-- Loaded via JavaScript -->
+            </div>
+        </div>
+
+        <!-- Slide-out Right Filter Panel -->
+        <div id="activityFilterPanel" class="hidden w-80 bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-md h-fit space-y-4">
+            <h3 class="text-[14px] font-bold border-b pb-2 text-[var(--text-primary)]">Filter Logs</h3>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-[11px] font-semibold text-[var(--text-muted)] mb-1">Type</label>
+                    <select id="filterType" class="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg h-9 px-3 text-[12px] outline-none">
+                        <option value="">All Types</option>
+                        <option value="Modified">Modified</option>
+                        <option value="Added">Added</option>
+                        <option value="Deleted">Deleted</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-[var(--text-muted)] mb-1">Transaction Type</label>
+                    <select id="filterTxType" class="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg h-9 px-3 text-[12px] outline-none">
+                        <option value="">Select Transaction</option>
+                        <option value="QTE">Quotes (QTE)</option>
+                        <option value="PR">Purchase Order (PR)</option>
+                        <option value="User">User Account</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-[var(--text-muted)] mb-1">Contacts / # / Ref# / Amount</label>
+                    <input type="text" id="filterKeyword" placeholder="Search values..." class="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg h-9 px-3 text-[12px] outline-none">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-[var(--text-muted)] mb-1">Status</label>
+                    <select id="filterStatus" class="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg h-9 px-3 text-[12px] outline-none">
+                        <option value="Any">Any</option>
+                        <option value="Success">Success</option>
+                        <option value="Failed">Failed</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-[var(--text-muted)] mb-1">Transaction Date</label>
+                    <select id="filterDateRange" class="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg h-9 px-3 text-[12px] outline-none">
+                        <option value="custom">Custom Date</option>
+                        <option value="today">Today</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-[var(--text-muted)] mb-1">Start Date</label>
+                        <input type="date" id="filterStartDate" class="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg h-9 px-2 text-[12px] outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-[var(--text-muted)] mb-1">End Date</label>
+                        <input type="date" id="filterEndDate" class="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg h-9 px-2 text-[12px] outline-none">
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="applyActivityFilters()" class="flex-1 py-2 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-md cursor-pointer transition-all">
+                    Search
+                </button>
+                <button onclick="clearActivityFilters()" class="flex-1 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg text-[12px] font-bold shadow-md cursor-pointer transition-all">
+                    Clear
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== TAB 4: ACCESS DEVICES ==================== -->
+    <div id="tabContentDevices" class="hidden space-y-4">
+        <!-- Sub navigation & Filters -->
+        <div class="flex justify-between items-center border-b border-[var(--border)]/60">
+            <div class="flex text-[13px] font-semibold gap-6">
+                <button onclick="switchDevicesSubTab('devicesList')" id="subTabBtnDevicesList" class="sub-tab-btn pb-2.5 border-b-2 border-[var(--accent)] text-[var(--accent)] cursor-pointer transition-all flex items-center gap-1.5">
+                    Devices
+                    <span id="devicesBadgeCount" class="px-2 py-0.5 text-[10px] bg-[var(--accent)] text-white rounded-full font-bold">18</span>
+                </button>
+                <button onclick="switchDevicesSubTab('loginActivity')" id="subTabBtnLoginActivity" class="sub-tab-btn pb-2.5 border-b-2 border-transparent text-[var(--text-muted)] hover:text-[var(--accent)] cursor-pointer transition-all">
+                    Login Activity
+                </button>
+            </div>
+            
+            <div class="flex items-center gap-2 pb-2 relative">
+                <!-- Group icon (orange/primary style) -->
+                <button onclick="toggleDevicesGrouping()" class="p-1.5 hover:bg-slate-100 rounded text-amber-500 cursor-pointer">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
+                    </svg>
+                </button>
+                <!-- Filter funnel icon button -->
+                <button onclick="toggleDevicesFilterModal()" class="p-1.5 bg-[var(--accent)] hover:brightness-110 text-white rounded cursor-pointer flex items-center justify-center">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/>
+                    </svg>
+                </button>
+
+                <!-- Filter Modal Dialog Box -->
+                <div id="devicesFilterModal" class="hidden absolute right-0 top-full mt-2 w-72 bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4 shadow-xl z-50 space-y-3.5">
+                    <div>
+                        <label class="block text-[11px] font-bold text-[var(--text-muted)] mb-1">Status</label>
+                        <select id="devicesFilterStatusSelect" class="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg h-9 px-3 text-[12px] outline-none">
+                            <option value="All">All users</option>
+                            <option value="User1">User1</option>
+                            <option value="User2">User2</option>
+                            <option value="Both">Both (Success & Failed)</option>
+                            <option value="Success">Success</option>
+                            <option value="Failed">Failed</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="applyDevicesFilters()" class="flex-1 py-1.5 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[11px] font-bold cursor-pointer">
+                            Search
+                        </button>
+                        <button onclick="clearDevicesFilters()" class="flex-1 py-1.5 bg-slate-600 hover:bg-slate-700 text-white rounded-lg text-[11px] font-bold cursor-pointer">
+                            Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4a. Devices Sub-Panel -->
+        <div id="subPanelDevicesList" class="space-y-8">
+            <!-- Group 1: User1 (5) -->
+            <div class="space-y-4">
+                <h3 class="text-[16px] font-extrabold text-[var(--text-primary)]" id="groupHeader1">User1 (5)</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4" id="devicesGroup1Container">
+                    <!-- Session cards dynamically generated -->
+                </div>
+            </div>
+
+            <!-- Group 2: User2 (5) -->
+            <div class="space-y-4">
+                <h3 class="text-[16px] font-extrabold text-[var(--text-primary)]" id="groupHeader2">User2 (5)</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4" id="devicesGroup2Container">
+                    <!-- Session cards dynamically generated -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 4b. Login Activity Sub-Panel -->
+        <div id="subPanelLoginActivity" class="hidden bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-sm overflow-hidden">
+            <table class="w-full text-left border-collapse text-[13px]">
+                <thead>
+                    <tr class="bg-[var(--accent)] text-white text-[12px] font-bold border-b border-[var(--border)] select-none">
+                        <th class="py-3 px-4">Date</th>
+                        <th class="py-3 px-4">Device</th>
+                        <th class="py-3 px-4">User</th>
+                        <th class="py-3 px-4">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="loginActivityTableBody" class="text-[var(--text-primary)]">
+                    <!-- Loaded via JavaScript with background coloring -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODAL: USER DETAILS ==================== -->
+<div id="userModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center modal-overlay bg-black/40">
+    <div class="bg-[var(--surface)] w-full max-w-xl rounded-2xl border border-[var(--border)] shadow-2xl overflow-hidden flex flex-col scale-in">
+        <!-- Modal Header -->
+        <div class="bg-[var(--accent)] text-white py-4 px-6 flex justify-between items-center">
+            <h2 class="text-[16px] font-extrabold" id="userModalTitle">User Details</h2>
+            <button onclick="closeUserModal()" class="text-white hover:opacity-85 text-[20px] font-bold select-none cursor-pointer">
+                &times;
+            </button>
+        </div>
+
+        <!-- Modal Body Form -->
+        <div class="p-6 space-y-4 overflow-y-auto max-h-[75vh]">
+            <input type="hidden" id="editUserId">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-[12px] font-bold text-[var(--text-primary)] mb-1">Role</label>
+                    <select id="userFieldRole" class="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg h-10 px-3 text-[13px] outline-none focus:border-[var(--accent)]">
+                        <option value="Accountant">Accountant</option>
+                        <option value="Administrator">Administrator</option>
+                        <option value="Sales">Sales</option>
+                        <option value="Top Management">Top Management</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[12px] font-bold text-[var(--text-primary)] mb-1">Name</label>
+                    <input type="text" id="userFieldName" class="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg h-10 px-3 text-[13px] outline-none focus:border-[var(--accent)]">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-[12px] font-bold text-[var(--text-primary)] mb-1">E-mail <span class="text-rose-600">*</span></label>
+                    <input type="email" id="userFieldEmail" required class="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg h-10 px-3 text-[13px] outline-none focus:border-[var(--accent)]">
+                </div>
+                <div>
+                    <label class="block text-[12px] font-bold text-[var(--text-primary)] mb-1">Location</label>
+                    <div class="relative">
+                        <!-- Simulated tag input select -->
+                        <div class="w-full min-h-[40px] bg-[var(--surface)] border border-[var(--border)] rounded-lg px-2 py-1 flex flex-wrap gap-1 items-center">
+                            <span class="inline-flex items-center gap-1 bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[11px] font-semibold">
+                                <svg class="w-3 h-3 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 21V8.25a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 8.25V21m15.5 0V11.25m0 9.75h-15.5M1.5 21h21"/></svg>
+                                All
+                                <button class="text-slate-400 hover:text-slate-600 font-bold ml-0.5">&times;</button>
+                            </span>
+                            <span class="text-[var(--text-muted)] text-[12px] ml-auto">&#9662;</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-[12px] font-bold text-[var(--text-primary)] mb-1">Phone</label>
+                    <input type="text" id="userFieldPhone" class="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg h-10 px-3 text-[13px] outline-none focus:border-[var(--accent)]">
+                </div>
+                <div>
+                    <label class="block text-[12px] font-bold text-[var(--text-primary)] mb-1">Password <span class="text-rose-600">*</span></label>
+                    <input type="password" id="userFieldPassword" required placeholder="••••••••" class="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg h-10 px-3 text-[13px] outline-none focus:border-[var(--accent)]">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-[12px] font-bold text-[var(--text-primary)] mb-1">Signature</label>
+                <div class="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center text-slate-400 hover:bg-slate-50/50 hover:border-slate-400 transition-all cursor-pointer relative">
+                    <span class="absolute top-2 right-2 text-[16px] font-bold text-slate-400 hover:text-slate-600">&times;</span>
+                    <svg class="w-8 h-8 mx-auto mb-2 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"/>
+                    </svg>
+                    <p class="text-[12px] font-semibold">Drop file to upload, or browse</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="bg-slate-50 py-3 px-6 border-t border-[var(--border)]/60 flex justify-end gap-2.5">
+            <button onclick="saveUserField()" class="px-5 py-2 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-md cursor-pointer transition-all">
+                Save
+            </button>
+            <button onclick="closeUserModal()" class="px-5 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg text-[12px] font-bold shadow-md cursor-pointer transition-all">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODAL: ROLE DETAILS ==================== -->
+<div id="roleModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center modal-overlay bg-black/40">
+    <div class="bg-[var(--surface)] w-full max-w-2xl rounded-2xl border border-[var(--border)] shadow-2xl overflow-hidden flex flex-col scale-in">
+        <!-- Modal Header -->
+        <div class="bg-[var(--accent)] text-white py-4 px-6 flex justify-between items-center">
+            <h2 class="text-[16px] font-extrabold" id="roleModalTitle">Role Details</h2>
+            <div class="flex gap-2">
+                <button onclick="saveRoleField()" class="px-4 py-1 bg-[var(--accent)] border border-white/40 hover:brightness-110 text-white rounded text-[11px] font-bold">
+                    Save
+                </button>
+                <button onclick="closeRoleModal()" class="px-4 py-1 bg-slate-600 hover:bg-slate-700 text-white rounded text-[11px] font-bold">
+                    Cancel
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-6 space-y-4 overflow-y-auto max-h-[75vh]">
+            <input type="hidden" id="editRoleId">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-[12px] font-bold text-[var(--text-primary)] mb-1">Role Name <span class="text-rose-600">*</span></label>
+                    <input type="text" id="roleFieldName" required class="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg h-10 px-3 text-[13px] outline-none focus:border-[var(--accent)]">
+                </div>
+                <div>
+                    <label class="block text-[12px] font-bold text-[var(--text-primary)] mb-1">Permission Level</label>
+                    <select id="roleFieldPermLevel" class="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg h-10 px-3 text-[13px] outline-none focus:border-[var(--accent)]">
+                        <option value="Transactions Sales Entry">Transactions Sales Entry</option>
+                        <option value="Full Control">Full Control</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Permission Matrix Table -->
+            <div class="border border-[var(--border)] rounded-xl overflow-hidden mt-4">
+                <table class="w-full text-left border-collapse text-[13px]">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-700 text-[11px] font-bold border-b border-[var(--border)]">
+                            <th class="py-2.5 px-4">Module</th>
+                            <th class="py-2.5 px-4 text-center">View</th>
+                            <th class="py-2.5 px-4 text-center">Add</th>
+                            <th class="py-2.5 px-4 text-center">Edit</th>
+                            <th class="py-2.5 px-4 text-center">Delete / All</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[var(--border)]/60 text-[var(--text-primary)] text-[12px]">
+                        <!-- Group Header: Manage -->
+                        <tr class="bg-slate-50/50 font-bold">
+                            <td class="py-2 px-4 flex items-center gap-2">
+                                <input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]">
+                                Manage
+                            </td>
+                            <td colspan="4"></td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 px-6">Customer</td>
+                            <td class="text-center"><input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                            <td class="text-center"><input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                            <td class="text-center"><input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                            <td class="text-center"><input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 px-6">Items</td>
+                            <td class="text-center"><input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                            <td class="text-center"><input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                            <td class="text-center"><input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                            <td class="text-center"><input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 px-6">Rate Sheet</td>
+                            <td class="text-center"><input type="checkbox" class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                            <td class="text-center"><input type="checkbox" class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                            <td class="text-center"><input type="checkbox" class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                            <td class="text-center"><input type="checkbox" class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                        </tr>
+                        
+                        <!-- Group Header: Sales -->
+                        <tr class="bg-slate-50/50 font-bold">
+                            <td class="py-2 px-4 flex items-center gap-2">
+                                <input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]">
+                                Sales
+                            </td>
+                            <td colspan="4"></td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 px-6 flex justify-between items-center">
+                                Quotes
+                            </td>
+                            <td class="text-center"><input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                            <td class="text-center"><input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                            <td class="text-center"><input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                            <td class="text-center"><input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 px-6">Sales Order</td>
+                            <td class="text-center"><input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                            <td class="text-center"><input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                            <td class="text-center"><input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                            <td class="text-center"><input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 px-6">Job Order</td>
+                            <td class="text-center"><input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                            <td class="text-center"><input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                            <td class="text-center"><input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                            <td class="text-center"><input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 px-6">Sales Invoice</td>
+                            <td class="text-center"><input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                            <td class="text-center"><input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                            <td class="text-center"><input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                            <td class="text-center"><input type="checkbox" checked class="rounded border-slate-300 text-[var(--accent)] focus:ring-[var(--accent)]"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="bg-slate-50 py-3 px-6 border-t border-[var(--border)]/60 flex justify-end gap-2.5">
+            <button onclick="saveRoleField()" class="px-5 py-2 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-md cursor-pointer transition-all">
+                Save
+            </button>
+            <button onclick="closeRoleModal()" class="px-5 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg text-[12px] font-bold shadow-md cursor-pointer transition-all">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== TOAST NOTIFICATION ==================== -->
+<div id="usersToast" class="fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3 bg-slate-900 text-white rounded-xl shadow-2xl opacity-0 translate-y-4 pointer-events-none transition-all duration-300">
+    <div id="toastIcon" class="flex items-center justify-center">
+        <svg class="w-4 h-4 text-[var(--accent)]" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+    </div>
+    <span id="toastText" class="text-[12px] font-semibold tracking-wide"></span>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initial datasets
+    let usersData = [
+        { id: 1, name: 'User2', email: 'gurunathanvel@gmail.com', role: 'Top Management', phone: '9677570276' },
+        { id: 2, name: 'User1', email: 'balajirajj@gmail.com', role: 'Top Management', phone: '8754416888' },
+        { id: 3, name: 'Thangarani', email: 'nrthangarani@gmail.com', role: 'Top Management', phone: '9489435625' },
+        { id: 4, name: 'RamaLakshmi', email: 'ramkutyma71@gmail.com', role: 'Top Management', phone: '9629937937' },
+        { id: 5, name: 'Natchadalingam Thangaprabu', email: 'ntprabhu@gmail.com', role: 'Administrator', phone: '9080560340' },
+        { id: 6, name: 'Ramya', email: 'ramyaworkac@gmail.com', role: 'Administrator', phone: '' }
+    ];
+
+    let rolesData = [
+        { id: 1, name: 'Accountant' },
+        { id: 2, name: 'Administrator' },
+        { id: 3, name: 'E-Commerce' },
+        { id: 4, name: 'Sales' },
+        { id: 5, name: 'Sales & Purchase' },
+        { id: 6, name: 'Sales Rep' },
+        { id: 7, name: 'Top Management' }
+    ];
+
+    let activityLogs = [
+        { date: '02/04/2026 12:07 PM', user: 'Natchadalingam Thangaprabu', action: 'Modified  User: Ramya', type: 'Modified', tx: 'User', extra: '' },
+        { date: '02/04/2026 10:05 AM', user: 'Natchadalingam Thangaprabu', action: 'Series Updated', type: 'Modified', tx: 'User', extra: '' },
+        { date: '18/01/2026 10:06 PM', user: 'User1', action: 'QTE15/FEB/25-26  Draft to Open', type: 'Modified', tx: 'QTE', extra: '' },
+        { date: '18/01/2026 10:06 PM', user: 'User1', action: 'QTE15/FEB/25-26  Added  ₹2,130.00', type: 'Added', tx: 'QTE', extra: '₹2,130.00' },
+        { date: '06/01/2026 12:30 PM', user: 'User1', action: 'QTE14/FEB/25-26  Draft to Open', type: 'Modified', tx: 'QTE', extra: '' },
+        { date: '06/01/2026 12:30 PM', user: 'User1', action: 'QTE14/FEB/25-26  Added  ₹21,620.00', type: 'Added', tx: 'QTE', extra: '₹21,620.00' },
+        { date: '08/12/2025 10:00 PM', user: 'User2', action: '45  Added  ₹44,125.00', type: 'Added', tx: 'QTE', extra: '₹44,125.00' },
+        { date: '08/12/2025 9:55 PM', user: 'User2', action: '44  Added  ₹90,999.00', type: 'Added', tx: 'QTE', extra: '₹90,999.00' },
+        { date: '08/12/2025 9:43 PM', user: 'User2', action: '43  Modified  ₹72,080.00 from ₹69,037.00', type: 'Modified', tx: 'QTE', extra: '₹72,080.00' },
+        { date: '08/12/2025 9:39 PM', user: 'User2', action: '43  Added  ₹69,037.00', type: 'Added', tx: 'QTE', extra: '₹69,037.00' },
+        { date: '08/12/2025 9:14 PM', user: 'User2', action: 'PR[37]  Deleted  ₹16,200.00', type: 'Deleted', tx: 'PR', extra: '₹16,200.00' }
+    ];
+
+    let deviceSessions = {
+        User1: [
+            { os: 'Windows 10', ip: '27.5.103.32', date: 'Feb 17, 9:29:55 AM', browser: 'Chrome', status: 'Signed out' },
+            { os: 'iOS', ip: '106.216.238.108', date: 'Dec 24, 6:59:58 PM', browser: 'Safari', status: 'Signed out' },
+            { os: 'Windows 10', ip: '115.99.67.145', date: 'Jul 28, 11:29:21 AM', browser: 'Chrome', status: 'Signed out' },
+            { os: 'Android', ip: '115.99.67.145', date: 'Jul 19, 12:31:41 PM', browser: 'Dart', status: 'Signed out' },
+            { os: 'Windows 10', ip: '192.168.1.1', date: 'May 1, 10:20:00 AM', browser: 'Chrome', status: 'Signed out' }
+        ],
+        User2: [
+            { os: 'Windows 10', ip: '203.28.245.140', date: 'Dec 15, 11:42:45 AM', browser: 'Chrome', status: 'Signed out' },
+            { os: 'Android', ip: '2401:4900:925f:8102:bdbf:a317:a072:334e', date: 'Nov 5, 4:10:48 PM', browser: 'Chrome', status: 'Signed out' },
+            { os: 'Windows 10', ip: '2409:40f4:4024:dc0b:15b8:8b8f:b9e6:2943', date: 'Sep 7, 12:40:29 PM', browser: 'Firefox', status: 'Signed out' },
+            { os: 'Windows 10', ip: '106.200.14.8', date: 'Jul 19, 12:00:37 PM', browser: 'Chrome', status: 'Signed out' },
+            { os: 'Android', ip: '192.168.1.2', date: 'Jul 10, 08:30:15 AM', browser: 'Chrome', status: 'Signed out' }
+        ]
+    };
+
+    let loginActivities = [
+        { date: 'May 26, 1:59:34 PM', os: 'Windows 10', browser: 'Chrome', user: 'Ramya', status: 'Success', count: 57 },
+        { date: 'Apr 21, 6:26:28 PM', os: 'Windows 10', browser: 'Chrome', user: 'Natchadalingam Thangaprabu', status: 'Success', count: 4 },
+        { date: 'Apr 2, 12:04:24 PM', os: 'Windows 10', browser: 'Chrome', user: 'Natchadalingam Thangaprabu', status: 'Success', count: 1 },
+        { date: 'Apr 2, 12:03:35 PM', os: 'Windows 10', browser: 'Chrome', user: 'Natchadalingam Thangaprabu', status: 'Failed', count: 1 },
+        { date: 'Feb 17, 9:29:55 AM', os: 'Windows 10', browser: 'Chrome', user: 'User1', status: 'Success', count: 7 },
+        { date: 'Feb 3, 1:16:25 PM', os: 'Windows 10', browser: 'Chrome', user: 'Natchadalingam Thangaprabu', status: 'Success', count: 2 },
+        { date: 'Dec 24, 7:02:56 PM', os: 'Windows 10', browser: 'Chrome', user: 'Thangarani', status: 'Success', count: 3 },
+        { date: 'Dec 24, 6:59:58 PM', os: 'iOS', browser: 'Safari', user: 'User1', status: 'Failed', count: 1 },
+        { date: 'Dec 18, 11:03:30 AM', os: 'Windows 10', browser: 'Chrome', user: 'User1', status: 'Failed', count: 2 }
+    ];
+
+    // SVG Icons
+    const osIcons = {
+        'Windows 10': `<svg class="w-8 h-8 text-sky-600 mx-auto" fill="currentColor" viewBox="0 0 24 24"><path d="M0 3.449L9.75 2.1v9.45H0V3.449zM0 12.45h9.75v9.45L0 20.551v-8.1zM10.8 1.95L24 0v11.55H10.8V1.95zm0 10.5H24v11.55l-13.2-1.95V12.45z"/></svg>`,
+        'iOS': `<svg class="w-8 h-8 text-slate-800 mx-auto" fill="currentColor" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.21.67-2.93 1.49-.62.69-1.16 1.84-1.01 2.96 1.12.09 2.27-.57 2.95-1.39z"/></svg>`,
+        'Android': `<svg class="w-8 h-8 text-emerald-500 mx-auto" fill="currentColor" viewBox="0 0 24 24"><path d="M17.523 15.3c-.56 0-1.013-.453-1.013-1.013a1.014 1.014 0 011.013-1.013c.56 0 1.013.453 1.013 1.013a1.014 1.014 0 01-1.013 1.013M6.477 15.3c-.56 0-1.013-.453-1.013-1.013a1.014 1.014 0 011.013-1.013c.56 0 1.013.453 1.013 1.013a1.014 1.014 0 01-1.013 1.013M18.067 8.35l1.83-3.17a.478.478 0 00-.175-.655.48.48 0 00-.656.175l-1.85 3.2a12.756 12.756 0 00-10.432 0l-1.85-3.2a.48.48 0 00-.656-.175.478.478 0 00-.175.655l1.83 3.17C2.793 10.457.73 13.903.73 17.88h22.54c0-3.978-2.063-7.424-5.203-9.53"/></svg>`
+    };
+
+    const browserIcons = {
+        'Chrome': `<svg class="w-4 h-4 text-emerald-600 inline-block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="M12 2a15.3 15.3 0 014 10M12 22a15.3 15.3 0 01-4-10M2 12h20"/></svg>`,
+        'Safari': `<svg class="w-4 h-4 text-sky-500 inline-block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16.24 7.76l-2.12 6.36-6.36 2.12 2.12-6.36 6.36-2.12z"/></svg>`,
+        'Firefox': `<svg class="w-4 h-4 text-orange-500 inline-block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6a6 6 0 016 6c0 2.2-1.2 4.1-3 5.2"/></svg>`,
+        'Dart': `<svg class="w-4 h-4 text-cyan-600 inline-block" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2zm0 3.8L18.5 19h-13L12 5.8z"/></svg>`
+    };
+
+    // Tab Switching
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active', 'border-[var(--accent)]', 'text-[var(--accent)]'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.add('border-transparent', 'text-[var(--text-muted)]'));
+        
+        const activeBtn = {
+            'users': 'tabBtnUsers',
+            'roles': 'tabBtnRoles',
+            'activity': 'tabBtnActivity',
+            'devices': 'tabBtnDevices'
+        }[tabId];
+
+        document.getElementById(activeBtn).classList.add('active', 'border-[var(--accent)]', 'text-[var(--accent)]');
+        document.getElementById(activeBtn).classList.remove('border-transparent', 'text-[var(--text-muted)]');
+
+        // Hide all contents
+        document.getElementById('tabContentUsers').classList.add('hidden');
+        document.getElementById('tabContentRoles').classList.add('hidden');
+        document.getElementById('tabContentActivity').classList.add('hidden');
+        document.getElementById('tabContentDevices').classList.add('hidden');
+
+        // Show selected content
+        if (tabId === 'users') {
+            document.getElementById('tabContentUsers').classList.remove('hidden');
+            document.getElementById('btnAddUser').classList.remove('hidden');
+            document.getElementById('btnAddRole').classList.add('hidden');
+            document.getElementById('activityHeaderControls').classList.add('hidden');
+            document.getElementById('devicesHeaderControls').classList.add('hidden');
+        } else if (tabId === 'roles') {
+            document.getElementById('tabContentRoles').classList.remove('hidden');
+            document.getElementById('btnAddUser').classList.add('hidden');
+            document.getElementById('btnAddRole').classList.remove('hidden');
+            document.getElementById('activityHeaderControls').classList.add('hidden');
+            document.getElementById('devicesHeaderControls').classList.add('hidden');
+        } else if (tabId === 'activity') {
+            document.getElementById('tabContentActivity').classList.remove('hidden');
+            document.getElementById('btnAddUser').classList.add('hidden');
+            document.getElementById('btnAddRole').classList.add('hidden');
+            document.getElementById('activityHeaderControls').classList.remove('hidden');
+            document.getElementById('devicesHeaderControls').classList.add('hidden');
+        } else if (tabId === 'devices') {
+            document.getElementById('tabContentDevices').classList.remove('hidden');
+            document.getElementById('btnAddUser').classList.add('hidden');
+            document.getElementById('btnAddRole').classList.add('hidden');
+            document.getElementById('activityHeaderControls').classList.add('hidden');
+            document.getElementById('devicesHeaderControls').classList.remove('hidden');
+        }
+    }
+
+    // Devices Sub Tabs
+    function switchDevicesSubTab(subTabId) {
+        document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active', 'border-[var(--accent)]', 'text-[var(--accent)]'));
+        document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.add('border-transparent', 'text-[var(--text-muted)]'));
+
+        const activeSubBtn = {
+            'devicesList': 'subTabBtnDevicesList',
+            'loginActivity': 'subTabBtnLoginActivity'
+        }[subTabId];
+
+        document.getElementById(activeSubBtn).classList.add('active', 'border-[var(--accent)]', 'text-[var(--accent)]');
+        document.getElementById(activeSubBtn).classList.remove('border-transparent', 'text-[var(--text-muted)]');
+
+        if (subTabId === 'devicesList') {
+            document.getElementById('subPanelDevicesList').classList.remove('hidden');
+            document.getElementById('subPanelLoginActivity').classList.add('hidden');
+        } else {
+            document.getElementById('subPanelDevicesList').classList.add('hidden');
+            document.getElementById('subPanelLoginActivity').classList.remove('hidden');
+        }
+    }
+
+    // Users List UI
+    function renderUsers() {
+        const tbody = document.getElementById('usersTableBody');
+        tbody.innerHTML = '';
+        usersData.forEach(user => {
+            tbody.innerHTML += `
+                <tr class="hover:bg-slate-50/50 transition-colors">
+                    <td class="py-3 px-6 font-semibold text-[var(--text-primary)]">${user.name}</td>
+                    <td class="py-3 px-6 text-slate-500">${user.email}</td>
+                    <td class="py-3 px-6 font-medium text-slate-600">${user.role}</td>
+                    <td class="py-3 px-6 text-slate-500">${user.phone}</td>
+                    <td class="py-3 px-6 text-center">
+                        <div class="relative inline-block text-left group/edit">
+                            <button onclick="editUser(${user.id})" class="text-sky-600 hover:text-sky-800 font-bold text-[12px] flex items-center gap-1 cursor-pointer select-none">
+                                Edit ▾
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    // Roles List UI
+    function renderRoles() {
+        const tbody = document.getElementById('rolesTableBody');
+        tbody.innerHTML = '';
+        rolesData.forEach(role => {
+            tbody.innerHTML += `
+                <tr class="hover:bg-slate-50/50 transition-colors">
+                    <td class="py-3.5 px-6 font-bold text-[var(--text-primary)]">${role.name}</td>
+                    <td class="py-3.5 px-6 text-center">
+                        <div class="flex items-center justify-center gap-4">
+                            <button onclick="editRole(${role.id})" class="text-slate-400 hover:text-[var(--accent)] transition-all">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.83 20.082a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
+                            </button>
+                            <button onclick="deleteRole(${role.id})" class="text-slate-400 hover:text-rose-600 transition-all">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    // Logs UI
+    function renderActivityLogs(filtered = activityLogs) {
+        const container = document.getElementById('activityLogsList');
+        container.innerHTML = '';
+        filtered.forEach(log => {
+            const isRed = log.type === 'Deleted' ? 'text-rose-600 font-semibold' : '';
+            const actionText = log.type === 'Deleted' 
+                ? log.action.replace('Deleted', '<span class="text-rose-600 font-bold">Deleted</span>') 
+                : log.action;
+
+            container.innerHTML += `
+                <div class="flex items-start gap-6 py-2 border-b border-slate-100 last:border-b-0">
+                    <span class="text-[var(--text-muted)] w-36 shrink-0 ${isRed}">${log.date}</span>
+                    <span class="font-bold text-slate-700 w-44 shrink-0">${log.user}</span>
+                    <span class="text-slate-600 flex-1 leading-relaxed">${actionText}</span>
+                </div>
+            `;
+        });
+    }
+
+    // Devices List Sub-Panel UI
+    function renderDevicesList() {
+        const user1Container = document.getElementById('devicesGroup1Container');
+        const user2Container = document.getElementById('devicesGroup2Container');
+
+        user1Container.innerHTML = '';
+        user2Container.innerHTML = '';
+
+        deviceSessions.User1.forEach(dev => {
+            const iconSvg = osIcons[dev.os] || '';
+            const browserIconSvg = browserIcons[dev.browser] || '';
+
+            user1Container.innerHTML += `
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 relative flex flex-col justify-between hover:shadow-md transition-shadow">
+                    <div class="absolute top-3 right-3 text-right flex items-center gap-1.5">
+                        <span class="text-[10px] text-slate-400 font-semibold">${dev.status}</span>
+                        <button class="text-slate-400 hover:text-slate-600 font-extrabold cursor-pointer">⋮</button>
+                    </div>
+                    <div class="py-4 text-center">
+                        ${iconSvg}
+                    </div>
+                    <div class="mt-4 space-y-1">
+                        <h4 class="text-[14px] font-bold text-sky-600">${dev.os}</h4>
+                        <p class="text-[11px] text-slate-500 font-medium">${dev.ip}</p>
+                        <p class="text-[11px] text-slate-600 font-bold">${dev.user}</p>
+                        <p class="text-[10px] text-slate-400">${dev.date}</p>
+                        <div class="pt-2 flex items-center gap-1.5 text-[11px] text-slate-600 font-semibold border-t border-slate-150">
+                            ${browserIconSvg}
+                            <span>${dev.browser}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        deviceSessions.User2.forEach(dev => {
+            const iconSvg = osIcons[dev.os] || '';
+            const browserIconSvg = browserIcons[dev.browser] || '';
+
+            user2Container.innerHTML += `
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 relative flex flex-col justify-between hover:shadow-md transition-shadow">
+                    <div class="absolute top-3 right-3 text-right flex items-center gap-1.5">
+                        <span class="text-[10px] text-slate-400 font-semibold">${dev.status}</span>
+                        <button class="text-slate-400 hover:text-slate-600 font-extrabold cursor-pointer">⋮</button>
+                    </div>
+                    <div class="py-4 text-center">
+                        ${iconSvg}
+                    </div>
+                    <div class="mt-4 space-y-1">
+                        <h4 class="text-[14px] font-bold text-sky-600">${dev.os}</h4>
+                        <p class="text-[11px] text-slate-500 font-medium truncate">${dev.ip}</p>
+                        <p class="text-[11px] text-slate-600 font-bold">${dev.user}</p>
+                        <p class="text-[10px] text-slate-400">${dev.date}</p>
+                        <div class="pt-2 flex items-center gap-1.5 text-[11px] text-slate-600 font-semibold border-t border-slate-150">
+                            ${browserIconSvg}
+                            <span>${dev.browser}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    // Login Activity Sub-Panel UI
+    function renderLoginActivityList(filtered = loginActivities) {
+        const tbody = document.getElementById('loginActivityTableBody');
+        tbody.innerHTML = '';
+
+        filtered.forEach(act => {
+            const rowBg = act.status === 'Success' ? 'bg-emerald-50/40 hover:bg-emerald-50/70' : 'bg-rose-50/40 hover:bg-rose-50/70';
+            const statusColor = act.status === 'Success' ? 'text-emerald-700' : 'text-rose-600';
+            const thumbIcon = act.status === 'Success' 
+                ? `<svg class="w-3.5 h-3.5 text-emerald-600 inline" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.633 10.5c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75A2.25 2.25 0 0116.5 4.5c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.849 7.72 10.978 10.978 0 01-5.425 3.518 10.98 10.98 0 01-3.21.36h-3.129a3.75 3.75 0 01-3.75-3.75V10.5H6.63z"/></svg>`
+                : `<svg class="w-3.5 h-3.5 text-rose-500 inline" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 2.25c.968 0 1.761.708 1.882 1.666l.167 1.334a1.872 1.872 0 001.077 1.5l1.642.73c.9.4 1.542 1.2 1.752 2.146l.22 1a2.248 2.248 0 01-2.193 2.728H12.44v3.13a3.75 3.75 0 01-3.75 3.75H6.38a3.75 3.75 0 01-3.75-3.75v-8.06a3.75 3.75 0 013.75-3.75H8V4.5a2.25 2.25 0 012.25-2.25h.75z"/></svg>`;
+
+            tbody.innerHTML += `
+                <tr class="${rowBg} border-b border-[var(--border)]/40 transition-colors">
+                    <td class="py-3 px-4 text-slate-500">${act.date}</td>
+                    <td class="py-3 px-4 font-semibold flex items-center gap-2">
+                        <span class="opacity-80">${act.os}</span>
+                        <span class="text-slate-400">|</span>
+                        <span class="opacity-80">${act.browser}</span>
+                        <span class="text-slate-300 hover:text-slate-500 cursor-pointer">&#9432;</span>
+                    </td>
+                    <td class="py-3 px-4 font-bold text-slate-700">${act.user}</td>
+                    <td class="py-3 px-4 font-bold ${statusColor}">
+                        <div class="flex items-center gap-1.5">
+                            ${act.status}
+                            ${thumbIcon}
+                            <span class="text-[11px] text-slate-400 font-normal">(${act.count})</span>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    // Modal Control: Users
+    function openUserModal(editId = null) {
+        document.getElementById('userModal').classList.remove('hidden');
+        if (editId) {
+            document.getElementById('userModalTitle').innerText = 'Edit User Details';
+            const user = usersData.find(u => u.id === editId);
+            document.getElementById('editUserId').value = user.id;
+            document.getElementById('userFieldName').value = user.name;
+            document.getElementById('userFieldEmail').value = user.email;
+            document.getElementById('userFieldPhone').value = user.phone;
+            document.getElementById('userFieldRole').value = user.role;
+        } else {
+            document.getElementById('userModalTitle').innerText = 'User Details';
+            document.getElementById('editUserId').value = '';
+            document.getElementById('userFieldName').value = '';
+            document.getElementById('userFieldEmail').value = '';
+            document.getElementById('userFieldPhone').value = '';
+            document.getElementById('userFieldRole').value = 'Accountant';
+        }
+    }
+
+    function closeUserModal() {
+        document.getElementById('userModal').classList.add('hidden');
+    }
+
+    function saveUserField() {
+        const id = document.getElementById('editUserId').value;
+        const name = document.getElementById('userFieldName').value;
+        const email = document.getElementById('userFieldEmail').value;
+        const phone = document.getElementById('userFieldPhone').value;
+        const role = document.getElementById('userFieldRole').value;
+
+        if (!email) {
+            alert('Email field is mandatory.');
+            return;
+        }
+
+        if (id) {
+            const userIndex = usersData.findIndex(u => u.id === parseInt(id));
+            usersData[userIndex] = { id: parseInt(id), name, email, phone, role };
+            showToast('User settings updated successfully.');
+        } else {
+            const newId = usersData.length ? Math.max(...usersData.map(u => u.id)) + 1 : 1;
+            usersData.push({ id: newId, name, email, phone, role });
+            showToast('New user added successfully.');
+        }
+        closeUserModal();
+        renderUsers();
+    }
+
+    function editUser(id) {
+        openUserModal(id);
+    }
+
+    // Modal Control: Roles
+    function openRoleModal(editId = null) {
+        document.getElementById('roleModal').classList.remove('hidden');
+        if (editId) {
+            document.getElementById('roleModalTitle').innerText = 'Role Details';
+            const role = rolesData.find(r => r.id === editId);
+            document.getElementById('editRoleId').value = role.id;
+            document.getElementById('roleFieldName').value = role.name;
+        } else {
+            document.getElementById('roleModalTitle').innerText = 'Role Details';
+            document.getElementById('editRoleId').value = '';
+            document.getElementById('roleFieldName').value = '';
+        }
+    }
+
+    function closeRoleModal() {
+        document.getElementById('roleModal').classList.add('hidden');
+    }
+
+    function saveRoleField() {
+        const id = document.getElementById('editRoleId').value;
+        const name = document.getElementById('roleFieldName').value;
+
+        if (!name) {
+            alert('Role name is mandatory.');
+            return;
+        }
+
+        if (id) {
+            const idx = rolesData.findIndex(r => r.id === parseInt(id));
+            rolesData[idx].name = name;
+            showToast('User role updated successfully.');
+        } else {
+            const newId = rolesData.length ? Math.max(...rolesData.map(r => r.id)) + 1 : 1;
+            rolesData.push({ id: newId, name });
+            showToast('New role created successfully.');
+        }
+        closeRoleModal();
+        renderRoles();
+    }
+
+    function editRole(id) {
+        openRoleModal(id);
+    }
+
+    function deleteRole(id) {
+        if (confirm('Are you sure you want to delete this role?')) {
+            rolesData = rolesData.filter(r => r.id !== id);
+            showToast('Role deleted successfully.');
+            renderRoles();
+        }
+    }
+
+    // Toast Control
+    function showToast(message) {
+        const toast = document.getElementById('usersToast');
+        const text = document.getElementById('toastText');
+        text.innerText = message;
+        toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+        toast.classList.add('opacity-100', 'translate-y-0');
+        setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+            toast.classList.remove('opacity-100', 'translate-y-0');
+        }, 2000);
+    }
+
+    // Toggle Activity Filters Side-Panel
+    function toggleActivityFilterPanel() {
+        const panel = document.getElementById('activityFilterPanel');
+        panel.classList.toggle('hidden');
+    }
+
+    function applyActivityFilters() {
+        const type = document.getElementById('filterType').value;
+        const tx = document.getElementById('filterTxType').value;
+        const keyword = document.getElementById('filterKeyword').value.toLowerCase();
+        
+        let filtered = activityLogs;
+        if (type) {
+            filtered = filtered.filter(log => log.type === type);
+        }
+        if (tx) {
+            filtered = filtered.filter(log => log.tx === tx);
+        }
+        if (keyword) {
+            filtered = filtered.filter(log => log.action.toLowerCase().includes(keyword) || log.user.toLowerCase().includes(keyword));
+        }
+
+        renderActivityLogs(filtered);
+        showToast('Filters applied.');
+    }
+
+    function clearActivityFilters() {
+        document.getElementById('filterType').value = '';
+        document.getElementById('filterTxType').value = '';
+        document.getElementById('filterKeyword').value = '';
+        renderActivityLogs();
+        showToast('Filters cleared.');
+    }
+
+    // Access Devices Filters Popup
+    function toggleDevicesFilterModal() {
+        const modal = document.getElementById('devicesFilterModal');
+        modal.classList.toggle('hidden');
+    }
+
+    function applyDevicesFilters() {
+        const val = document.getElementById('devicesFilterStatusSelect').value;
+        
+        if (val === 'User1') {
+            document.getElementById('groupHeader1').classList.remove('hidden');
+            document.getElementById('devicesGroup1Container').classList.remove('hidden');
+            document.getElementById('groupHeader2').classList.add('hidden');
+            document.getElementById('devicesGroup2Container').classList.add('hidden');
+        } else if (val === 'User2') {
+            document.getElementById('groupHeader1').classList.add('hidden');
+            document.getElementById('devicesGroup1Container').classList.add('hidden');
+            document.getElementById('groupHeader2').classList.remove('hidden');
+            document.getElementById('devicesGroup2Container').classList.remove('hidden');
+        } else {
+            document.getElementById('groupHeader1').classList.remove('hidden');
+            document.getElementById('devicesGroup1Container').classList.remove('hidden');
+            document.getElementById('groupHeader2').classList.remove('hidden');
+            document.getElementById('devicesGroup2Container').classList.remove('hidden');
+        }
+
+        if (val === 'Success' || val === 'Failed') {
+            const filteredAct = loginActivities.filter(a => a.status === val);
+            renderLoginActivityList(filteredAct);
+        } else if (val === 'Both') {
+            renderLoginActivityList();
+        }
+
+        toggleDevicesFilterModal();
+        showToast('Device status search applied.');
+    }
+
+    function clearDevicesFilters() {
+        document.getElementById('devicesFilterStatusSelect').value = 'All';
+        applyDevicesFilters();
+    }
+
+    function toggleDevicesGrouping() {
+        showToast('Toggled group details layout views.');
+    }
+
+    // Initial Loading Calls
+    window.addEventListener('DOMContentLoaded', () => {
+        renderUsers();
+        renderRoles();
+        renderActivityLogs();
+        renderDevicesList();
+        renderLoginActivityList();
+    });
+</script>
+{% endblock %}

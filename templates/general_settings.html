@@ -1,0 +1,928 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Settings - General - Auraa Books{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Styling active states for navigation tabs */
+    .tab-btn.active {
+        border-bottom-color: var(--accent);
+        color: var(--accent);
+    }
+</style>
+{% endblock %}
+
+{% block breadcrumb_parent %}
+    <a href="{% url 'settings-dashboard' %}" class="hover:text-accent cursor-pointer">Settings</a>
+    <span class="opacity-50">/</span>
+{% endblock %}
+
+{% block breadcrumb_active %}General{% endblock %}
+
+{% block content %}
+<div class="stagger-in max-w-5xl mx-auto space-y-6 pb-12">
+    <!-- Page Header -->
+    <div class="pb-4 border-b border-[var(--border)] flex justify-between items-center relative z-30">
+        <h1 class="text-[24px] font-extrabold text-[var(--text-primary)] tracking-tight flex items-center gap-2">
+            <a href="{% url 'settings-dashboard' %}" class="text-accent hover:underline cursor-pointer">Settings</a>
+            <span class="text-[var(--text-muted)] font-medium mx-1">/</span>
+            General Settings
+        </h1>
+    </div>
+
+    <!-- Navigation Tabs & Actions -->
+    <div class="flex justify-between items-center border-b border-[var(--border)]/60 relative z-30">
+        <div class="flex text-[13px] font-bold gap-6">
+            <button onclick="switchTab('salesform')" id="tabBtnSalesform" class="tab-btn pb-3 border-b-2 border-transparent text-[var(--text-muted)] hover:text-accent transition-all cursor-pointer">
+                Sales Form
+            </button>
+            <button onclick="switchTab('salescharges')" id="tabBtnSalescharges" class="tab-btn pb-3 border-b-2 border-accent text-accent transition-all cursor-pointer">
+                Sales Charges
+            </button>
+            <button onclick="switchTab('purchasecharges')" id="tabBtnPurchasecharges" class="tab-btn pb-3 border-b-2 border-transparent text-[var(--text-muted)] hover:text-accent transition-all cursor-pointer">
+                Purchase Charges
+            </button>
+            <button onclick="switchTab('receiptcharges')" id="tabBtnReceiptcharges" class="tab-btn pb-3 border-b-2 border-transparent text-[var(--text-muted)] hover:text-accent transition-all cursor-pointer">
+                Receipt Charges
+            </button>
+        </div>
+
+        <!-- Inline Actions: Edit (view mode), Save & Cancel (edit mode) -->
+        <div id="headerActions" class="flex gap-2 pb-2">
+            <button id="btnEdit" onclick="enterEditMode()" class="px-5 py-1.5 bg-[var(--accent)] hover:brightness-110 text-white rounded text-[12px] font-bold shadow-sm cursor-pointer transition-all">
+                Edit
+            </button>
+            <button id="btnSave" onclick="saveSettings()" class="hidden px-5 py-1.5 bg-[var(--accent)] hover:brightness-110 text-white rounded text-[12px] font-bold shadow-sm cursor-pointer transition-all">
+                Save
+            </button>
+            <button id="btnCancel" onclick="cancelSettings()" class="hidden px-5 py-1.5 bg-slate-600 hover:bg-slate-700 text-white rounded text-[12px] font-bold shadow-sm cursor-pointer transition-all">
+                Cancel
+            </button>
+        </div>
+    </div>
+
+    <!-- TAB 1: SALES FORM PANEL -->
+    <div id="tabContentSalesform" class="hidden bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-sm space-y-6">
+        <!-- Sales Form Content -->
+        <div id="salesFormContainer" class="text-[13px] divide-y divide-[var(--border)]/40 space-y-4">
+            <!-- Dynamic elements will be loaded by JS based on View/Edit mode -->
+        </div>
+    </div>
+
+    <!-- TAB 2: SALES CHARGES GRID -->
+    <div id="tabContentSalescharges" class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-[13px]">
+                <thead>
+                    <tr class="bg-[var(--accent)] text-white text-[12px] font-bold border-b border-[var(--border)]/60 select-none">
+                        <th class="py-3.5 px-6 w-12 text-center"></th> <!-- Drag handle / check box -->
+                        <th class="py-3.5 px-6">Type</th>
+                        <th class="py-3.5 px-6">Account</th>
+                        <th class="py-3.5 px-6">Name</th>
+                        <th class="py-3.5 px-6 text-center">Contact</th>
+                        <th class="py-3.5 px-6 text-center">Is Grid</th>
+                        <th class="py-3.5 px-6">Default Value</th>
+                        <th class="py-3.5 px-6 text-center w-12 action-col hidden"></th>
+                    </tr>
+                </thead>
+                <tbody id="salesChargesTableBody" class="divide-y divide-[var(--border)]/60 text-[var(--text-primary)]">
+                    <!-- Injected via JS -->
+                </tbody>
+            </table>
+        </div>
+        <div id="salesChargesFooter" class="hidden p-4 border-t border-[var(--border)]/60 text-center">
+            <button onclick="addNewSalesChargeRow()" class="px-5 py-2 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-sm cursor-pointer transition-all">
+                Add New
+            </button>
+        </div>
+    </div>
+
+    <!-- TAB 3: PURCHASE CHARGES GRID -->
+    <div id="tabContentPurchasecharges" class="hidden bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-[13px]">
+                <thead>
+                    <tr class="bg-[var(--accent)] text-white text-[12px] font-bold border-b border-[var(--border)]/60 select-none">
+                        <th class="py-3.5 px-6 w-12 text-center"></th> <!-- Drag handle / check box -->
+                        <th class="py-3.5 px-6">Type</th>
+                        <th class="py-3.5 px-6">Account</th>
+                        <th class="py-3.5 px-6">Name</th>
+                        <th class="py-3.5 px-6 text-center">Contact</th>
+                        <th class="py-3.5 px-6 text-center">Add to stock value</th>
+                        <th class="py-3.5 px-6 text-center">Is Grid</th>
+                        <th class="py-3.5 px-6">Default Value</th>
+                        <th class="py-3.5 px-6 text-center w-12 action-col hidden"></th>
+                    </tr>
+                </thead>
+                <tbody id="purchaseChargesTableBody" class="divide-y divide-[var(--border)]/60 text-[var(--text-primary)]">
+                    <!-- Injected via JS -->
+                </tbody>
+            </table>
+        </div>
+        <div id="purchaseChargesFooter" class="hidden p-4 border-t border-[var(--border)]/60 text-center">
+            <button onclick="addNewPurchaseChargeRow()" class="px-5 py-2 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-sm cursor-pointer transition-all">
+                Add New
+            </button>
+        </div>
+    </div>
+
+    <!-- TAB 4: RECEIPT CHARGES -->
+    <div id="tabContentReceiptcharges" class="hidden bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-sm space-y-4">
+        <!-- Info alert header -->
+        <p class="text-[13px] font-bold text-slate-800 tracking-wide pb-2 border-b border-[var(--border)]/40">
+            Receipts Bank Charges, Payment Processor Commission Charges, E-commerce operator fees can be defined here. Assign Vendor to claim ITC
+        </p>
+
+        <div class="overflow-x-auto border border-[var(--border)]/60 rounded-xl overflow-hidden shadow-sm">
+            <table class="w-full text-left border-collapse text-[13px]">
+                <thead>
+                    <tr class="bg-[var(--accent)] text-white text-[12px] font-bold select-none">
+                        <th class="py-3 px-4">Payment Mode</th>
+                        <th class="py-3 px-4">Account</th>
+                        <th class="py-3 px-4">Vendor (optional)</th>
+                        <th class="py-3 px-4 text-center w-12 action-col hidden"></th>
+                    </tr>
+                </thead>
+                <tbody id="receiptChargesTableBody" class="divide-y divide-[var(--border)]/60 text-[var(--text-primary)]">
+                    <!-- Injected via JS -->
+                </tbody>
+            </table>
+        </div>
+        <div id="receiptChargesFooter" class="hidden pt-4 text-center">
+            <button onclick="addNewReceiptChargeRow()" class="px-5 py-2 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-sm cursor-pointer transition-all">
+                Add New
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Status Toast -->
+<div id="generalToast" class="fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3.5 bg-slate-900 text-white rounded-xl shadow-2xl opacity-0 translate-y-4 pointer-events-none transition-all duration-300">
+    <div id="generalToastIcon" class="flex items-center justify-center"></div>
+    <span id="generalToastText" class="text-[13px] font-semibold tracking-wide"></span>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Tab switching state
+    let currentTab = 'salescharges';
+    let isEditMode = false;
+
+    // Default configuration database (simulation)
+    let salesFormConfig = {
+        mobileMandatory: false,
+        showSku: true,
+        showAccounts: true,
+        lockRate: false,
+        freeQty: false,
+        mrpSalesPurchase: true,
+        convertMrpUnit: false,
+        defineSaleInPurchase: false,
+        showInvoiceType: false,
+        allowItemsNotInMaster: false,
+        allowSalesStockGreaterZero: false,
+        showAttributes: false,
+        showLastEntryDate: false,
+        applyCreditLimitSalesOrder: false,
+        showInputBuyerOrder: true,
+        showItemDetailPopup: true,
+        itemDetailPopupType: 'With profit Margin',
+        showItemInfoDropdown: false,
+        shareContacts: true,
+        shareContactsOption: 'to Branches Only',
+        shareContactsFranchisee: false,
+        strictCustomerSupplier: true,
+        restrictBranchHierarchy: false,
+        autoCreateJournalReferred: false,
+        referredByLabel: 'Referred By',
+        itemRateDecimal: '2',
+        qtyDecimal: '2',
+        amountDecimal: '2',
+        roundOffTotal: 'Round Normal',
+        roundOffTotalPurchase: 'Manual',
+        defaultDueDate: 'Based on Credit Limit',
+        defaultBankCashAccount: 'Cash',
+        nameCaseAutoFormat: 'No Formatting',
+        totalAmountInvoice: 'Exclusive Tax',
+        stockValueBasedOn: 'Average Purchase Rate',
+        paymentModeCash: true,
+        salesRepRequired: false,
+        salesRepReceiptsPayments: false,
+        salesRepSeeAll: false,
+        autoCreateJournalSalesRep: false,
+        posSeparateMenu: false,
+        posShowDetailPopup: false,
+        posSkipQtyValueOne: true,
+        posSkipRateDefined: true,
+        posHideRate: false
+    };
+
+    let salesChargesData = [
+        { id: 1, type: 'Add Before Tax', account: 'Freight Charges', name: 'Freight Charges', contact: false, isGrid: '% on Amt', defaultVal: '0.000', defaultValUnit: '% on Amount', checked: false },
+        { id: 2, type: 'Add After Tax', account: 'Packing and Forwarding Charges', name: 'Packing and Forwarding Charges', contact: false, isGrid: '% on Amt', defaultVal: '0.000', defaultValUnit: '% on Amount', checked: true },
+        { id: 3, type: 'Add Before Tax', account: 'Insurance Charges', name: 'Insurance Charges', contact: false, isGrid: false, defaultVal: '0.00', defaultValUnit: 'Rate/Unit', checked: false },
+        { id: 4, type: 'Add After Tax', account: 'TCS Payable', name: 'TCS Payable', contact: false, isGrid: false, defaultVal: '0.00', defaultValUnit: 'Rate/Unit', checked: false }
+    ];
+
+    let purchaseChargesData = [
+        { id: 1, type: 'Add After Tax', account: 'Customs Duty Payable', name: 'Customs Duty Payable', contact: false, addToStock: false, isGrid: false, defaultVal: '0.00', defaultValUnit: 'Rate/Unit', checked: false },
+        { id: 2, type: 'Add After Tax', account: 'TCS Receivable', name: 'TCS Receivable', contact: false, addToStock: false, isGrid: false, defaultVal: '0.00', defaultValUnit: 'Rate/Unit', checked: false }
+    ];
+
+    let receiptChargesData = [];
+
+    // Clones for editing states
+    let editSalesFormConfig = {};
+    let editSalesCharges = [];
+    let editPurchaseCharges = [];
+    let editReceiptCharges = [];
+
+    window.addEventListener('DOMContentLoaded', () => {
+        // Initialize structures
+        renderSalesForm();
+        renderSalesCharges();
+        renderPurchaseCharges();
+        renderReceiptCharges();
+        switchTab('salesform'); // default tab selected first by default
+    });
+
+    function switchTab(tab) {
+        currentTab = tab;
+        
+        if (tab === 'salesform') {
+            editSalesFormConfig = JSON.parse(JSON.stringify(salesFormConfig));
+        }
+
+        // Toggle view container visibilities
+        document.getElementById('tabContentSalesform').classList.toggle('hidden', tab !== 'salesform');
+        document.getElementById('tabContentSalescharges').classList.toggle('hidden', tab !== 'salescharges');
+        document.getElementById('tabContentPurchasecharges').classList.toggle('hidden', tab !== 'purchasecharges');
+        document.getElementById('tabContentReceiptcharges').classList.toggle('hidden', tab !== 'receiptcharges');
+
+        // Style navigation tabs
+        const tabs = ['salesform', 'salescharges', 'purchasecharges', 'receiptcharges'];
+        tabs.forEach(t => {
+            const btn = document.getElementById(`tabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
+            if (t === tab) {
+                btn.className = 'tab-btn pb-3 border-b-2 border-accent text-accent transition-all cursor-pointer';
+            } else {
+                btn.className = 'tab-btn pb-3 border-b-2 border-transparent text-[var(--text-muted)] hover:text-accent transition-all cursor-pointer';
+            }
+        });
+
+        // Toggle footers / actions
+        toggleActionVisibilities();
+
+        if (tab === 'salesform') {
+            renderSalesForm();
+        }
+    }
+
+    function toggleActionVisibilities() {
+        const actionCols = document.querySelectorAll('.action-col');
+        const salesFooter = document.getElementById('salesChargesFooter');
+        const purchaseFooter = document.getElementById('purchaseChargesFooter');
+        const receiptFooter = document.getElementById('receiptChargesFooter');
+
+        if (currentTab === 'salesform') {
+            document.getElementById('btnEdit').classList.add('hidden');
+            document.getElementById('btnSave').classList.remove('hidden');
+            document.getElementById('btnCancel').classList.add('hidden');
+            return;
+        }
+
+        if (isEditMode) {
+            document.getElementById('btnEdit').classList.add('hidden');
+            document.getElementById('btnSave').classList.remove('hidden');
+            document.getElementById('btnCancel').classList.remove('hidden');
+
+            actionCols.forEach(col => col.classList.remove('hidden'));
+            if (currentTab === 'salescharges') salesFooter.classList.remove('hidden');
+            if (currentTab === 'purchasecharges') purchaseFooter.classList.remove('hidden');
+            if (currentTab === 'receiptcharges') receiptFooter.classList.remove('hidden');
+        } else {
+            document.getElementById('btnEdit').classList.remove('hidden');
+            document.getElementById('btnSave').classList.add('hidden');
+            document.getElementById('btnCancel').classList.add('hidden');
+
+            actionCols.forEach(col => col.classList.add('hidden'));
+            salesFooter.classList.add('hidden');
+            purchaseFooter.classList.add('hidden');
+            receiptFooter.classList.add('hidden');
+        }
+    }
+
+    function enterEditMode() {
+        isEditMode = true;
+        
+        // Deep copy live variables into temporary edit stores
+        editSalesFormConfig = JSON.parse(JSON.stringify(salesFormConfig));
+        editSalesCharges = JSON.parse(JSON.stringify(salesChargesData));
+        editPurchaseCharges = JSON.parse(JSON.stringify(purchaseChargesData));
+        editReceiptCharges = JSON.parse(JSON.stringify(receiptChargesData));
+
+        renderSalesForm();
+        renderSalesCharges();
+        renderPurchaseCharges();
+        renderReceiptCharges();
+
+        toggleActionVisibilities();
+    }
+
+    function cancelSettings() {
+        isEditMode = false;
+        
+        renderSalesForm();
+        renderSalesCharges();
+        renderPurchaseCharges();
+        renderReceiptCharges();
+
+        toggleActionVisibilities();
+        showToast('Edits cancelled.', 'error');
+        hideToast(1500);
+    }
+
+    function saveSettings() {
+        showToast('Saving settings...', 'loading');
+
+        setTimeout(() => {
+            isEditMode = false;
+
+            // Commit edit variables back to live databases
+            salesFormConfig = JSON.parse(JSON.stringify(editSalesFormConfig));
+            salesChargesData = JSON.parse(JSON.stringify(editSalesCharges));
+            purchaseChargesData = JSON.parse(JSON.stringify(editPurchaseCharges));
+            receiptChargesData = JSON.parse(JSON.stringify(editReceiptCharges));
+
+            renderSalesForm();
+            renderSalesCharges();
+            renderPurchaseCharges();
+            renderReceiptCharges();
+
+            toggleActionVisibilities();
+
+            showToast('Settings saved successfully!', 'success');
+            hideToast(1500);
+        }, 800);
+    }
+
+    // 1. Sales Form Tab Rendering
+    function renderSalesForm() {
+        const container = document.getElementById('salesFormContainer');
+        container.innerHTML = '';
+
+        const renderAsEdit = (currentTab === 'salesform' || isEditMode);
+        const config = renderAsEdit ? editSalesFormConfig : salesFormConfig;
+
+        // Toggles data list
+        const toggles = [
+            { key: 'mobileMandatory', label: 'Contacts: Mobile number mandatory' },
+            { key: 'showSku', label: 'Item: Show SKU column' },
+            { key: 'showAccounts', label: 'Item: Show Accounts column' },
+            { key: 'lockRate', label: 'Item: Lock Rate Column' },
+            { key: 'freeQty', label: 'Item: Free Qty in Sales & Purchase' },
+            { key: 'mrpSalesPurchase', label: 'Item: MRP in Sales & Purchase' },
+            { key: 'convertMrpUnit', label: 'Item: Convert MRP with relative unit\'s ratio' },
+            { key: 'defineSaleInPurchase', label: 'Item: Define Sale Rate in Purchase' },
+            { key: 'showInvoiceType', label: 'Show Invoice Type' },
+            { key: 'allowItemsNotInMaster', label: 'Allow Items not in master list' },
+            { key: 'allowSalesStockGreaterZero', label: 'Allow sales only if stock > 0' },
+            { key: 'showAttributes', label: 'Show list of attributes in Quotes / Sales Order' },
+            { key: 'showLastEntryDate', label: 'Show last entry date as default date' },
+            { key: 'applyCreditLimitSalesOrder', label: 'Apply Credit Limit for Sales Order too' },
+            { key: 'showInputBuyerOrder', label: 'Show Input for Buyer\'s Order No / Date' },
+            { key: 'showItemDetailPopup', label: 'Show Item Detail Popup', dropdownKey: 'itemDetailPopupType', options: ['With profit Margin', 'Without profit Margin'] },
+            { key: 'showItemInfoDropdown', label: 'Show Item info in Item Dropdown (on focus by up/down arrow keys)' },
+            { key: 'shareContacts', label: 'Share contacts', dropdownKey: 'shareContactsOption', options: ['to Branches Only', 'to All'] },
+            { key: 'shareContactsFranchisee', label: 'Share contacts between Franchisee' },
+            { key: 'strictCustomerSupplier', label: 'Strict customer / supplier dropdowns' },
+            { key: 'restrictBranchHierarchy', label: 'Restrict branch hierarchy' },
+            { key: 'autoCreateJournalReferred', label: 'Auto Create Journal on Referred By Commission', dropdownKey: 'referredByLabel', isInputText: true }
+        ];
+
+        toggles.forEach(t => {
+            const div = document.createElement('div');
+            div.className = 'py-3.5 flex items-center justify-between gap-4';
+
+            // Left Side Description & subdropdowns
+            let leftHtml = `<span class="font-bold text-[var(--text-primary)]">${t.label}</span>`;
+            if (t.dropdownKey) {
+                if (renderAsEdit) {
+                    leftHtml += `
+                        <select onchange="editSalesFormConfig['${t.dropdownKey}'] = this.value" class="ml-2 px-2 py-1 border border-slate-200 bg-[var(--surface)] text-[11px] rounded font-bold outline-none text-accent">
+                            ${t.options.map(opt => `<option value="${opt}" ${config[t.dropdownKey] === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+                        </select>
+                    `;
+                } else {
+                    leftHtml += ` <span class="ml-2 text-accent font-extrabold text-[12px] cursor-pointer hover:underline">${config[t.dropdownKey]} ▾</span>`;
+                }
+            } else if (t.isInputText) {
+                if (renderAsEdit) {
+                    leftHtml += `
+                        <input type="text" value="${config[t.dropdownKey]}" oninput="editSalesFormConfig['${t.dropdownKey}'] = this.value" class="ml-2 px-2 py-0.5 border border-slate-200 bg-[var(--surface)] rounded text-[12px] outline-none">
+                    `;
+                } else {
+                    leftHtml += ` <span class="ml-2 font-semibold text-slate-500">[${config[t.dropdownKey]}]</span>`;
+                }
+            }
+
+            // Right Side Toggle Switch
+            let rightHtml = '';
+            if (renderAsEdit) {
+                rightHtml = `
+                    <label class="relative inline-flex items-center cursor-pointer select-none">
+                        <input type="checkbox" ${config[t.key] ? 'checked' : ''} onchange="editSalesFormConfig['${t.key}'] = this.checked" class="sr-only peer">
+                        <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[var(--accent)]"></div>
+                    </label>
+                `;
+            } else {
+                rightHtml = config[t.key]
+                    ? `<span class="px-2 py-0.5 bg-[var(--accent)]/10 text-[var(--accent)] font-bold rounded text-[10px]">ON</span>`
+                    : `<span class="px-2 py-0.5 bg-slate-100 text-slate-400 font-bold rounded text-[10px]">OFF</span>`;
+            }
+
+            div.innerHTML = `<div>${leftHtml}</div><div>${rightHtml}</div>`;
+            container.appendChild(div);
+        });
+
+        // Render select dropdown configurations below
+        const selects = [
+            { key: 'itemRateDecimal', label: 'Item Rate Decimal', options: ['2', '3', '4'] },
+            { key: 'qtyDecimal', label: 'Qty decimal', options: ['2', '3', '4'] },
+            { key: 'amountDecimal', label: 'Amount Decimal', options: ['2', '3', '4'] },
+            { key: 'roundOffTotal', label: 'Round off final total amount', options: ['Round Normal', 'Round Up', 'Round Down'] },
+            { key: 'roundOffTotalPurchase', label: 'Round off final total amount (Purchase)', options: ['Manual', 'Automatic'] },
+            { key: 'defaultDueDate', label: 'Default Due Date', options: ['Based on Credit Limit', 'Immediate', '15 Days', '30 Days'] },
+            { key: 'defaultBankCashAccount', label: 'Default Bank / Cash Account', options: ['Cash', 'Bank Account'], hasLink: true, linkLabel: 'Branch Default' },
+            { key: 'nameCaseAutoFormat', label: 'Name Case Auto Formatting', options: ['No Formatting', 'Title Case', 'UPPERCASE'] },
+            { key: 'totalAmountInvoice', label: 'Total Amount (Invoice)', options: ['Exclusive Tax', 'Inclusive Tax'] },
+            { key: 'stockValueBasedOn', label: 'Stock value based on', options: ['Average Purchase Rate', 'FIFO', 'LIFO'] }
+        ];
+
+        selects.forEach(s => {
+            const div = document.createElement('div');
+            div.className = 'py-3.5 flex items-center justify-between gap-4';
+
+            let leftHtml = `<span class="font-bold text-[var(--text-primary)]">${s.label}</span>`;
+            if (s.hasLink) {
+                leftHtml += ` <span class="text-accent text-[11px] font-bold hover:underline cursor-pointer ml-1">${s.linkLabel}</span>`;
+            }
+
+            let rightHtml = '';
+            if (renderAsEdit) {
+                rightHtml = `
+                    <select onchange="editSalesFormConfig['${s.key}'] = this.value" class="h-9 px-3 border border-slate-200 bg-[var(--surface)] text-[12px] font-semibold rounded-lg focus:border-accent outline-none">
+                        ${s.options.map(opt => `<option value="${opt}" ${config[s.key] === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+                    </select>
+                `;
+            } else {
+                rightHtml = `<span class="font-semibold text-slate-700">${config[s.key]}</span>`;
+            }
+
+            div.innerHTML = `<div>${leftHtml}</div><div>${rightHtml}</div>`;
+            container.appendChild(div);
+        });
+
+        // Payment Modes dropdown
+        const payDiv = document.createElement('div');
+        payDiv.className = 'py-4 space-y-2';
+        payDiv.innerHTML = `
+            <span class="block font-bold text-slate-800">Payment Modes</span>
+            <span class="block text-[11px] text-slate-500">Cash, Cheque / DD, Debit/Credit Card, Electronic Transfer</span>
+        `;
+        if (renderAsEdit) {
+            payDiv.innerHTML += `
+                <select class="w-72 h-9 px-3 border border-slate-200 rounded-lg bg-[var(--surface)] text-[12px] outline-none">
+                    <option value="Select">Select</option>
+                    <option value="Cash" selected>Cash</option>
+                </select>
+            `;
+        } else {
+            payDiv.innerHTML += `<span class="text-[12px] font-semibold text-slate-600">Select</span>`;
+        }
+        container.appendChild(payDiv);
+
+        // Sales Representative header section
+        const repHeader = document.createElement('div');
+        repHeader.className = 'py-4 border-t border-[var(--border)]/60';
+        repHeader.innerHTML = `<span class="block font-extrabold text-[14px] text-slate-800 tracking-wide">Sales Representative</span>`;
+        container.appendChild(repHeader);
+
+        const repToggles = [
+            { key: 'salesRepRequired', label: 'Sales Rep required on transaction' },
+            { key: 'salesRepReceiptsPayments', label: 'Sales Rep Receipts/Payments in their Account' },
+            { key: 'salesRepSeeAll', label: 'Sales rep can see all transactions for customers' },
+            { key: 'autoCreateJournalSalesRep', label: 'Auto Create Journal on Sales Rep Commission', dropdownKey: 'salesRepCommissionDropdown', isCommission: true }
+        ];
+
+        repToggles.forEach(r => {
+            const div = document.createElement('div');
+            div.className = 'py-3.5 flex items-center justify-between gap-4';
+
+            let leftHtml = `<span class="font-bold text-[var(--text-primary)]">${r.label}</span>`;
+            if (r.isCommission) {
+                leftHtml += ` <span class="text-accent font-extrabold text-[12px] cursor-pointer">Commission ▾</span>`;
+            }
+
+            let rightHtml = '';
+            if (renderAsEdit) {
+                rightHtml = `
+                    <label class="relative inline-flex items-center cursor-pointer select-none">
+                        <input type="checkbox" ${config[r.key] ? 'checked' : ''} onchange="editSalesFormConfig['${r.key}'] = this.checked" class="sr-only peer">
+                        <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[var(--accent)]"></div>
+                    </label>
+                `;
+            } else {
+                rightHtml = config[r.key]
+                    ? `<span class="px-2 py-0.5 bg-[var(--accent)]/10 text-[var(--accent)] font-bold rounded text-[10px]">ON</span>`
+                    : `<span class="px-2 py-0.5 bg-slate-100 text-slate-400 font-bold rounded text-[10px]">OFF</span>`;
+            }
+
+            div.innerHTML = `<div>${leftHtml}</div><div>${rightHtml}</div>`;
+            container.appendChild(div);
+        });
+
+        // POS header section
+        const posHeader = document.createElement('div');
+        posHeader.className = 'py-4 border-t border-[var(--border)]/60';
+        posHeader.innerHTML = `<span class="block font-extrabold text-[14px] text-slate-800 tracking-wide">POS</span>`;
+        container.appendChild(posHeader);
+
+        const posToggles = [
+            { key: 'posSeparateMenu', label: 'Show POS as separate menu' },
+            { key: 'posShowDetailPopup', label: 'Show Item Detail Popup' },
+            { key: 'posSkipQtyValueOne', label: 'Skip Quantity with value as 1' },
+            { key: 'posSkipRateDefined', label: 'Skip Rate if defined in item' },
+            { key: 'posHideRate', label: 'Hide Rate in item listing' }
+        ];
+
+        posToggles.forEach(p => {
+            const div = document.createElement('div');
+            div.className = 'py-3.5 flex items-center justify-between gap-4';
+
+            let leftHtml = `<span class="font-bold text-[var(--text-primary)]">${p.label}</span>`;
+            let rightHtml = '';
+            if (renderAsEdit) {
+                rightHtml = `
+                    <label class="relative inline-flex items-center cursor-pointer select-none">
+                        <input type="checkbox" ${config[p.key] ? 'checked' : ''} onchange="editSalesFormConfig['${p.key}'] = this.checked" class="sr-only peer">
+                        <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[var(--accent)]"></div>
+                    </label>
+                `;
+            } else {
+                rightHtml = config[p.key]
+                    ? `<span class="px-2 py-0.5 bg-[var(--accent)]/10 text-[var(--accent)] font-bold rounded text-[10px]">ON</span>`
+                    : `<span class="px-2 py-0.5 bg-slate-100 text-slate-400 font-bold rounded text-[10px]">OFF</span>`;
+            }
+
+            div.innerHTML = `<div>${leftHtml}</div><div>${rightHtml}</div>`;
+            container.appendChild(div);
+        });
+    }
+
+    // 2. Sales Charges Tab Grid Rendering
+    function renderSalesCharges() {
+        const body = document.getElementById('salesChargesTableBody');
+        body.innerHTML = '';
+
+        const data = isEditMode ? editSalesCharges : salesChargesData;
+
+        data.forEach((row, idx) => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-slate-50/50 transition-colors duration-150 relative';
+
+            // Drag handle or checkbox indicator column
+            let iconColHtml = `<span class="text-slate-400 select-none text-[16px] cursor-grab">⋮</span>`;
+            if (isEditMode) {
+                iconColHtml = `<input type="checkbox" ${row.checked ? 'checked' : ''} onchange="editSalesCharges[${idx}].checked = this.checked" class="rounded border-slate-300">`;
+            } else if (row.checked) {
+                iconColHtml += `<span class="block mt-1 font-bold text-[var(--accent)] flex justify-center"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>`;
+            }
+
+            let typeCol = `<span class="font-semibold">${row.type}</span>`;
+            let accountCol = `<span>${row.account}</span>`;
+            let nameCol = `<span class="font-semibold text-slate-700">${row.name}</span>`;
+            let contactCol = row.contact ? `<span class="text-[var(--accent)]">✔</span>` : '<span class="text-slate-300">-</span>';
+            let gridCol = row.isGrid ? `<span class="font-semibold">${row.isGrid}</span>` : '<span class="text-slate-300">-</span>';
+            let defaultCol = `<span>${row.defaultValUnit === 'Rate/Unit' ? '₹' : ''}${row.defaultVal}</span>`;
+
+            if (isEditMode) {
+                // Type Select Option dropdown
+                typeCol = `
+                    <select onchange="editSalesCharges[${idx}].type = this.value" class="h-8 px-2 border border-slate-200 bg-[var(--surface)] text-[12px] font-bold rounded outline-none">
+                        <option value="Add Before Tax" ${row.type === 'Add Before Tax' ? 'selected' : ''}>Add Before Tax</option>
+                        <option value="Add After Tax" ${row.type === 'Add After Tax' ? 'selected' : ''}>Add After Tax</option>
+                    </select>
+                `;
+
+                // Account dropdown selection
+                accountCol = `
+                    <select onchange="editSalesCharges[${idx}].account = this.value" class="h-8 px-2 border border-slate-200 bg-[var(--surface)] text-[12px] rounded outline-none w-44">
+                        <option value="Freight Charges" ${row.account === 'Freight Charges' ? 'selected' : ''}>Freight Charges</option>
+                        <option value="Packing and Forwarding Charges" ${row.account === 'Packing and Forwarding Charges' ? 'selected' : ''}>Packing and Forwarding Charges</option>
+                        <option value="Insurance Charges" ${row.account === 'Insurance Charges' ? 'selected' : ''}>Insurance Charges</option>
+                        <option value="TCS Payable" ${row.account === 'TCS Payable' ? 'selected' : ''}>TCS Payable</option>
+                    </select>
+                `;
+
+                // Name input
+                nameCol = `
+                    <input type="text" value="${row.name}" oninput="editSalesCharges[${idx}].name = this.value" class="h-8 px-2 border border-slate-200 bg-[var(--surface)] rounded text-[12px] focus:border-accent outline-none w-44">
+                `;
+
+                // Contact checkbox
+                contactCol = `
+                    <input type="checkbox" ${row.contact ? 'checked' : ''} onchange="editSalesCharges[${idx}].contact = this.checked" class="rounded border-slate-300">
+                `;
+
+                // Is Grid checkbox
+                gridCol = `
+                    <input type="checkbox" ${row.isGrid ? 'checked' : ''} onchange="editSalesCharges[${idx}].isGrid = this.checked ? '% on Amt' : false; renderSalesCharges();" class="rounded border-slate-300">
+                `;
+
+                // Default value input + dropdown
+                defaultCol = `
+                    <div class="flex items-center gap-1">
+                        <input type="text" value="${row.defaultVal}" oninput="editSalesCharges[${idx}].defaultVal = this.value" class="h-8 px-2 w-20 border border-slate-200 bg-[var(--surface)] rounded text-[12px] outline-none">
+                        <select onchange="editSalesCharges[${idx}].defaultValUnit = this.value" class="h-8 px-2 border border-slate-200 bg-[var(--surface)] text-[11px] rounded outline-none">
+                            <option value="% on Amount" ${row.defaultValUnit === '% on Amount' ? 'selected' : ''}>% on Amount</option>
+                            <option value="Rate/Unit" ${row.defaultValUnit === 'Rate/Unit' ? 'selected' : ''}>Rate/Unit</option>
+                        </select>
+                    </div>
+                `;
+            }
+
+            tr.innerHTML = `
+                <td class="py-3 px-6 text-center select-none w-12">${iconColHtml}</td>
+                <td class="py-3 px-6">${typeCol}</td>
+                <td class="py-3 px-6">${accountCol}</td>
+                <td class="py-3 px-6">${nameCol}</td>
+                <td class="py-3 px-6 text-center">${contactCol}</td>
+                <td class="py-3 px-6 text-center">${gridCol}</td>
+                <td class="py-3 px-6">${defaultCol}</td>
+            `;
+
+            if (isEditMode) {
+                // Red trash column on edit
+                tr.innerHTML += `
+                    <td class="py-3 px-6 text-center action-col w-12">
+                        <button onclick="removeSalesChargeRow(${idx})" class="w-7 h-7 flex items-center justify-center bg-rose-600 hover:bg-rose-700 text-white rounded-lg cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </td>
+                `;
+            }
+
+            body.appendChild(tr);
+        });
+    }
+
+    function addNewSalesChargeRow() {
+        editSalesCharges.push({
+            id: Date.now(),
+            type: 'Add Before Tax',
+            account: 'Freight Charges',
+            name: 'New Sales Charge',
+            contact: false,
+            isGrid: false,
+            defaultVal: '0.000',
+            defaultValUnit: '% on Amount',
+            checked: false
+        });
+        renderSalesCharges();
+    }
+
+    function removeSalesChargeRow(idx) {
+        editSalesCharges.splice(idx, 1);
+        renderSalesCharges();
+    }
+
+    // 3. Purchase Charges Tab Grid Rendering
+    function renderPurchaseCharges() {
+        const body = document.getElementById('purchaseChargesTableBody');
+        body.innerHTML = '';
+
+        const data = isEditMode ? editPurchaseCharges : purchaseChargesData;
+
+        data.forEach((row, idx) => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-slate-50/50 transition-colors duration-150 relative';
+
+            let iconColHtml = `<span class="text-slate-400 select-none text-[16px] cursor-grab">⋮</span>`;
+            if (isEditMode) {
+                iconColHtml = `<input type="checkbox" ${row.checked ? 'checked' : ''} onchange="editPurchaseCharges[${idx}].checked = this.checked" class="rounded border-slate-300">`;
+            }
+
+            let typeCol = `<span class="font-semibold">${row.type}</span>`;
+            let accountCol = `<span>${row.account}</span>`;
+            let nameCol = `<span class="font-semibold text-slate-700">${row.name}</span>`;
+            let contactCol = row.contact ? `<span class="text-[var(--accent)]">✔</span>` : '<span class="text-slate-300">-</span>';
+            let stockCol = row.addToStock ? `<span class="text-[var(--accent)]">✔</span>` : '<span class="text-slate-300">-</span>';
+            let gridCol = row.isGrid ? `<span class="font-semibold">${row.isGrid}</span>` : '<span class="text-slate-300">-</span>';
+            let defaultCol = `<span>${row.defaultValUnit === 'Rate/Unit' ? '₹' : ''}${row.defaultVal}</span>`;
+
+            if (isEditMode) {
+                typeCol = `
+                    <select onchange="editPurchaseCharges[${idx}].type = this.value" class="h-8 px-2 border border-slate-200 bg-[var(--surface)] text-[12px] font-bold rounded outline-none">
+                        <option value="Add Before Tax" ${row.type === 'Add Before Tax' ? 'selected' : ''}>Add Before Tax</option>
+                        <option value="Add After Tax" ${row.type === 'Add After Tax' ? 'selected' : ''}>Add After Tax</option>
+                    </select>
+                `;
+
+                accountCol = `
+                    <select onchange="editPurchaseCharges[${idx}].account = this.value" class="h-8 px-2 border border-slate-200 bg-[var(--surface)] text-[12px] rounded outline-none w-44">
+                        <option value="Customs Duty Payable" ${row.account === 'Customs Duty Payable' ? 'selected' : ''}>Customs Duty Payable</option>
+                        <option value="TCS Receivable" ${row.account === 'TCS Receivable' ? 'selected' : ''}>TCS Receivable</option>
+                    </select>
+                `;
+
+                nameCol = `
+                    <input type="text" value="${row.name}" oninput="editPurchaseCharges[${idx}].name = this.value" class="h-8 px-2 border border-slate-200 bg-[var(--surface)] rounded text-[12px] focus:border-accent outline-none w-44">
+                `;
+
+                contactCol = `
+                    <input type="checkbox" ${row.contact ? 'checked' : ''} onchange="editPurchaseCharges[${idx}].contact = this.checked" class="rounded border-slate-300">
+                `;
+
+                stockCol = `
+                    <input type="checkbox" ${row.addToStock ? 'checked' : ''} onchange="editPurchaseCharges[${idx}].addToStock = this.checked" class="rounded border-slate-300">
+                `;
+
+                gridCol = `
+                    <input type="checkbox" ${row.isGrid ? 'checked' : ''} onchange="editPurchaseCharges[${idx}].isGrid = this.checked ? '% on Amt' : false; renderPurchaseCharges();" class="rounded border-slate-300">
+                `;
+
+                defaultCol = `
+                    <div class="flex items-center gap-1">
+                        <input type="text" value="${row.defaultVal}" oninput="editPurchaseCharges[${idx}].defaultVal = this.value" class="h-8 px-2 w-20 border border-slate-200 bg-[var(--surface)] rounded text-[12px] outline-none">
+                        <select onchange="editPurchaseCharges[${idx}].defaultValUnit = this.value" class="h-8 px-2 border border-slate-200 bg-[var(--surface)] text-[11px] rounded outline-none">
+                            <option value="% on Amount" ${row.defaultValUnit === '% on Amount' ? 'selected' : ''}>% on Amount</option>
+                            <option value="Rate/Unit" ${row.defaultValUnit === 'Rate/Unit' ? 'selected' : ''}>Rate/Unit</option>
+                        </select>
+                    </div>
+                `;
+            }
+
+            tr.innerHTML = `
+                <td class="py-3 px-6 text-center select-none w-12">${iconColHtml}</td>
+                <td class="py-3 px-6">${typeCol}</td>
+                <td class="py-3 px-6">${accountCol}</td>
+                <td class="py-3 px-6">${nameCol}</td>
+                <td class="py-3 px-6 text-center">${contactCol}</td>
+                <td class="py-3 px-6 text-center">${stockCol}</td>
+                <td class="py-3 px-6 text-center">${gridCol}</td>
+                <td class="py-3 px-6">${defaultCol}</td>
+            `;
+
+            if (isEditMode) {
+                tr.innerHTML += `
+                    <td class="py-3 px-6 text-center action-col w-12">
+                        <button onclick="removePurchaseChargeRow(${idx})" class="w-7 h-7 flex items-center justify-center bg-rose-600 hover:bg-rose-700 text-white rounded-lg cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </td>
+                `;
+            }
+
+            body.appendChild(tr);
+        });
+    }
+
+    function addNewPurchaseChargeRow() {
+        editPurchaseCharges.push({
+            id: Date.now(),
+            type: 'Add After Tax',
+            account: 'Customs Duty Payable',
+            name: 'New Purchase Charge',
+            contact: false,
+            addToStock: false,
+            isGrid: false,
+            defaultVal: '0.00',
+            defaultValUnit: 'Rate/Unit',
+            checked: false
+        });
+        renderPurchaseCharges();
+    }
+
+    function removePurchaseChargeRow(idx) {
+        editPurchaseCharges.splice(idx, 1);
+        renderPurchaseCharges();
+    }
+
+    // 4. Receipt Charges Tab Grid Rendering
+    function renderReceiptCharges() {
+        const body = document.getElementById('receiptChargesTableBody');
+        body.innerHTML = '';
+
+        const data = isEditMode ? editReceiptCharges : receiptChargesData;
+
+        if (data.length === 0 && !isEditMode) {
+            body.innerHTML = `
+                <tr>
+                    <td colspan="3" class="py-8 text-center text-slate-400 font-bold">No receipt charges configured. Click Edit to add payment options.</td>
+                </tr>
+            `;
+            return;
+        }
+
+        data.forEach((row, idx) => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-slate-50/50 transition-colors duration-150';
+
+            let modeCol = `<span>${row.paymentMode}</span>`;
+            let accountCol = `<span>${row.account}</span>`;
+            let vendorCol = `<span>${row.vendor || '-'}</span>`;
+
+            if (isEditMode) {
+                modeCol = `
+                    <select onchange="editReceiptCharges[${idx}].paymentMode = this.value" class="h-8 px-2 border border-slate-200 bg-[var(--surface)] text-[12px] rounded outline-none w-48 font-bold text-accent">
+                        <option value="Cash" ${row.paymentMode === 'Cash' ? 'selected' : ''}>Cash</option>
+                        <option value="Cheque / DD" ${row.paymentMode === 'Cheque / DD' ? 'selected' : ''}>Cheque / DD</option>
+                        <option value="Debit/Credit Card" ${row.paymentMode === 'Debit/Credit Card' ? 'selected' : ''}>Debit/Credit Card</option>
+                        <option value="Electronic Transfer" ${row.paymentMode === 'Electronic Transfer' ? 'selected' : ''}>Electronic Transfer</option>
+                    </select>
+                `;
+
+                accountCol = `
+                    <input type="text" value="${row.account}" oninput="editReceiptCharges[${idx}].account = this.value" class="h-8 px-2 border border-slate-200 bg-[var(--surface)] rounded text-[12px] focus:border-accent outline-none w-48 font-semibold">
+                `;
+
+                vendorCol = `
+                    <input type="text" value="${row.vendor}" oninput="editReceiptCharges[${idx}].vendor = this.value" class="h-8 px-2 border border-slate-200 bg-[var(--surface)] rounded text-[12px] focus:border-accent outline-none w-48" placeholder="Optional">
+                `;
+            }
+
+            tr.innerHTML = `
+                <td class="py-3.5 px-4">${modeCol}</td>
+                <td class="py-3.5 px-4">${accountCol}</td>
+                <td class="py-3.5 px-4">${vendorCol}</td>
+            `;
+
+            if (isEditMode) {
+                tr.innerHTML += `
+                    <td class="py-3.5 px-4 text-center action-col w-12">
+                        <button onclick="removeReceiptChargeRow(${idx})" class="w-7 h-7 flex items-center justify-center bg-rose-600 hover:bg-rose-700 text-white rounded-lg cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </td>
+                `;
+            }
+
+            body.appendChild(tr);
+        });
+    }
+
+    function addNewReceiptChargeRow() {
+        editReceiptCharges.push({
+            paymentMode: 'Cash',
+            account: 'Bank Charges Account',
+            vendor: ''
+        });
+        renderReceiptCharges();
+    }
+
+    function removeReceiptChargeRow(idx) {
+        editReceiptCharges.splice(idx, 1);
+        renderReceiptCharges();
+    }
+
+    // Status Toast helper
+    let toastTimeout = null;
+    function showToast(text, type = 'loading') {
+        const toast = document.getElementById('generalToast');
+        const textSpan = document.getElementById('generalToastText');
+        const iconDiv = document.getElementById('generalToastIcon');
+
+        if (toastTimeout) clearTimeout(toastTimeout);
+
+        textSpan.innerText = text;
+
+        if (type === 'loading') {
+            iconDiv.innerHTML = '<div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>';
+        } else if (type === 'success') {
+            iconDiv.innerHTML = '<svg class="w-4.5 h-4.5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
+        } else {
+            iconDiv.innerHTML = '<svg class="w-4.5 h-4.5 text-rose-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>';
+        }
+
+        toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+        toast.classList.add('opacity-100', 'translate-y-0');
+    }
+
+    function hideToast(delay = 1500) {
+        const toast = document.getElementById('generalToast');
+        toastTimeout = setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+            toast.classList.remove('opacity-100', 'translate-y-0');
+        }, delay);
+    }
+</script>
+{% endblock %}

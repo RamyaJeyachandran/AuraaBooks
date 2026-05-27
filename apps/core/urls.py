@@ -41,6 +41,31 @@ urlpatterns = [
     path('expenses/reclaim/', views.ReclaimExpenseListView.as_view(), name='reclaim-expenses'),
 
     # Accounting
-    path('accounting/accounts/', views.GenericMasterView.as_view(title='Accounts', parent_name='Accounting'), name='accounts'),
-    path('accounting/opening-balance/', views.GenericMasterView.as_view(title='Opening Balance', parent_name='Accounting'), name='opening-balance'),
+    path('accounting/accounts/', views.AccountsListView.as_view(), name='accounts'),
+    path('accounting/opening-balance/', views.OpeningBalanceListView.as_view(), name='opening-balance'),
+
+    # Settings
+    path('settings/', views.SettingsDashboardView.as_view(), name='settings-dashboard'),
+    path('settings/smtp/', views.SmtpSettingsView.as_view(), name='smtp-settings'),
+    path('settings/storage/', views.StorageLocationView.as_view(), name='storage-location'),
+    path('settings/general/', views.GeneralSettingsView.as_view(), name='general-settings'),
+    path('settings/preferences/', views.GenericMasterView.as_view(title='Preferences', parent_name='Settings'), name='preferences'),
+    path('settings/customer-points/', views.CustomerPointsSettingsView.as_view(), name='customer-points-settings'),
+    path('settings/qr-code/', views.QrCodeSettingsView.as_view(), name='qr-code-settings'),
+    path('settings/units/', views.UnitsSettingsView.as_view(), name='units-settings'),
+    path('settings/print/', views.PrintSettingsView.as_view(), name='print-settings'),
+    path('settings/modules/', views.ModulesSettingsView.as_view(), name='modules-settings'),
+    path('settings/serial-numbers/', views.SerialNumbersView.as_view(), name='serial-numbers-settings'),
+    path('settings/company/', views.CompanySettingsView.as_view(), name='company-settings'),
+    path('settings/default-content/', views.DefaultContentView.as_view(), name='default-content-settings'),
+    path('settings/tax-rates/', views.TaxRatesSettingsView.as_view(), name='tax-rates-settings'),
+    path('settings/custom-fields/', views.CustomFieldsView.as_view(), name='custom-fields-settings'),
+    path('settings/users/', views.UsersSettingsView.as_view(), name='users-settings'),
 ]
+
+
+
+
+
+
+
