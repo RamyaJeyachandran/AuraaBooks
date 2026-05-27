@@ -156,4 +156,26 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
+
+    // Sidebar Collapse Toggle
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebar');
+
+    if (sidebarToggle && sidebar) {
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('sidebar-collapsed');
+            const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
+            localStorage.setItem('sidebarState', isCollapsed ? 'collapsed' : 'expanded');
+            
+            // Optional: if collapsing, close all open submenus immediately for a cleaner look
+            if (isCollapsed) {
+                document.querySelectorAll('.nav-children:not(.max-h-0)').forEach(child => {
+                    child.style.maxHeight = '0px';
+                    child.classList.add('max-h-0');
+                    const chevron = child.previousElementSibling.querySelector('.chevron');
+                    if (chevron) chevron.classList.remove('rotate-90');
+                });
+            }
+        });
+    }
 });

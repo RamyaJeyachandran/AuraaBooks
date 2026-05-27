@@ -37,6 +37,11 @@
         
         <!-- SIDEBAR -->
         <aside id="sidebar" class="sidebar-premium w-[230px] h-full flex-shrink-0 flex flex-col relative z-20 group/sidebar transition-all duration-700 ease-out [transform-style:preserve-3d] [perspective:1000px]">
+            <script>
+                if (localStorage.getItem('sidebarState') === 'collapsed') {
+                    document.getElementById('sidebar').classList.add('sidebar-collapsed');
+                }
+            </script>
             <div class="sb-glass-reflect"></div>
             <div class="sb-edge-line"></div>
             
