@@ -1,17 +1,69 @@
 <!-- Navigation Items -->
+<style>
+    .nav-tooltip-box {
+        display: none !important;
+        position: absolute;
+        left: calc(100% + 14px);
+        top: 50%;
+        transform: translateY(-50%) translateX(-8px);
+        opacity: 0;
+        pointer-events: none;
+        background: #1e2130;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 10px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+        white-space: nowrap;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        z-index: 999999;
+        transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .sidebar-collapsed .nav-item .nav-tooltip-box,
+    .sidebar-collapsed .nav-parent .nav-tooltip-box {
+        display: flex !important;
+    }
+    .sidebar-collapsed .nav-item:hover .nav-tooltip-box,
+    .sidebar-collapsed .nav-parent:hover .nav-tooltip-box {
+        opacity: 1;
+        transform: translateY(-50%) translateX(0);
+    }
+    .sidebar-collapsed .nav-tooltip-box span {
+        display: inline-block !important;
+    }
+    .nav-tooltip-box::before {
+        content: '';
+        position: absolute;
+        right: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+        border-right: 6px solid rgba(255,255,255,0.1);
+        border-top: 5px solid transparent;
+        border-bottom: 5px solid transparent;
+    }
+    .nav-tooltip-box::after {
+        content: '';
+        position: absolute;
+        right: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+        border-right: 5px solid #1e2130;
+        border-top: 4px solid transparent;
+        border-bottom: 4px solid transparent;
+        margin-right: -1px;
+    }
+</style>
 <div class="space-y-1">
     <!-- Dashboard -->
-    <a href="{% url 'dashboard' %}" class="nav-item flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 {% if request.path == '/' %}active{% endif %}">
+    <a href="{% url 'dashboard' %}" class="nav-item flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative z-10 {% if request.path == '/' %}active{% endif %}">
         <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 3h7v7H3V3zm11 0h7v7h-7V3zm0 11h7v7h-7v-7zm-11 0h7v7H3v-7z"/></svg>
         </div>
         <span class="text-[13px] flex-1 font-medium text-white">Dashboard</span>
-        <div class="absolute left-[calc(100%+14px)] top-1/2 -translate-y-1/2 -translate-x-1.5 opacity-0 pointer-events-none bg-[#1e2130] border border-white/10 rounded-[10px] shadow-[0_4px_24px_rgba(0,0,0,0.4)] whitespace-nowrap items-center gap-2 px-3 py-1.5 z-[99999] transition-all duration-200 group-hover/item:opacity-100 group-hover/item:translate-x-0 hidden [.sidebar-collapsed_&]:flex">
+        <div class="nav-tooltip-box">
             <div class="w-1.5 h-1.5 rounded-full bg-indigo-400"></div>
             <span style="font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: #e2e4ed;">Dashboard</span>
             <kbd style="font-family: 'DM Mono', monospace; font-size: 10px; background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 4px; color: #a0a5b5;">⌘D</kbd>
-            <div class="absolute right-[100%] top-1/2 -translate-y-1/2 border-r-[6px] border-r-white/10 border-y-[5px] border-y-transparent"></div>
-            <div class="absolute right-[100%] top-1/2 -translate-y-1/2 border-r-[5px] border-r-[#1e2130] border-y-[4px] border-y-transparent -mr-[1px]"></div>
         </div>
     </a>
 
@@ -19,18 +71,17 @@
 
     <!-- Masters -->
     <div class="nav-group">
-        <div class="nav-parent flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl {% if '/items/' in request.path or '/customers/' in request.path or '/suppliers/' in request.path or '/referrers/' in request.path or '/warehouse/' in request.path or '/branch/' in request.path or '/franchisee/' in request.path or '/sales-rep/' in request.path or '/rate-sheet/' in request.path or '/stock-journal/' in request.path %}active-parent{% endif %}" onclick="toggleNavGroup(this)">
+        <div class="nav-parent flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative z-10 text-white hover:bg-white/5 rounded-xl {% if '/items/' in request.path or '/customers/' in request.path or '/suppliers/' in request.path or '/referrers/' in request.path or '/warehouse/' in request.path or '/branch/' in request.path or '/franchisee/' in request.path or '/sales-rep/' in request.path or '/rate-sheet/' in request.path or '/stock-journal/' in request.path %}active-parent{% endif %}" onclick="toggleNavGroup(this)">
             <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
             </div>
             <span class="text-[13px] flex-1 font-medium">Masters</span>
             <svg class="w-3 h-3 transition-transform chevron {% if '/items/' in request.path or '/customers/' in request.path or '/suppliers/' in request.path or '/referrers/' in request.path or '/warehouse/' in request.path or '/branch/' in request.path or '/franchisee/' in request.path or '/sales-rep/' in request.path or '/rate-sheet/' in request.path or '/stock-journal/' in request.path %}rotate-90{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
-            <div class="absolute left-[calc(100%+14px)] top-1/2 -translate-y-1/2 -translate-x-1.5 opacity-0 pointer-events-none bg-[#1e2130] border border-white/10 rounded-[10px] shadow-[0_4px_24px_rgba(0,0,0,0.4)] whitespace-nowrap items-center gap-2 px-3 py-1.5 z-[99999] transition-all duration-200 group-hover/item:opacity-100 group-hover/item:translate-x-0 hidden [.sidebar-collapsed_&]:flex">
+            <div class="nav-tooltip-box">
                 <div class="w-1.5 h-1.5 rounded-full bg-emerald-400"></div>
                 <span style="font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: #e2e4ed;">Masters</span>
                 <kbd style="font-family: 'DM Mono', monospace; font-size: 10px; background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 4px; color: #a0a5b5;">⌘M</kbd>
-                <div class="absolute right-[100%] top-1/2 -translate-y-1/2 border-r-[6px] border-r-white/10 border-y-[5px] border-y-transparent"></div>
-                <div class="absolute right-[100%] top-1/2 -translate-y-1/2 border-r-[5px] border-r-[#1e2130] border-y-[4px] border-y-transparent -mr-[1px]"></div>
+
             </div>
         </div>
         <div class="nav-children mt-1 space-y-1 ml-6 mr-1 overflow-hidden transition-all duration-300 relative z-20 {% if not '/items/' in request.path and not '/customers/' in request.path and not '/suppliers/' in request.path and not '/referrers/' in request.path and not '/warehouse/' in request.path and not '/branch/' in request.path and not '/franchisee/' in request.path and not '/sales-rep/' in request.path and not '/rate-sheet/' in request.path and not '/stock-journal/' in request.path %}max-h-0{% endif %}">
@@ -57,12 +108,11 @@
             </div>
             <span class="text-[13px] flex-1 font-medium">Sales</span>
             <svg class="w-3 h-3 transition-transform chevron {% if '/sales/' in request.path %}rotate-90{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
-            <div class="absolute left-[calc(100%+14px)] top-1/2 -translate-y-1/2 -translate-x-1.5 opacity-0 pointer-events-none bg-[#1e2130] border border-white/10 rounded-[10px] shadow-[0_4px_24px_rgba(0,0,0,0.4)] whitespace-nowrap items-center gap-2 px-3 py-1.5 z-[99999] transition-all duration-200 group-hover/item:opacity-100 group-hover/item:translate-x-0 hidden [.sidebar-collapsed_&]:flex">
+            <div class="nav-tooltip-box">
                 <div class="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
                 <span style="font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: #e2e4ed;">Sales</span>
                 <kbd style="font-family: 'DM Mono', monospace; font-size: 10px; background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 4px; color: #a0a5b5;">⌘S</kbd>
-                <div class="absolute right-[100%] top-1/2 -translate-y-1/2 border-r-[6px] border-r-white/10 border-y-[5px] border-y-transparent"></div>
-                <div class="absolute right-[100%] top-1/2 -translate-y-1/2 border-r-[5px] border-r-[#1e2130] border-y-[4px] border-y-transparent -mr-[1px]"></div>
+
             </div>
         </div>
         <div class="nav-children mt-1 space-y-1 ml-6 mr-1 overflow-hidden transition-all duration-300 relative z-20 {% if not '/sales/' in request.path %}max-h-0{% endif %}">
@@ -85,12 +135,11 @@
             </div>
             <span class="text-[13px] flex-1 font-medium">Purchase</span>
             <svg class="w-3 h-3 transition-transform chevron {% if '/purchase/' in request.path %}rotate-90{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
-            <div class="absolute left-[calc(100%+14px)] top-1/2 -translate-y-1/2 -translate-x-1.5 opacity-0 pointer-events-none bg-[#1e2130] border border-white/10 rounded-[10px] shadow-[0_4px_24px_rgba(0,0,0,0.4)] whitespace-nowrap items-center gap-2 px-3 py-1.5 z-[99999] transition-all duration-200 group-hover/item:opacity-100 group-hover/item:translate-x-0 hidden [.sidebar-collapsed_&]:flex">
+            <div class="nav-tooltip-box">
                 <div class="w-1.5 h-1.5 rounded-full bg-amber-400"></div>
                 <span style="font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: #e2e4ed;">Purchase</span>
                 <kbd style="font-family: 'DM Mono', monospace; font-size: 10px; background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 4px; color: #a0a5b5;">⌘P</kbd>
-                <div class="absolute right-[100%] top-1/2 -translate-y-1/2 border-r-[6px] border-r-white/10 border-y-[5px] border-y-transparent"></div>
-                <div class="absolute right-[100%] top-1/2 -translate-y-1/2 border-r-[5px] border-r-[#1e2130] border-y-[4px] border-y-transparent -mr-[1px]"></div>
+
             </div>
         </div>
         <div class="nav-children mt-1 space-y-1 ml-6 mr-1 overflow-hidden transition-all duration-300 relative z-20 {% if not '/purchase/' in request.path %}max-h-0{% endif %}">
@@ -113,12 +162,11 @@
             </div>
             <span class="text-[13px] flex-1 font-medium">Expenses</span>
             <svg class="w-3 h-3 transition-transform chevron {% if '/expenses/' in request.path %}rotate-90{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
-            <div class="absolute left-[calc(100%+14px)] top-1/2 -translate-y-1/2 -translate-x-1.5 opacity-0 pointer-events-none bg-[#1e2130] border border-white/10 rounded-[10px] shadow-[0_4px_24px_rgba(0,0,0,0.4)] whitespace-nowrap items-center gap-2 px-3 py-1.5 z-[99999] transition-all duration-200 group-hover/item:opacity-100 group-hover/item:translate-x-0 hidden [.sidebar-collapsed_&]:flex">
+            <div class="nav-tooltip-box">
                 <div class="w-1.5 h-1.5 rounded-full bg-rose-400"></div>
                 <span style="font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: #e2e4ed;">Expenses</span>
                 <kbd style="font-family: 'DM Mono', monospace; font-size: 10px; background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 4px; color: #a0a5b5;">⌘E</kbd>
-                <div class="absolute right-[100%] top-1/2 -translate-y-1/2 border-r-[6px] border-r-white/10 border-y-[5px] border-y-transparent"></div>
-                <div class="absolute right-[100%] top-1/2 -translate-y-1/2 border-r-[5px] border-r-[#1e2130] border-y-[4px] border-y-transparent -mr-[1px]"></div>
+
             </div>
         </div>
         <div class="nav-children mt-1 space-y-1 ml-6 mr-1 overflow-hidden transition-all duration-300 relative z-20 {% if not '/expenses/' in request.path %}max-h-0{% endif %}">
@@ -139,12 +187,11 @@
             </div>
             <span class="text-[13px] flex-1 font-medium">Accounting</span>
             <svg class="w-3 h-3 transition-transform chevron {% if '/accounting/' in request.path %}rotate-90{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
-            <div class="absolute left-[calc(100%+14px)] top-1/2 -translate-y-1/2 -translate-x-1.5 opacity-0 pointer-events-none bg-[#1e2130] border border-white/10 rounded-[10px] shadow-[0_4px_24px_rgba(0,0,0,0.4)] whitespace-nowrap items-center gap-2 px-3 py-1.5 z-[99999] transition-all duration-200 group-hover/item:opacity-100 group-hover/item:translate-x-0 hidden [.sidebar-collapsed_&]:flex">
+            <div class="nav-tooltip-box">
                 <div class="w-1.5 h-1.5 rounded-full bg-violet-400"></div>
                 <span style="font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: #e2e4ed;">Accounting</span>
                 <kbd style="font-family: 'DM Mono', monospace; font-size: 10px; background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 4px; color: #a0a5b5;">⌘A</kbd>
-                <div class="absolute right-[100%] top-1/2 -translate-y-1/2 border-r-[6px] border-r-white/10 border-y-[5px] border-y-transparent"></div>
-                <div class="absolute right-[100%] top-1/2 -translate-y-1/2 border-r-[5px] border-r-[#1e2130] border-y-[4px] border-y-transparent -mr-[1px]"></div>
+
             </div>
         </div>
         <div class="nav-children mt-1 space-y-1 ml-6 mr-1 overflow-hidden transition-all duration-300 relative z-20 {% if not '/accounting/' in request.path %}max-h-0{% endif %}">
@@ -161,12 +208,11 @@
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
         </div>
         <span class="text-[13px] flex-1 font-medium">Bank / Cash</span>
-        <div class="absolute left-[calc(100%+14px)] top-1/2 -translate-y-1/2 -translate-x-1.5 opacity-0 pointer-events-none bg-[#1e2130] border border-white/10 rounded-[10px] shadow-[0_4px_24px_rgba(0,0,0,0.4)] whitespace-nowrap items-center gap-2 px-3 py-1.5 z-[99999] transition-all duration-200 group-hover/item:opacity-100 group-hover/item:translate-x-0 hidden [.sidebar-collapsed_&]:flex">
+        <div class="nav-tooltip-box">
             <div class="w-1.5 h-1.5 rounded-full bg-cyan-400"></div>
             <span style="font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: #e2e4ed;">Bank / Cash</span>
             <kbd style="font-family: 'DM Mono', monospace; font-size: 10px; background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 4px; color: #a0a5b5;">⌘B</kbd>
-            <div class="absolute right-[100%] top-1/2 -translate-y-1/2 border-r-[6px] border-r-white/10 border-y-[5px] border-y-transparent"></div>
-            <div class="absolute right-[100%] top-1/2 -translate-y-1/2 border-r-[5px] border-r-[#1e2130] border-y-[4px] border-y-transparent -mr-[1px]"></div>
+
         </div>
     </a>
 
@@ -176,12 +222,11 @@
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 3h6v6H3zM15 3h6v6h-6zM3 15h6v6H3zM15 15h6v6h-6z"/></svg>
         </div>
         <span class="text-[13px] flex-1 font-medium">Project</span>
-        <div class="absolute left-[calc(100%+14px)] top-1/2 -translate-y-1/2 -translate-x-1.5 opacity-0 pointer-events-none bg-[#1e2130] border border-white/10 rounded-[10px] shadow-[0_4px_24px_rgba(0,0,0,0.4)] whitespace-nowrap items-center gap-2 px-3 py-1.5 z-[99999] transition-all duration-200 group-hover/item:opacity-100 group-hover/item:translate-x-0 hidden [.sidebar-collapsed_&]:flex">
+        <div class="nav-tooltip-box">
             <div class="w-1.5 h-1.5 rounded-full bg-pink-400"></div>
             <span style="font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: #e2e4ed;">Project</span>
             <kbd style="font-family: 'DM Mono', monospace; font-size: 10px; background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 4px; color: #a0a5b5;">⌘R</kbd>
-            <div class="absolute right-[100%] top-1/2 -translate-y-1/2 border-r-[6px] border-r-white/10 border-y-[5px] border-y-transparent"></div>
-            <div class="absolute right-[100%] top-1/2 -translate-y-1/2 border-r-[5px] border-r-[#1e2130] border-y-[4px] border-y-transparent -mr-[1px]"></div>
+
         </div>
     </a>
 
@@ -193,12 +238,11 @@
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </div>
         <span class="text-[13px] flex-1 font-medium">Settings</span>
-        <div class="absolute left-[calc(100%+14px)] top-1/2 -translate-y-1/2 -translate-x-1.5 opacity-0 pointer-events-none bg-[#1e2130] border border-white/10 rounded-[10px] shadow-[0_4px_24px_rgba(0,0,0,0.4)] whitespace-nowrap items-center gap-2 px-3 py-1.5 z-[99999] transition-all duration-200 group-hover/item:opacity-100 group-hover/item:translate-x-0 hidden [.sidebar-collapsed_&]:flex">
+        <div class="nav-tooltip-box">
             <div class="w-1.5 h-1.5 rounded-full bg-slate-400"></div>
             <span style="font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: #e2e4ed;">Settings</span>
             <kbd style="font-family: 'DM Mono', monospace; font-size: 10px; background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 4px; color: #a0a5b5;">⌘,</kbd>
-            <div class="absolute right-[100%] top-1/2 -translate-y-1/2 border-r-[6px] border-r-white/10 border-y-[5px] border-y-transparent"></div>
-            <div class="absolute right-[100%] top-1/2 -translate-y-1/2 border-r-[5px] border-r-[#1e2130] border-y-[4px] border-y-transparent -mr-[1px]"></div>
+
         </div>
     </a>
 </div>
