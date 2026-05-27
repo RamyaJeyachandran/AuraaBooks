@@ -1,23 +1,33 @@
 <!-- Navigation Items -->
 <div class="space-y-1">
     <!-- Dashboard -->
-    <a href="{% url 'dashboard' %}" title="Dashboard" class="nav-item flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 {% if request.path == '/' %}active{% endif %}">
+    <a href="{% url 'dashboard' %}" class="nav-item flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 {% if request.path == '/' %}active{% endif %}">
         <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 3h7v7H3V3zm11 0h7v7h-7V3zm0 11h7v7h-7v-7zm-11 0h7v7H3v-7z"/></svg>
         </div>
         <span class="text-[13px] flex-1 font-medium text-white">Dashboard</span>
+        <div class="nav-tooltip">
+            <div class="w-1.5 h-1.5 rounded-full bg-indigo-400"></div>
+            <span style="font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: #e2e4ed;">Dashboard</span>
+            <kbd style="font-family: 'DM Mono', monospace; font-size: 10px; background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 4px; color: #a0a5b5;">⌘D</kbd>
+        </div>
     </a>
 
     <div class="h-1"></div>
 
     <!-- Masters -->
     <div class="nav-group">
-        <div title="Masters" class="nav-parent flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl {% if '/items/' in request.path or '/customers/' in request.path or '/suppliers/' in request.path or '/referrers/' in request.path or '/warehouse/' in request.path or '/branch/' in request.path or '/franchisee/' in request.path or '/sales-rep/' in request.path or '/rate-sheet/' in request.path or '/stock-journal/' in request.path %}active-parent{% endif %}" onclick="toggleNavGroup(this)">
+        <div class="nav-parent flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl {% if '/items/' in request.path or '/customers/' in request.path or '/suppliers/' in request.path or '/referrers/' in request.path or '/warehouse/' in request.path or '/branch/' in request.path or '/franchisee/' in request.path or '/sales-rep/' in request.path or '/rate-sheet/' in request.path or '/stock-journal/' in request.path %}active-parent{% endif %}" onclick="toggleNavGroup(this)">
             <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
             </div>
             <span class="text-[13px] flex-1 font-medium">Masters</span>
             <svg class="w-3 h-3 transition-transform chevron {% if '/items/' in request.path or '/customers/' in request.path or '/suppliers/' in request.path or '/referrers/' in request.path or '/warehouse/' in request.path or '/branch/' in request.path or '/franchisee/' in request.path or '/sales-rep/' in request.path or '/rate-sheet/' in request.path or '/stock-journal/' in request.path %}rotate-90{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+            <div class="nav-tooltip">
+                <div class="w-1.5 h-1.5 rounded-full bg-emerald-400"></div>
+                <span style="font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: #e2e4ed;">Masters</span>
+                <kbd style="font-family: 'DM Mono', monospace; font-size: 10px; background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 4px; color: #a0a5b5;">⌘M</kbd>
+            </div>
         </div>
         <div class="nav-children mt-1 space-y-1 ml-6 mr-1 overflow-hidden transition-all duration-300 relative z-20 {% if not '/items/' in request.path and not '/customers/' in request.path and not '/suppliers/' in request.path and not '/referrers/' in request.path and not '/warehouse/' in request.path and not '/branch/' in request.path and not '/franchisee/' in request.path and not '/sales-rep/' in request.path and not '/rate-sheet/' in request.path and not '/stock-journal/' in request.path %}max-h-0{% endif %}">
             <a href="{% url 'customer-list' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/customers/' %}active-child{% endif %}">Customer</a>
@@ -37,12 +47,17 @@
 
     <!-- Sales -->
     <div class="nav-group">
-        <div title="Sales" class="nav-parent flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl {% if '/sales/' in request.path %}active-parent{% endif %}" onclick="toggleNavGroup(this)">
+        <div class="nav-parent flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl {% if '/sales/' in request.path %}active-parent{% endif %}" onclick="toggleNavGroup(this)">
             <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2m4 0v2m0 4v.01M8 4h8a2 2 0 012 2v2H6V6a2 2 0 012-2z"/></svg>
             </div>
             <span class="text-[13px] flex-1 font-medium">Sales</span>
             <svg class="w-3 h-3 transition-transform chevron {% if '/sales/' in request.path %}rotate-90{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+            <div class="nav-tooltip">
+                <div class="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
+                <span style="font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: #e2e4ed;">Sales</span>
+                <kbd style="font-family: 'DM Mono', monospace; font-size: 10px; background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 4px; color: #a0a5b5;">⌘S</kbd>
+            </div>
         </div>
         <div class="nav-children mt-1 space-y-1 ml-6 mr-1 overflow-hidden transition-all duration-300 relative z-20 {% if not '/sales/' in request.path %}max-h-0{% endif %}">
             <a href="{% url 'sales-quotes' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/sales/quotes/' %}active-child{% endif %}">Quotes</a>
@@ -58,12 +73,17 @@
 
     <!-- Purchase -->
     <div class="nav-group">
-        <div title="Purchase" class="nav-parent flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl {% if '/purchase/' in request.path %}active-parent{% endif %}" onclick="toggleNavGroup(this)">
+        <div class="nav-parent flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl {% if '/purchase/' in request.path %}active-parent{% endif %}" onclick="toggleNavGroup(this)">
             <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
             </div>
             <span class="text-[13px] flex-1 font-medium">Purchase</span>
             <svg class="w-3 h-3 transition-transform chevron {% if '/purchase/' in request.path %}rotate-90{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+            <div class="nav-tooltip">
+                <div class="w-1.5 h-1.5 rounded-full bg-amber-400"></div>
+                <span style="font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: #e2e4ed;">Purchase</span>
+                <kbd style="font-family: 'DM Mono', monospace; font-size: 10px; background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 4px; color: #a0a5b5;">⌘P</kbd>
+            </div>
         </div>
         <div class="nav-children mt-1 space-y-1 ml-6 mr-1 overflow-hidden transition-all duration-300 relative z-20 {% if not '/purchase/' in request.path %}max-h-0{% endif %}">
             <a href="{% url 'purchase-quotes' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/purchase/quotes/' %}active-child{% endif %}">Purchase Quote</a>
@@ -79,12 +99,17 @@
 
     <!-- Expenses -->
     <div class="nav-group">
-        <div title="Expenses" class="nav-parent flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl {% if '/expenses/' in request.path %}active-parent{% endif %}" onclick="toggleNavGroup(this)">
+        <div class="nav-parent flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl {% if '/expenses/' in request.path %}active-parent{% endif %}" onclick="toggleNavGroup(this)">
             <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zM12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z"/></svg>
             </div>
             <span class="text-[13px] flex-1 font-medium">Expenses</span>
             <svg class="w-3 h-3 transition-transform chevron {% if '/expenses/' in request.path %}rotate-90{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+            <div class="nav-tooltip">
+                <div class="w-1.5 h-1.5 rounded-full bg-rose-400"></div>
+                <span style="font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: #e2e4ed;">Expenses</span>
+                <kbd style="font-family: 'DM Mono', monospace; font-size: 10px; background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 4px; color: #a0a5b5;">⌘E</kbd>
+            </div>
         </div>
         <div class="nav-children mt-1 space-y-1 ml-6 mr-1 overflow-hidden transition-all duration-300 relative z-20 {% if not '/expenses/' in request.path %}max-h-0{% endif %}">
             <a href="{% url 'credit-expenses' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/expenses/credit/' %}active-child{% endif %}">Credit Expenses</a>
@@ -98,12 +123,17 @@
 
     <!-- Accounting -->
     <div class="nav-group">
-        <div title="Accounting" class="nav-parent flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl {% if '/accounting/' in request.path %}active-parent{% endif %}" onclick="toggleNavGroup(this)">
+        <div class="nav-parent flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl {% if '/accounting/' in request.path %}active-parent{% endif %}" onclick="toggleNavGroup(this)">
             <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2" /><line x1="2" y1="10" x2="22" y2="10" /><line x1="7" y1="15" x2="7" y2="15.01" /><line x1="12" y1="15" x2="12" y2="15.01" /><line x1="17" y1="15" x2="17" y2="15.01" /></svg>
             </div>
             <span class="text-[13px] flex-1 font-medium">Accounting</span>
             <svg class="w-3 h-3 transition-transform chevron {% if '/accounting/' in request.path %}rotate-90{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+            <div class="nav-tooltip">
+                <div class="w-1.5 h-1.5 rounded-full bg-violet-400"></div>
+                <span style="font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: #e2e4ed;">Accounting</span>
+                <kbd style="font-family: 'DM Mono', monospace; font-size: 10px; background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 4px; color: #a0a5b5;">⌘A</kbd>
+            </div>
         </div>
         <div class="nav-children mt-1 space-y-1 ml-6 mr-1 overflow-hidden transition-all duration-300 relative z-20 {% if not '/accounting/' in request.path %}max-h-0{% endif %}">
             <a href="{% url 'accounts' %}" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 {% if request.path == '/accounting/accounts/' %}active-child{% endif %}">Accounts</a>
@@ -114,29 +144,44 @@
     <div class="h-1"></div>
 
     <!-- Bank / Cash -->
-    <a href="{% url 'bank-cash-list' %}" title="Bank / Cash" class="nav-item flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl {% if '/bank-cash/' in request.path %}active{% endif %}">
+    <a href="{% url 'bank-cash-list' %}" class="nav-item flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl {% if '/bank-cash/' in request.path %}active{% endif %}">
         <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
         </div>
         <span class="text-[13px] flex-1 font-medium">Bank / Cash</span>
+        <div class="nav-tooltip">
+            <div class="w-1.5 h-1.5 rounded-full bg-cyan-400"></div>
+            <span style="font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: #e2e4ed;">Bank / Cash</span>
+            <kbd style="font-family: 'DM Mono', monospace; font-size: 10px; background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 4px; color: #a0a5b5;">⌘B</kbd>
+        </div>
     </a>
 
     <!-- Project -->
-    <a href="{% url 'project-list' %}" title="Project" class="nav-item flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl {% if '/projects/' in request.path %}active{% endif %}">
+    <a href="{% url 'project-list' %}" class="nav-item flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl {% if '/projects/' in request.path %}active{% endif %}">
         <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 3h6v6H3zM15 3h6v6h-6zM3 15h6v6H3zM15 15h6v6h-6z"/></svg>
         </div>
         <span class="text-[13px] flex-1 font-medium">Project</span>
+        <div class="nav-tooltip">
+            <div class="w-1.5 h-1.5 rounded-full bg-pink-400"></div>
+            <span style="font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: #e2e4ed;">Project</span>
+            <kbd style="font-family: 'DM Mono', monospace; font-size: 10px; background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 4px; color: #a0a5b5;">⌘R</kbd>
+        </div>
     </a>
 
     <div class="h-1"></div>
 
     <!-- Settings -->
-    <a href="{% url 'settings-dashboard' %}" title="Settings" class="nav-item flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl {% if '/settings/' in request.path %}active{% endif %}">
+    <a href="{% url 'settings-dashboard' %}" class="nav-item flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl {% if '/settings/' in request.path %}active{% endif %}">
         <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </div>
         <span class="text-[13px] flex-1 font-medium">Settings</span>
+        <div class="nav-tooltip">
+            <div class="w-1.5 h-1.5 rounded-full bg-slate-400"></div>
+            <span style="font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: #e2e4ed;">Settings</span>
+            <kbd style="font-family: 'DM Mono', monospace; font-size: 10px; background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 4px; color: #a0a5b5;">⌘,</kbd>
+        </div>
     </a>
 </div>
 
