@@ -779,8 +779,7 @@ table thead tr:last-child th {
 
 /* Hide text and chevrons when collapsed */
 .sidebar-collapsed span,
-.sidebar-collapsed .chevron,
-.sidebar-collapsed .nav-children {
+.sidebar-collapsed .chevron {
     display: none !important;
 }
 
@@ -801,4 +800,70 @@ table thead tr:last-child th {
     padding-left: 0 !important;
     padding-right: 0 !important;
     justify-content: center !important;
+}
+
+/* Sidebar overflow fix for flyouts */
+.sidebar-collapsed .overflow-y-auto {
+    overflow: visible !important;
+}
+
+/* Flyout Menus Setup */
+.sidebar-collapsed .nav-group {
+    position: relative;
+}
+
+/* Ensure the nav-children act as absolute flyouts */
+.sidebar-collapsed .nav-children {
+    position: absolute;
+    left: 80px; /* Just outside the collapsed sidebar */
+    top: 0;
+    width: 220px;
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    border-radius: 8px;
+    padding: 8px 0;
+    z-index: 9999;
+    max-height: none !important; /* Override JS max-height */
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-10px);
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Show the flyout if not collapsed by JS (max-h-0) */
+.sidebar-collapsed .nav-children:not(.max-h-0) {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+}
+
+/* Ensure the links look good on the white background */
+.sidebar-collapsed .nav-children a {
+    color: #334155 !important;
+    padding: 10px 20px;
+    margin: 0;
+    border-radius: 0;
+}
+
+.sidebar-collapsed .nav-children a:hover {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+    transform: none;
+}
+
+/* Dark Mode Flyout */
+.dark .sidebar-collapsed .nav-children {
+    background: #0f172a;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.dark .sidebar-collapsed .nav-children a {
+    color: #cbd5e1 !important;
+}
+
+.dark .sidebar-collapsed .nav-children a:hover {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
 }

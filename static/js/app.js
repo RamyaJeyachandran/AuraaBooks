@@ -1,15 +1,4 @@
 function toggleNavGroup(el) {
-    const sidebar = document.getElementById('sidebar');
-    if (sidebar && sidebar.classList.contains('sidebar-collapsed')) {
-        // Expand sidebar first
-        sidebar.classList.remove('sidebar-collapsed');
-        localStorage.setItem('sidebarState', 'expanded');
-        // Give it a tiny delay to allow CSS transition to start before expanding the submenu
-        setTimeout(() => {
-            toggleNavGroupLogic(el);
-        }, 150);
-        return;
-    }
     toggleNavGroupLogic(el);
 }
 
