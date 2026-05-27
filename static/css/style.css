@@ -603,38 +603,202 @@ table thead tr:last-child th {
 
 /* Hide logo text margin and center logo avatar */
 .sidebar-collapsed .px-4.mb-4 {
+.nav-children a:hover {
+    opacity: 1;
+    background: rgba(255,255,255,0.1) !important;
+    transform: translateX(2px);
+}
+
+/* ── Chevron smooth rotation ── */
+.chevron {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    opacity: 0.65;
+}
+
+/* ── Sidebar logo avatar ── */
+.sidebar-logo-avatar {
+    background: linear-gradient(135deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.14) 100%);
+    border: 1px solid rgba(255,255,255,0.45);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.5);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.sidebar-logo-avatar:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2), 0 0 20px rgba(255,255,255,0.2);
+}
+
+/* ── Sidebar user card ── */
+.sidebar-user-card {
+    background: rgba(0,0,0,0.13);
+    border-top: 1px solid rgba(255,255,255,0.12);
+    transition: background 0.2s ease;
+}
+
+.sidebar-user-card:hover {
+    background: rgba(0,0,0,0.2);
+}
+
+.sidebar-user-avatar {
+    background: linear-gradient(135deg, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0.14) 100%);
+    border: 1px solid rgba(255,255,255,0.32);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.14);
+    transition: box-shadow 0.25s ease;
+}
+
+.sidebar-user-avatar:hover {
+    box-shadow: 0 0 18px rgba(255,255,255,0.22);
+}
+
+/* ============================================================
+   PREMIUM TOPBAR REDESIGN — AuraaBooks 2026
+   ============================================================ */
+
+.topbar-premium {
+    background: rgba(255,255,255,0.82) !important;
+    backdrop-filter: blur(24px) saturate(1.6) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(1.6) !important;
+    border-bottom: 1px solid rgba(0,0,0,0.07) !important;
+    box-shadow:
+        0 1px 0 rgba(255,255,255,0.9) inset,
+        0 4px 24px rgba(0,0,0,0.04);
+}
+
+.dark .topbar-premium {
+    background: rgba(11, 24, 41, 0.86) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+}
+
+/* ── Floating glass search capsule ── */
+.search-capsule {
+    background: rgba(0,0,0,0.04);
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 12px;
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark .search-capsule {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+.search-capsule:focus-within {
+    background: rgba(255,255,255,1);
+    border-color: var(--accent);
+    box-shadow:
+        0 0 0 3px rgba(var(--accent-rgb), 0.12),
+        0 4px 16px rgba(var(--accent-rgb), 0.08);
+    transform: translateY(-1px);
+}
+
+.dark .search-capsule:focus-within {
+    background: rgba(18, 32, 64, 1);
+}
+
+/* ── Glass topbar icon buttons ── */
+.topbar-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid transparent;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    color: var(--text-muted);
+}
+
+.topbar-btn:hover {
+    background: rgba(0,0,0,0.05);
+    border-color: rgba(0,0,0,0.08);
+    color: var(--text-secondary);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+}
+
+.dark .topbar-btn:hover {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.8);
+}
+
+.topbar-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+    background: rgba(0,0,0,0.08);
+}
+
+/* ── Animated notification dot ── */
+.notif-dot {
+    width: 7px;
+    height: 7px;
+    background: #EF4444;
+    border-radius: 9999px;
+    border: 1.5px solid white;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    animation: notif-pulse 2.5s ease-in-out infinite;
+}
+
+/* ============================================================
+   KEYFRAMES
+   ============================================================ */
+
+@keyframes nav-bar-pulse {
+    0%, 100% {
+        box-shadow: 0 0 8px rgba(255,255,255,0.9), 0 0 18px rgba(255,255,255,0.4);
+        opacity: 1;
+    }
+    50% {
+        box-shadow: 0 0 16px rgba(255,255,255,1), 0 0 32px rgba(255,255,255,0.6);
+        opacity: 0.8;
+    }
+}
+
+@keyframes notif-pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(239,68,68,0.45);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 0 5px rgba(239,68,68,0);
+        transform: scale(1.15);
+    }
+}/* ============================================================
+   COLLAPSIBLE SIDEBAR — AuraaBooks 2026
+   ============================================================ */
+.sidebar-collapsed {
+    width: 80px !important;
+}
+
+/* Hide text and chevrons when collapsed */
+.sidebar-collapsed span,
+.sidebar-collapsed .chevron,
+.sidebar-collapsed .nav-children {
+    display: none !important;
+}
+
+/* Center icons when collapsed */
+.sidebar-collapsed .nav-item,
+.sidebar-collapsed .nav-parent {
     padding-left: 0 !important;
     padding-right: 0 !important;
     justify-content: center !important;
 }
 
-/* Hover Tooltips strictly for Collapsed Mode */
-.sidebar-collapsed .nav-item::after,
-.sidebar-collapsed .nav-parent::after {
-    content: attr(data-title);
-    position: absolute;
-    left: 70px;
-    top: 50%;
-    transform: translateY(-50%) scale(0.95);
-    background: rgba(15, 23, 42, 0.9);
-    backdrop-filter: blur(8px);
-    color: white;
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    white-space: nowrap;
-    z-index: 100;
-    border: 1px solid rgba(255,255,255,0.1);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+.sidebar-collapsed .nav-icon {
+    margin: 0 !important;
 }
 
-.sidebar-collapsed .nav-item:hover::after,
-.sidebar-collapsed .nav-parent:hover::after {
-    opacity: 1;
-    transform: translateY(-50%) scale(1);
-    left: 80px;
+/* Hide logo text margin and center logo avatar */
+.sidebar-collapsed .px-4.mb-4 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    justify-content: center !important;
 }
