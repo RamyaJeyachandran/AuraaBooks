@@ -777,7 +777,7 @@ table thead tr:last-child th {
 }
 
 /* Hide text and chevrons when collapsed */
-.sidebar-collapsed span,
+.sidebar-collapsed span:not(.nav-tooltip span),
 .sidebar-collapsed .chevron,
 .sidebar-collapsed .nav-children {
     display: none !important;
