@@ -167,17 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
             localStorage.setItem('sidebarState', isCollapsed ? 'collapsed' : 'expanded');
             
-            const scrollContainer = document.getElementById('sidebarScroll');
-            if (scrollContainer) {
-                if (isCollapsed) {
-                    scrollContainer.classList.remove('overflow-y-auto', 'no-scrollbar');
-                    scrollContainer.classList.add('!overflow-visible');
-                } else {
-                    scrollContainer.classList.add('overflow-y-auto', 'no-scrollbar');
-                    scrollContainer.classList.remove('!overflow-visible');
-                }
-            }
-            
             // Optional: if collapsing, close all open submenus immediately for a cleaner look
             if (isCollapsed) {
                 document.querySelectorAll('.nav-children:not(.max-h-0)').forEach(child => {
@@ -189,4 +178,37 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Global Tooltip Initialization (2026 Premium UI)
+    const globalTooltip = document.createElement('div');
+    globalTooltip.id = 'global-tooltip';
+    document.body.appendChild(globalTooltip);
+
+    const tooltipItems = document.querySelectorAll('[data-tooltip]');
+
+    tooltipItems.forEach(item => {
+        item.addEventListener('mouseenter', () => {
+            // Only show tooltip if sidebar is collapsed
+            if (!sidebar || !sidebar.classList.contains('sidebar-collapsed')) return;
+
+            const text = item.getAttribute('data-tooltip');
+            if (!text) return;
+
+            globalTooltip.innerText = text;
+            const rect = item.getBoundingClientRect();
+            
+            // Position the tooltip vertically centered with the item
+            globalTooltip.style.top = `${rect.top + (rect.height / 2)}px`;
+            globalTooltip.style.left = `${rect.right + 14}px`;
+            
+            // Show the tooltip (CSS handles the animation)
+            globalTooltip.classList.add('show');
+            globalTooltip.style.transform = `translateY(-50%) scale(1) translateX(0)`;
+        });
+
+        item.addEventListener('mouseleave', () => {
+            globalTooltip.classList.remove('show');
+            globalTooltip.style.transform = `translateY(-50%) scale(0.92) translateX(-8px)`;
+        });
+    });
 });

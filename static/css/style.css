@@ -596,12 +596,13 @@ table thead tr:last-child th {
     padding-right: 0 !important;
     justify-content: center !important;
 }
-/* ── Submenu child links ── */
-.nav-children a {
-    transition: all 0.18s ease-out;
-    opacity: 0.8;
+
+.sidebar-collapsed .nav-icon {
+    margin: 0 !important;
 }
 
+/* Hide logo text margin and center logo avatar */
+.sidebar-collapsed .px-4.mb-4 {
 .nav-children a:hover {
     opacity: 1;
     background: rgba(255,255,255,0.1) !important;
@@ -777,7 +778,7 @@ table thead tr:last-child th {
 }
 
 /* Hide text and chevrons when collapsed */
-.sidebar-collapsed span:not(.nav-tooltip span),
+.sidebar-collapsed span,
 .sidebar-collapsed .chevron,
 .sidebar-collapsed .nav-children {
     display: none !important;
@@ -802,7 +803,35 @@ table thead tr:last-child th {
     justify-content: center !important;
 }
 
-/* Fix clipping for tooltips in collapsed mode */
-.sidebar-collapsed .overflow-y-auto {
-    overflow: visible !important;
+/* ============================================================
+   GLOBAL JS TOOLTIP (2026 Premium UI)
+   ============================================================ */
+#global-tooltip {
+    position: fixed;
+    z-index: 99999;
+    pointer-events: none;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(16px) saturate(1.8);
+    -webkit-backdrop-filter: blur(16px) saturate(1.8);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    padding: 7px 14px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    box-shadow: 
+        0 10px 25px -5px rgba(0, 0, 0, 0.3), 
+        0 4px 10px -2px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    opacity: 0;
+    transform: scale(0.92) translateX(-8px);
+    transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+}
+
+#global-tooltip.show {
+    opacity: 1;
+    transform: scale(1) translateX(0);
 }
