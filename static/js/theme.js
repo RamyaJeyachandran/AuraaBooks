@@ -124,21 +124,36 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleDark(isDark);
     });
 
-    // Palette Toggle Click
-    const paletteToggle = document.getElementById('paletteToggle');
-    const themePanel = document.getElementById('themePanel');
+    // Dropdown Toggles
+    const dropdowns = [
+        { toggle: 'paletteToggle', panel: 'themePanel' },
+        { toggle: 'branchToggle', panel: 'branchPanel' },
+        { toggle: 'companyToggle', panel: 'companyPanel' },
+        { toggle: 'profileToggle', panel: 'profilePanel' }
+    ];
 
-    if (paletteToggle && themePanel) {
-        paletteToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            themePanel.classList.toggle('hidden');
-        });
-
-        // Close when clicking outside
-        window.addEventListener('click', (e) => {
-            if (!themePanel.contains(e.target) && !paletteToggle.contains(e.target)) {
-                themePanel.classList.add('hidden');
-            }
-        });
-    }
+    dropdowns.forEach(({ toggle, panel }) => {
+        const tElem = document.getElementById(toggle);
+        const pElem = document.getElementById(panel);
+        if (tElem && pElem) {
+            tElem.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Close other panels
+                dropdowns.forEach(d => {
+                    if (d.panel !== panel) {
+                        const otherPanel = document.getElementById(d.panel);
+                        if (otherPanel) otherPanel.classList.add('hidden');
+                    }
+                });
+                pElem.classList.toggle('hidden');
+            });
+            
+            // Close when clicking outside
+            window.addEventListener('click', (e) => {
+                if (!pElem.contains(e.target) && !tElem.contains(e.target)) {
+                    pElem.classList.add('hidden');
+                }
+            });
+        }
+    });
 });
