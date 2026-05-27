@@ -185,11 +185,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.appendChild(globalTooltip);
 
     const tooltipItems = document.querySelectorAll('[data-tooltip]');
+    let tooltipTimeout;
 
     tooltipItems.forEach(item => {
         item.addEventListener('mouseenter', () => {
+            const currentSidebar = document.getElementById('sidebar');
             // Only show tooltip if sidebar is collapsed
-            if (!sidebar || !sidebar.classList.contains('sidebar-collapsed')) return;
+            if (!currentSidebar || !currentSidebar.classList.contains('sidebar-collapsed')) return;
 
             const text = item.getAttribute('data-tooltip');
             if (!text) return;
@@ -201,12 +203,16 @@ document.addEventListener('DOMContentLoaded', () => {
             globalTooltip.style.top = `${rect.top + (rect.height / 2)}px`;
             globalTooltip.style.left = `${rect.right + 14}px`;
             
-            // Show the tooltip (CSS handles the animation)
-            globalTooltip.classList.add('show');
-            globalTooltip.style.transform = `translateY(-50%) scale(1) translateX(0)`;
+            // Small timeout allows the browser to render the position before animating opacity
+            clearTimeout(tooltipTimeout);
+            tooltipTimeout = setTimeout(() => {
+                globalTooltip.classList.add('show');
+                globalTooltip.style.transform = `translateY(-50%) scale(1) translateX(0)`;
+            }, 10);
         });
 
         item.addEventListener('mouseleave', () => {
+            clearTimeout(tooltipTimeout);
             globalTooltip.classList.remove('show');
             globalTooltip.style.transform = `translateY(-50%) scale(0.92) translateX(-8px)`;
         });
