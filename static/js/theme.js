@@ -167,6 +167,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
             localStorage.setItem('sidebarState', isCollapsed ? 'collapsed' : 'expanded');
             
+            const scrollContainer = document.getElementById('sidebarScroll');
+            if (scrollContainer) {
+                if (isCollapsed) {
+                    scrollContainer.classList.remove('overflow-y-auto', 'no-scrollbar');
+                    scrollContainer.classList.add('!overflow-visible');
+                } else {
+                    scrollContainer.classList.add('overflow-y-auto', 'no-scrollbar');
+                    scrollContainer.classList.remove('!overflow-visible');
+                }
+            }
+            
             // Optional: if collapsing, close all open submenus immediately for a cleaner look
             if (isCollapsed) {
                 document.querySelectorAll('.nav-children:not(.max-h-0)').forEach(child => {
