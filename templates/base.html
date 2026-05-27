@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Auraa Books{% endblock %}</title>
     <!-- Favicon -->
-    <link rel="icon" type="image/jpeg" href="{% static 'images/logo.jpeg' %}">
+    <link rel="icon" type="image/png" href="{% static 'images/logo1.png' %}">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -49,8 +49,8 @@
             
             <!-- Sidebar Header -->
             <div class="h-[52px] flex items-center px-4 mb-4 mt-2 relative z-10">
-                <div class="sidebar-logo-avatar w-12 h-12 rounded-xl flex items-center justify-center bg-white shadow-lg flex-shrink-0 transition-transform hover:scale-105 overflow-hidden">
-                    <img src="{% static 'images/logo1.png' %}" alt="Auraa Books Logo" class="w-full h-full object-cover scale-[1.35]">
+                <div class="sidebar-logo-avatar w-12 h-12 rounded-xl flex items-center justify-center bg-white shadow-lg flex-shrink-0 transition-transform hover:scale-105 overflow-hidden p-1">
+                    <img src="{% static 'images/logo1.png' %}" alt="Auraa Books Logo" class="w-full h-full object-contain">
                 </div>
                 <span class="ml-3 text-[16px] font-black text-white drop-shadow-md tracking-wide">Auraa Books</span>
             </div>
@@ -234,7 +234,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="{% static 'js/theme.js' %}?v=1.1"></script>
+    <script src="{% static 'js/theme.js' %}"></script>
     <script src="{% static 'js/app.js' %}"></script>
     <script>
         // Global Cancel Interceptor

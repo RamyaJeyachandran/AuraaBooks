@@ -178,43 +178,4 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
-    // Global Tooltip Initialization (2026 Premium UI)
-    const globalTooltip = document.createElement('div');
-    globalTooltip.id = 'global-tooltip';
-    document.body.appendChild(globalTooltip);
-
-    const tooltipItems = document.querySelectorAll('[data-tooltip]');
-    let tooltipTimeout;
-
-    tooltipItems.forEach(item => {
-        item.addEventListener('mouseenter', () => {
-            const currentSidebar = document.getElementById('sidebar');
-            // Only show tooltip if sidebar is collapsed
-            if (!currentSidebar || !currentSidebar.classList.contains('sidebar-collapsed')) return;
-
-            const text = item.getAttribute('data-tooltip');
-            if (!text) return;
-
-            globalTooltip.innerText = text;
-            const rect = item.getBoundingClientRect();
-            
-            // Position the tooltip vertically centered with the item
-            globalTooltip.style.top = `${rect.top + (rect.height / 2)}px`;
-            globalTooltip.style.left = `${rect.right + 14}px`;
-            
-            // Small timeout allows the browser to render the position before animating opacity
-            clearTimeout(tooltipTimeout);
-            tooltipTimeout = setTimeout(() => {
-                globalTooltip.classList.add('show');
-                globalTooltip.style.transform = `translateY(-50%) scale(1) translateX(0)`;
-            }, 10);
-        });
-
-        item.addEventListener('mouseleave', () => {
-            clearTimeout(tooltipTimeout);
-            globalTooltip.classList.remove('show');
-            globalTooltip.style.transform = `translateY(-50%) scale(0.92) translateX(-8px)`;
-        });
-    });
 });
