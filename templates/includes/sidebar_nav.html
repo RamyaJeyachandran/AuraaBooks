@@ -140,34 +140,3 @@
     </a>
 </div>
 
-
-<style>
-    /* 3D Sidebar Active Styles - Purely for mirroring React UI exactly */
-    .nav-item.active, .nav-parent.active-parent {
-        background: rgba(0,0,0,0.4) !important;
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 1rem;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.1);
-        transform: translateZ(15px) scale(1.03);
-        font-weight: 900;
-    }
-    .nav-item.active::before, .nav-parent.active-parent::before {
-        content: '';
-        position: absolute;
-        left: -4px;
-        top: 12px;
-        bottom: 12px;
-        width: 4px;
-        background: white;
-        border-radius: 9999px;
-        box-shadow: 0 0 15px rgba(255,255,255,0.8);
-    }
-    .active-child {
-        color: white !important;
-        background: rgba(0,0,0,0.4) !important;
-        font-weight: 900;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-        border: 1px solid rgba(255,255,255,0.1);
-        transform: translateZ(10px) scale(1.02);
-    }
-</style>
