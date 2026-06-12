@@ -137,10 +137,10 @@
     </div>
 </div>
 
-<!-- SMTP Status Toast Container -->
-<div id="smtpToast" class="fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3.5 bg-slate-900 text-white rounded-xl shadow-2xl opacity-0 translate-y-4 pointer-events-none transition-all duration-300">
-    <div id="smtpToastIcon" class="flex items-center justify-center">
-        <div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+<!-- SMTP Status Toast Notification -->
+<div id="smtpToast" class="fixed top-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3 text-white rounded-xl shadow-2xl opacity-0 -translate-y-4 pointer-events-none transition-all duration-300" style="background-color: var(--accent);">
+    <div id="smtpToastIcon" class="shrink-0">
+        <svg class="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
     </div>
     <span id="smtpToastText" class="text-[13px] font-semibold tracking-wide"></span>
 </div>
@@ -149,15 +149,7 @@
 {% block extra_js %}
 <script>
     // State Store
-    const smtpState = {
-        host: '',
-        connection: 'None',
-        port: '25',
-        email: 'ramyaworkac@gmail.com',
-        password: '******',
-        fromName: '',
-        fromEmail: ''
-    };
+    const smtpState = {{ smtp_config|safe }};
 
     function switchToEditMode() {
         // Toggle view containers
@@ -235,28 +227,30 @@
     }
 
     let smtpToastTimeout = null;
-    function showSmtpToast(text, isLoader = true) {
+    function showSmtpToast(text, isLoader = true, isError = false) {
         const toast = document.getElementById('smtpToast');
         const toastText = document.getElementById('smtpToastText');
         const toastIcon = document.getElementById('smtpToastIcon');
 
         if (smtpToastTimeout) clearTimeout(smtpToastTimeout);
 
+        toast.style.backgroundColor = isError ? '#ef4444' : 'var(--accent)';
+
         if (isLoader) {
             toastIcon.innerHTML = '<div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>';
         } else {
-            toastIcon.innerHTML = '<svg class="w-4.5 h-4.5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
+            toastIcon.innerHTML = isError ? '<svg class="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>' : '<svg class="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
         }
 
         toastText.innerText = text;
-        toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+        toast.classList.remove('opacity-0', '-translate-y-4', 'pointer-events-none');
         toast.classList.add('opacity-100', 'translate-y-0');
     }
 
     function hideSmtpToast(delay = 1500) {
         const toast = document.getElementById('smtpToast');
         smtpToastTimeout = setTimeout(() => {
-            toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+            toast.classList.add('opacity-0', '-translate-y-4', 'pointer-events-none');
             toast.classList.remove('opacity-100', 'translate-y-0');
         }, delay);
     }
@@ -267,10 +261,40 @@
 
         showSmtpToast(`Testing SMTP connection to ${host}...`, true);
 
-        setTimeout(() => {
-            showSmtpToast(`Test email sent successfully to ${email}.`, false);
-            hideSmtpToast(1800);
-        }, 1500);
+        // Collect Form values for testing
+        const testData = {
+            host: document.getElementById('smtpHost').value.trim(),
+            connection: document.getElementById('smtpConnection').value,
+            port: document.getElementById('smtpPort').value.trim() || '25',
+            email: document.getElementById('smtpEmail').value.trim(),
+            password: document.getElementById('smtpPassword').value,
+            fromName: document.getElementById('smtpFromName').value.trim(),
+            fromEmail: document.getElementById('smtpFromEmail').value.trim()
+        };
+
+        fetch('{% url "smtp-settings" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ action: 'test', data: testData })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                showSmtpToast(data.message, false);
+                hideSmtpToast(1800);
+            } else {
+                showSmtpToast(data.message || 'SMTP Connection failed', false, true);
+                hideSmtpToast(3000);
+            }
+        })
+        .catch(err => {
+            console.error('Test error:', err);
+            showSmtpToast('Error testing connection', false, true);
+            hideSmtpToast(3000);
+        });
     }
 
     function saveSmtpSettings() {
@@ -285,13 +309,31 @@
 
         showSmtpToast('Saving SMTP configurations...', true);
 
-        setTimeout(() => {
-            showSmtpToast('SMTP settings saved successfully!', false);
-            hideSmtpToast(1200);
-            
-            // Switch back to view mode
-            switchToReadOnlyMode();
-        }, 800);
+        fetch('{% url "smtp-settings" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ action: 'save', data: smtpState })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                showSmtpToast(data.message || 'SMTP settings saved successfully!', false);
+                hideSmtpToast(1200);
+                // Switch back to view mode
+                switchToReadOnlyMode();
+            } else {
+                showSmtpToast(data.message || 'Error saving settings', false, true);
+                hideSmtpToast(3000);
+            }
+        })
+        .catch(err => {
+            console.error('Save error:', err);
+            showSmtpToast('Error saving settings', false, true);
+            hideSmtpToast(3000);
+        });
     }
 
     // Initialize values on load

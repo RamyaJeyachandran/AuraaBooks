@@ -11,6 +11,19 @@
         color: var(--accent);
     }
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<style>
+    #toast-container > .toast-success {
+        background-color: var(--accent) !important;
+        opacity: 1 !important;
+        border-radius: 8px !important;
+    }
+    #toast-container > .toast-error {
+        background-color: #ef4444 !important;
+        opacity: 1 !important;
+        border-radius: 8px !important;
+    }
+</style>
 {% endblock %}
 
 {% block breadcrumb_parent %}
@@ -27,7 +40,7 @@
         <h1 class="text-[24px] font-extrabold text-[var(--text-primary)] tracking-tight flex items-center gap-2">
             <a href="{% url 'settings-dashboard' %}" class="text-accent hover:underline cursor-pointer">Settings</a>
             <span class="text-[var(--text-muted)] font-medium mx-1">/</span>
-            General Settings
+            General
         </h1>
     </div>
 
@@ -157,21 +170,37 @@
     </div>
 </div>
 
-<!-- Status Toast -->
-<div id="generalToast" class="fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3.5 bg-slate-900 text-white rounded-xl shadow-2xl opacity-0 translate-y-4 pointer-events-none transition-all duration-300">
-    <div id="generalToastIcon" class="flex items-center justify-center"></div>
-    <span id="generalToastText" class="text-[13px] font-semibold tracking-wide"></span>
-</div>
+<!-- Status Toast Removed -->
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
+    toastr.options = {
+        "closeButton": true,
+        "debug": false,
+        "newestOnTop": true,
+        "progressBar": true,
+        "positionClass": "toast-top-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "3000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    };
+
     // Tab switching state
     let currentTab = 'salescharges';
     let isEditMode = false;
 
     // Default configuration database (simulation)
-    let salesFormConfig = {
+    let salesFormConfigDefault = {
         mobileMandatory: false,
         showSku: true,
         showAccounts: true,
@@ -219,19 +248,25 @@
         posHideRate: false
     };
 
-    let salesChargesData = [
+    let salesFormConfig = Object.assign({}, salesFormConfigDefault, {{ sales_form_config|safe }});
+
+    let salesChargesDataDefault = [
         { id: 1, type: 'Add Before Tax', account: 'Freight Charges', name: 'Freight Charges', contact: false, isGrid: '% on Amt', defaultVal: '0.000', defaultValUnit: '% on Amount', checked: false },
         { id: 2, type: 'Add After Tax', account: 'Packing and Forwarding Charges', name: 'Packing and Forwarding Charges', contact: false, isGrid: '% on Amt', defaultVal: '0.000', defaultValUnit: '% on Amount', checked: true },
         { id: 3, type: 'Add Before Tax', account: 'Insurance Charges', name: 'Insurance Charges', contact: false, isGrid: false, defaultVal: '0.00', defaultValUnit: 'Rate/Unit', checked: false },
         { id: 4, type: 'Add After Tax', account: 'TCS Payable', name: 'TCS Payable', contact: false, isGrid: false, defaultVal: '0.00', defaultValUnit: 'Rate/Unit', checked: false }
     ];
+    let backendSalesCharges = {{ sales_charges_config|safe }};
+    let salesChargesData = backendSalesCharges.length > 0 ? backendSalesCharges : salesChargesDataDefault;
 
-    let purchaseChargesData = [
+    let purchaseChargesDataDefault = [
         { id: 1, type: 'Add After Tax', account: 'Customs Duty Payable', name: 'Customs Duty Payable', contact: false, addToStock: false, isGrid: false, defaultVal: '0.00', defaultValUnit: 'Rate/Unit', checked: false },
         { id: 2, type: 'Add After Tax', account: 'TCS Receivable', name: 'TCS Receivable', contact: false, addToStock: false, isGrid: false, defaultVal: '0.00', defaultValUnit: 'Rate/Unit', checked: false }
     ];
+    let backendPurchaseCharges = {{ purchase_charges_config|safe }};
+    let purchaseChargesData = backendPurchaseCharges.length > 0 ? backendPurchaseCharges : purchaseChargesDataDefault;
 
-    let receiptChargesData = [];
+    let receiptChargesData = {{ receipt_charges_config|safe }};
 
     // Clones for editing states
     let editSalesFormConfig = {};
@@ -340,32 +375,49 @@
         renderReceiptCharges();
 
         toggleActionVisibilities();
-        showToast('Edits cancelled.', 'error');
-        hideToast(1500);
+        toastr.info('Edits cancelled.');
     }
 
     function saveSettings() {
-        showToast('Saving settings...', 'loading');
+        // Commit edit variables back to live databases
+        salesFormConfig = JSON.parse(JSON.stringify(editSalesFormConfig));
+        salesChargesData = JSON.parse(JSON.stringify(editSalesCharges));
+        purchaseChargesData = JSON.parse(JSON.stringify(editPurchaseCharges));
+        receiptChargesData = JSON.parse(JSON.stringify(editReceiptCharges));
 
-        setTimeout(() => {
-            isEditMode = false;
+        let payload = {
+            sales_form_config: salesFormConfig,
+            sales_charges_config: salesChargesData,
+            purchase_charges_config: purchaseChargesData,
+            receipt_charges_config: receiptChargesData
+        };
 
-            // Commit edit variables back to live databases
-            salesFormConfig = JSON.parse(JSON.stringify(editSalesFormConfig));
-            salesChargesData = JSON.parse(JSON.stringify(editSalesCharges));
-            purchaseChargesData = JSON.parse(JSON.stringify(editPurchaseCharges));
-            receiptChargesData = JSON.parse(JSON.stringify(editReceiptCharges));
-
-            renderSalesForm();
-            renderSalesCharges();
-            renderPurchaseCharges();
-            renderReceiptCharges();
-
-            toggleActionVisibilities();
-
-            showToast('Settings saved successfully!', 'success');
-            hideToast(1500);
-        }, 800);
+        fetch('{% url "general-settings" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(res => {
+            if(res.status === 'success') {
+                isEditMode = false;
+                renderSalesForm();
+                renderSalesCharges();
+                renderPurchaseCharges();
+                renderReceiptCharges();
+                toggleActionVisibilities();
+                toastr.success('Settings saved successfully!');
+            } else {
+                toastr.error(res.message || 'Error saving settings');
+            }
+        })
+        .catch(err => {
+            console.error('Save error:', err);
+            toastr.error('Error saving settings: ' + err.message);
+        });
     }
 
     // 1. Sales Form Tab Rendering
@@ -373,7 +425,7 @@
         const container = document.getElementById('salesFormContainer');
         container.innerHTML = '';
 
-        const renderAsEdit = (currentTab === 'salesform' || isEditMode);
+        const renderAsEdit = isEditMode;
         const config = renderAsEdit ? editSalesFormConfig : salesFormConfig;
 
         // Toggles data list
@@ -892,37 +944,6 @@
     function removeReceiptChargeRow(idx) {
         editReceiptCharges.splice(idx, 1);
         renderReceiptCharges();
-    }
-
-    // Status Toast helper
-    let toastTimeout = null;
-    function showToast(text, type = 'loading') {
-        const toast = document.getElementById('generalToast');
-        const textSpan = document.getElementById('generalToastText');
-        const iconDiv = document.getElementById('generalToastIcon');
-
-        if (toastTimeout) clearTimeout(toastTimeout);
-
-        textSpan.innerText = text;
-
-        if (type === 'loading') {
-            iconDiv.innerHTML = '<div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>';
-        } else if (type === 'success') {
-            iconDiv.innerHTML = '<svg class="w-4.5 h-4.5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
-        } else {
-            iconDiv.innerHTML = '<svg class="w-4.5 h-4.5 text-rose-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>';
-        }
-
-        toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
-        toast.classList.add('opacity-100', 'translate-y-0');
-    }
-
-    function hideToast(delay = 1500) {
-        const toast = document.getElementById('generalToast');
-        toastTimeout = setTimeout(() => {
-            toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
-            toast.classList.remove('opacity-100', 'translate-y-0');
-        }, delay);
     }
 </script>
 {% endblock %}

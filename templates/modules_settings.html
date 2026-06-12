@@ -81,6 +81,17 @@
         transform: translateX(36px);
     }
 </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <style>
+        /* Toastr primary color override */
+        #toast-container > div {
+            background-color: var(--accent) !important;
+            opacity: 1 !important;
+            border-radius: 8px !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+        }
+    </style>
+
 {% endblock %}
 
 {% block breadcrumb_parent %}
@@ -116,249 +127,27 @@
 
         <!-- Save button styled in primary theme color -->
         <div class="flex items-center gap-3">
-            <button onclick="saveModulesSettings()" class="px-6 py-2.5 bg-[var(--accent)] hover:brightness-110 text-white rounded-xl text-[13px] font-extrabold transition-all shadow-md active:scale-[0.98] cursor-pointer">
+            <button onclick="toastr.success('Changes saved successfully!')" class="px-6 py-2.5 bg-[var(--accent)] hover:brightness-110 text-white rounded-xl text-[13px] font-extrabold transition-all shadow-md active:scale-[0.98] cursor-pointer">
                 Save
             </button>
         </div>
     </div>
 
     <!-- Modules Options Grid Layout -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 shadow-sm">
+    <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 shadow-sm">
         
-        <!-- Left Column -->
-        <div class="space-y-6">
-            <!-- Quote -->
+        <!-- Modules Options Grid Layout -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
+            {% for module in modules_list %}
             <div class="flex items-center justify-between py-2 border-b border-[var(--border)]/40">
-                <span class="text-[13px] font-bold text-[var(--text-primary)]">Quote</span>
+                <span class="text-[13px] font-bold text-[var(--text-primary)]">{{ module.module_name }}</span>
                 <label class="switch-container">
-                    <input type="checkbox" id="modQuote" checked class="switch-input">
+                    <input type="checkbox" onchange="toggleModuleStatus(this, {{ module.id }}, this.checked)" {% if module.is_active %}checked{% endif %} class="switch-input">
                     <span class="switch-slider"><span class="on-txt hidden">ON</span><span class="off-txt">OFF</span></span>
                 </label>
             </div>
-
-            <!-- Sales Order -->
-            <div class="flex items-center justify-between py-2 border-b border-[var(--border)]/40">
-                <span class="text-[13px] font-bold text-[var(--text-primary)]">Sales Order</span>
-                <label class="switch-container">
-                    <input type="checkbox" id="modSalesOrder" checked class="switch-input">
-                    <span class="switch-slider"><span class="on-txt hidden">ON</span><span class="off-txt">OFF</span></span>
-                </label>
-            </div>
-
-            <!-- Delivery Challan -->
-            <div class="flex items-center justify-between py-2 border-b border-[var(--border)]/40">
-                <span class="text-[13px] font-bold text-[var(--text-primary)]">Delivery Challan</span>
-                <label class="switch-container">
-                    <input type="checkbox" id="modChallan" checked class="switch-input">
-                    <span class="switch-slider"><span class="on-txt hidden">ON</span><span class="off-txt">OFF</span></span>
-                </label>
-            </div>
-
-            <!-- Credit Note -->
-            <div class="flex items-center justify-between py-2 border-b border-[var(--border)]/40">
-                <span class="text-[13px] font-bold text-[var(--text-primary)]">Credit Note</span>
-                <label class="switch-container">
-                    <input type="checkbox" id="modCreditNote" checked class="switch-input">
-                    <span class="switch-slider"><span class="on-txt hidden">ON</span><span class="off-txt">OFF</span></span>
-                </label>
-            </div>
-
-            <!-- Debit Note -->
-            <div class="flex items-center justify-between py-2 border-b border-[var(--border)]/40">
-                <span class="text-[13px] font-bold text-[var(--text-primary)]">Debit Note</span>
-                <label class="switch-container">
-                    <input type="checkbox" id="modDebitNote" class="switch-input">
-                    <span class="switch-slider"><span class="on-txt hidden">ON</span><span class="off-txt">OFF</span></span>
-                </label>
-            </div>
-
-            <!-- E-Way Bill -->
-            <div class="flex items-center justify-between py-2 border-b border-[var(--border)]/40">
-                <span class="text-[13px] font-bold text-[var(--text-primary)]">E-Way Bill</span>
-                <label class="switch-container">
-                    <input type="checkbox" id="modEWayBill" class="switch-input">
-                    <span class="switch-slider"><span class="on-txt hidden">ON</span><span class="off-txt">OFF</span></span>
-                </label>
-            </div>
-
-            <!-- Job Order -->
-            <div class="flex items-center justify-between py-2 border-b border-[var(--border)]/40">
-                <span class="text-[13px] font-bold text-[var(--text-primary)]">Job Order</span>
-                <label class="switch-container">
-                    <input type="checkbox" id="modJobOrder" class="switch-input">
-                    <span class="switch-slider"><span class="on-txt hidden">ON</span><span class="off-txt">OFF</span></span>
-                </label>
-            </div>
-
-            <!-- Sales Rep -->
-            <div class="flex items-start justify-between py-3 border-b border-[var(--border)]/40 gap-4">
-                <div class="space-y-1 max-w-[70%]">
-                    <span class="block text-[13px] font-bold text-[var(--text-primary)]">Sales Rep</span>
-                    <p class="text-[11px] text-[var(--text-muted)] leading-relaxed">This module allows defining sales representatives and track their performance based on orders.</p>
-                </div>
-                <label class="switch-container shrink-0">
-                    <input type="checkbox" id="modSalesRep" checked class="switch-input">
-                    <span class="switch-slider"><span class="on-txt hidden">ON</span><span class="off-txt">OFF</span></span>
-                </label>
-            </div>
-
-            <!-- Manage Branches -->
-            <div class="flex items-start justify-between py-3 border-b border-[var(--border)]/40 gap-4">
-                <div class="space-y-1 max-w-[70%]">
-                    <span class="block text-[13px] font-bold text-[var(--text-primary)]">Manage multiple branches / stock in multiple locations</span>
-                    <p class="text-[11px] text-[var(--text-muted)] leading-relaxed">To manage multi-branch / shops billing. To manage stocks in multiple Warehouse (Godown) / Vehicle / locations.</p>
-                </div>
-                <label class="switch-container shrink-0">
-                    <input type="checkbox" id="modBranches" checked class="switch-input">
-                    <span class="switch-slider"><span class="on-txt hidden">ON</span><span class="off-txt">OFF</span></span>
-                </label>
-            </div>
-
-            <!-- Storage Location -->
-            <div class="flex items-start justify-between py-3 border-b border-[var(--border)]/40 gap-4">
-                <div class="space-y-1 max-w-[70%]">
-                    <span class="block text-[13px] font-bold text-[var(--text-primary)]">Storage Location</span>
-                    <p class="text-[11px] text-[var(--text-muted)] leading-relaxed">To manage the physical storage of inventory within a warehouse or branch. Works only with Delivery Note, Goods Receipt & Stock Adjustment only. (Not on invoice, bill etc)</p>
-                </div>
-                <label class="switch-container shrink-0">
-                    <input type="checkbox" id="modStorageLoc" checked class="switch-input">
-                    <span class="switch-slider"><span class="on-txt hidden">ON</span><span class="off-txt">OFF</span></span>
-                </label>
-            </div>
-
-            <!-- Project -->
-            <div class="flex items-start justify-between py-3 border-b border-[var(--border)]/40 gap-4">
-                <div class="space-y-1 max-w-[70%]">
-                    <span class="block text-[13px] font-bold text-[var(--text-primary)]">Project</span>
-                    <p class="text-[11px] text-[var(--text-muted)] leading-relaxed">Track & Monitor your projects financial activities.</p>
-                </div>
-                <label class="switch-container shrink-0">
-                    <input type="checkbox" id="modProject" checked class="switch-input">
-                    <span class="switch-slider"><span class="on-txt hidden">ON</span><span class="off-txt">OFF</span></span>
-                </label>
-            </div>
-
-            <!-- Enhanced Export/Import -->
-            <div class="flex items-start justify-between py-3 border-b border-[var(--border)]/40 gap-4">
-                <div class="space-y-1 max-w-[70%]">
-                    <span class="block text-[13px] font-bold text-[var(--text-primary)]">Enhanced Export/Import</span>
-                    <p class="text-[11px] text-[var(--text-muted)] leading-relaxed">Advanced batch spreadsheet transfer capabilities and logs monitors.</p>
-                </div>
-                <label class="switch-container shrink-0">
-                    <input type="checkbox" id="modExportImport" checked class="switch-input">
-                    <span class="switch-slider"><span class="on-txt hidden">ON</span><span class="off-txt">OFF</span></span>
-                </label>
-            </div>
+            {% endfor %}
         </div>
-
-        <!-- Right Column -->
-        <div class="space-y-6">
-            <!-- Purchase Quote -->
-            <div class="flex items-center justify-between py-2 border-b border-[var(--border)]/40">
-                <span class="text-[13px] font-bold text-[var(--text-primary)]">Purchase Quote</span>
-                <label class="switch-container">
-                    <input type="checkbox" id="modPurchaseQuote" checked class="switch-input">
-                    <span class="switch-slider"><span class="on-txt hidden">ON</span><span class="off-txt">OFF</span></span>
-                </label>
-            </div>
-
-            <!-- Purchase Order -->
-            <div class="flex items-center justify-between py-2 border-b border-[var(--border)]/40">
-                <span class="text-[13px] font-bold text-[var(--text-primary)]">Purchase Order</span>
-                <label class="switch-container">
-                    <input type="checkbox" id="modPurchaseOrder" checked class="switch-input">
-                    <span class="switch-slider"><span class="on-txt hidden">ON</span><span class="off-txt">OFF</span></span>
-                </label>
-            </div>
-
-            <!-- Goods Receipt -->
-            <div class="flex items-center justify-between py-2 border-b border-[var(--border)]/40">
-                <span class="text-[13px] font-bold text-[var(--text-primary)]">Goods Receipt</span>
-                <label class="switch-container">
-                    <input type="checkbox" id="modGoodsReceipt" checked class="switch-input">
-                    <span class="switch-slider"><span class="on-txt hidden">ON</span><span class="off-txt">OFF</span></span>
-                </label>
-            </div>
-
-            <!-- Supplier Credit Note -->
-            <div class="flex items-center justify-between py-2 border-b border-[var(--border)]/40">
-                <span class="text-[13px] font-bold text-[var(--text-primary)]">Supplier Credit Note</span>
-                <label class="switch-container">
-                    <input type="checkbox" id="modSupCreditNote" checked class="switch-input">
-                    <span class="switch-slider"><span class="on-txt hidden">ON</span><span class="off-txt">OFF</span></span>
-                </label>
-            </div>
-
-            <!-- Supplier Debit Note -->
-            <div class="flex items-center justify-between py-2 border-b border-[var(--border)]/40">
-                <span class="text-[13px] font-bold text-[var(--text-primary)]">Supplier Debit Note</span>
-                <label class="switch-container">
-                    <input type="checkbox" id="modSupDebitNote" class="switch-input">
-                    <span class="switch-slider"><span class="on-txt hidden">ON</span><span class="off-txt">OFF</span></span>
-                </label>
-            </div>
-
-            <!-- E-Invoice -->
-            <div class="flex items-center justify-between py-2 border-b border-[var(--border)]/40">
-                <span class="text-[13px] font-bold text-[var(--text-primary)]">E-Invoice</span>
-                <label class="switch-container">
-                    <input type="checkbox" id="modEInvoice" class="switch-input">
-                    <span class="switch-slider"><span class="on-txt hidden">ON</span><span class="off-txt">OFF</span></span>
-                </label>
-            </div>
-
-            <!-- Item Categories & Attributes -->
-            <div class="flex items-start justify-between py-3 border-b border-[var(--border)]/40 gap-4">
-                <div class="space-y-1 max-w-[70%]">
-                    <span class="block text-[13px] font-bold text-[var(--text-primary)]">Item Categories & Attributes</span>
-                    <p class="text-[11px] text-[var(--text-muted)] leading-relaxed">Batch/Exp Date/Brand & more attributes can be defined in Manage > Items > Attributes Tab.</p>
-                </div>
-                <label class="switch-container shrink-0">
-                    <input type="checkbox" id="modAttributes" checked class="switch-input">
-                    <span class="switch-slider"><span class="on-txt hidden">ON</span><span class="off-txt">OFF</span></span>
-                </label>
-            </div>
-
-            <!-- Referred By -->
-            <div class="flex items-center justify-between py-2 border-b border-[var(--border)]/40">
-                <span class="text-[13px] font-bold text-[var(--text-primary)]">Referred By</span>
-                <label class="switch-container">
-                    <input type="checkbox" id="modReferredBy" checked class="switch-input">
-                    <span class="switch-slider"><span class="on-txt hidden">ON</span><span class="off-txt">OFF</span></span>
-                </label>
-            </div>
-
-            <!-- Customer Points -->
-            <div class="flex items-center justify-between py-2 border-b border-[var(--border)]/40">
-                <span class="text-[13px] font-bold text-[var(--text-primary)]">Customer Points</span>
-                <label class="switch-container">
-                    <input type="checkbox" id="modCustomerPoints" checked class="switch-input">
-                    <span class="switch-slider"><span class="on-txt hidden">ON</span><span class="off-txt">OFF</span></span>
-                </label>
-            </div>
-
-            <!-- Coupons -->
-            <div class="flex items-start justify-between py-3 border-b border-[var(--border)]/40 gap-4">
-                <div class="space-y-1 max-w-[70%]">
-                    <span class="block text-[13px] font-bold text-[var(--text-primary)]">Coupons</span>
-                    <p class="text-[11px] text-[var(--text-muted)] leading-relaxed">Manage and apply discount coupons for sales transactions.</p>
-                </div>
-                <label class="switch-container shrink-0">
-                    <input type="checkbox" id="modCoupons" checked class="switch-input">
-                    <span class="switch-slider"><span class="on-txt hidden">ON</span><span class="off-txt">OFF</span></span>
-                </label>
-            </div>
-
-            <!-- E-Commerce -->
-            <div class="flex items-center justify-between py-2 border-b border-[var(--border)]/40">
-                <span class="text-[13px] font-bold text-[var(--text-primary)]">E-Commerce</span>
-                <label class="switch-container">
-                    <input type="checkbox" id="modECommerce" class="switch-input">
-                    <span class="switch-slider"><span class="on-txt hidden">ON</span><span class="off-txt">OFF</span></span>
-                </label>
-            </div>
-        </div>
-
     </div>
 </div>
 
@@ -372,23 +161,31 @@
 {% endblock %}
 
 {% block extra_js %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
-    // State Store for Toggles
-    const modulesState = {
-        Quote: true, SalesOrder: true, Challan: true, CreditNote: true, DebitNote: false,
-        EWayBill: false, JobOrder: false, SalesRep: true, Branches: true, StorageLoc: true,
-        Project: true, ExportImport: true, PurchaseQuote: true, PurchaseOrder: true, GoodsReceipt: true,
-        SupCreditNote: true, SupDebitNote: false, EInvoice: false, Attributes: true, ReferredBy: true,
-        CustomerPoints: true, Coupons: true, ECommerce: false
+    toastr.options = {
+        "closeButton": true,
+        "debug": false,
+        "newestOnTop": true,
+        "progressBar": true,
+        "positionClass": "toast-top-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "3000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
     };
 
     window.addEventListener('DOMContentLoaded', () => {
-        // Sync toggles state labels ON/OFF text visually
         document.querySelectorAll('.switch-input').forEach(input => {
             syncSwitchLabels(input);
-            input.addEventListener('change', (e) => {
-                syncSwitchLabels(e.target);
-            });
         });
     });
 
@@ -406,65 +203,41 @@
         }
     }
 
-    function saveModulesSettings() {
-        // Sync states to local object store
-        modulesState.Quote = document.getElementById('modQuote').checked;
-        modulesState.SalesOrder = document.getElementById('modSalesOrder').checked;
-        modulesState.Challan = document.getElementById('modChallan').checked;
-        modulesState.CreditNote = document.getElementById('modCreditNote').checked;
-        modulesState.DebitNote = document.getElementById('modDebitNote').checked;
-        modulesState.EWayBill = document.getElementById('modEWayBill').checked;
-        modulesState.JobOrder = document.getElementById('modJobOrder').checked;
-        modulesState.SalesRep = document.getElementById('modSalesRep').checked;
-        modulesState.Branches = document.getElementById('modBranches').checked;
-        modulesState.StorageLoc = document.getElementById('modStorageLoc').checked;
-        modulesState.Project = document.getElementById('modProject').checked;
-        modulesState.ExportImport = document.getElementById('modExportImport').checked;
-        modulesState.PurchaseQuote = document.getElementById('modPurchaseQuote').checked;
-        modulesState.PurchaseOrder = document.getElementById('modPurchaseOrder').checked;
-        modulesState.GoodsReceipt = document.getElementById('modGoodsReceipt').checked;
-        modulesState.SupCreditNote = document.getElementById('modSupCreditNote').checked;
-        modulesState.SupDebitNote = document.getElementById('modSupDebitNote').checked;
-        modulesState.EInvoice = document.getElementById('modEInvoice').checked;
-        modulesState.Attributes = document.getElementById('modAttributes').checked;
-        modulesState.ReferredBy = document.getElementById('modReferredBy').checked;
-        modulesState.CustomerPoints = document.getElementById('modCustomerPoints').checked;
-        modulesState.Coupons = document.getElementById('modCoupons').checked;
-        modulesState.ECommerce = document.getElementById('modECommerce').checked;
+    function toggleModuleStatus(element, moduleId, isActive) {
+        // Optimistically update the UI labels immediately
+        syncSwitchLabels(element);
 
-        showToast('Saving active modules configurations...', true);
-        setTimeout(() => {
-            showToast('Module settings saved successfully!', false);
-            hideToast(1500);
-        }, 1000);
-    }
-
-    // Toast helpers
-    let modulesToastTimeout = null;
-    function showToast(text, isLoader = true) {
-        const toast = document.getElementById('modulesToast');
-        const toastText = document.getElementById('modulesToastText');
-        const toastIcon = document.getElementById('modulesToastIcon');
-
-        if (modulesToastTimeout) clearTimeout(modulesToastTimeout);
-
-        if (isLoader) {
-            toastIcon.innerHTML = '<div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>';
-        } else {
-            toastIcon.innerHTML = '<svg class="w-4.5 h-4.5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
-        }
-
-        toastText.innerText = text;
-        toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
-        toast.classList.add('opacity-100', 'translate-y-0');
-    }
-
-    function hideToast(delay = 1500) {
-        const toast = document.getElementById('modulesToast');
-        modulesToastTimeout = setTimeout(() => {
-            toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
-            toast.classList.remove('opacity-100', 'translate-y-0');
-        }, delay);
+        fetch("{% url 'modules-settings' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                action: 'toggle_status',
+                module_id: moduleId,
+                is_active: isActive
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success') {
+                toastr.success("Module status updated successfully!");
+            } else {
+                toastr.error("Failed to update status: " + data.message);
+                // Revert state if failed
+                element.checked = !isActive;
+                syncSwitchLabels(element);
+            }
+        })
+        .catch(err => {
+            toastr.error("An error occurred");
+            // Revert state if failed
+            element.checked = !isActive;
+            syncSwitchLabels(element);
+            console.error(err);
+        });
     }
 </script>
+
 {% endblock %}

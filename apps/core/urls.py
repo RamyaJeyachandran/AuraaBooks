@@ -11,6 +11,7 @@ urlpatterns = [
     path('referrers/', views.ReferrerListView.as_view(), name='referrer-list'),
     path('warehouse/', views.WarehouseListView.as_view(), name='warehouse-list'),
     path('branch/', views.BranchListView.as_view(), name='branch-list'),
+    path('tags/', views.TagView.as_view(), name='tag-api'),
     path('franchisee/', views.FranchiseeListView.as_view(), name='franchisee-list'),
     path('projects/', views.ProjectListView.as_view(), name='project-list'),
     path('sales-rep/', views.SalesRepListView.as_view(), name='sales-rep-list'),

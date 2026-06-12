@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Warehouse Management - Auraa Books{% endblock %}
+{% block title %}Warehouse - Auraa Books{% endblock %}
 {% block breadcrumb_active %}Warehouse{% endblock %}
 
 {% block content %}
@@ -15,17 +15,17 @@
             <div class="flex-1 flex items-center justify-around bg-white border border-slate-200 rounded-2xl px-6 py-3 shadow-sm max-w-[550px]">
                 <div onclick="filterByStatus('All')" class="flex flex-col items-center cursor-pointer hover:bg-slate-50 px-8 py-2 rounded-xl transition-all active:scale-95 min-w-[120px]" title="Total Warehouses">
                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-2">Total</span>
-                    <span class="text-[30px] font-black text-slate-700 leading-none">124</span>
+                    <span id="countTotal" class="text-[30px] font-black text-slate-700 leading-none">0</span>
                 </div>
                 <div class="w-px h-12 bg-slate-200"></div>
                 <div onclick="filterByStatus('Active')" class="flex flex-col items-center cursor-pointer hover:bg-slate-50 px-6 py-2 rounded-xl transition-all active:scale-95 min-w-[100px]" title="Filter Active">
                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-2">Active</span>
-                    <span class="text-[30px] font-black text-emerald-500 leading-none">118</span>
+                    <span id="countActive" class="text-[30px] font-black text-emerald-500 leading-none">0</span>
                 </div>
                 <div class="w-px h-12 bg-slate-200"></div>
                 <div onclick="filterByStatus('Inactive')" class="flex flex-col items-center cursor-pointer hover:bg-slate-50 px-6 py-2 rounded-xl transition-all active:scale-95 min-w-[100px]" title="Filter Inactive">
                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-2">In-Active</span>
-                    <span class="text-[30px] font-black text-rose-500 leading-none">6</span>
+                    <span id="countInactive" class="text-[30px] font-black text-rose-500 leading-none">0</span>
                 </div>
             </div>
         </div>
@@ -34,14 +34,14 @@
             <div class="relative">
                 <div class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-[var(--accent)] z-10 border-2 border-white box-content"></div>
                 <div class="flex items-center bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden h-[52px]">
-                    <button type="button" class="px-3 h-full hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-all border-r border-slate-200">
+                    <button type="button" onclick="navigateRecentWarehouse('prev')" class="px-3 h-full hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-all border-r border-slate-200">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
                     </button>
                     <div class="px-5 flex flex-col items-center min-w-[100px] justify-center">
                         <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Recent</span>
-                        <span class="text-[14px] font-black text-slate-700 leading-none">WAR-001</span>
+                        <span id="recentWarehouseText" class="text-[14px] font-black text-slate-700 leading-none">-</span>
                     </div>
-                    <button type="button" class="px-3 h-full hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-all border-l border-slate-200">
+                    <button type="button" onclick="navigateRecentWarehouse('next')" class="px-3 h-full hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-all border-l border-slate-200">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
                     </button>
                 </div>
@@ -57,12 +57,12 @@
     <div class="mb-4 relative z-[110]">
         <div class="bg-white px-6 py-2 rounded-[24px] border border-slate-100 shadow-sm flex items-center justify-between gap-6">
             <div class="flex items-center gap-4 flex-1">
-                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Filter</label>
-                <div class="relative min-w-[300px]">
-                    <select class="w-full h-8 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold text-slate-700 appearance-none focus:bg-white focus:ring-4 focus:ring-[var(--accent)]/10 transition-all outline-none cursor-pointer">
-                        <option>Select Warehouse</option>
-                    </select>
+                <div class="relative min-w-[300px]" id="warehouseAutocompleteWrapper">
+                    <input type="text" id="warehouseFilterInput" autocomplete="off" onkeydown="handleWarehouseDropdownKeydown(event)" onfocus="filterWarehouseDropdown(this.value)" oninput="filterWarehouseDropdown(this.value)" placeholder="Search Warehouse..." class="w-full h-8 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-[var(--accent)]/10 transition-all">
                     <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                    <div id="warehouseAutocompleteDropdown" class="hidden absolute top-full left-0 right-0 mt-1 bg-white border border-slate-100 rounded-xl shadow-xl z-50 max-h-60 overflow-y-auto">
+                        <!-- Autocomplete items -->
+                    </div>
                 </div>
             </div>
 
@@ -75,15 +75,13 @@
                     </button>
                     <div id="exportDropdown" class="hidden absolute top-full right-0 mt-3 w-56 bg-white rounded-3xl shadow-2xl border border-slate-100 py-3 z-50 overflow-hidden scale-in-tr">
                         <div class="px-5 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50 mb-2">Export</div>
-                        <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Export CSV</button>
-                        <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Export XLS</button>
-                        <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Export PDF</button>
-                        <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Export Tally XML</button>
+                        <button onclick="exportTableToCSV()" class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Export CSV</button>
+                        <button onclick="exportTableToXLS()" class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Export XLS</button>
+                        <button onclick="exportTableToPDF()" class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Export PDF</button>
                         <div class="px-5 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest border-y border-slate-50 my-2 bg-slate-50/50">Import</div>
-                        <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Import CSV</button>
-                        <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Import XLS</button>
-                        <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Import From Tally</button>
-                        <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Import From Tally XML</button>
+                        <button onclick="document.getElementById('importFileInput').click()" class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Import CSV</button>
+                        <button onclick="document.getElementById('importFileInput').click()" class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Import XLS</button>
+                        <input type="file" id="importFileInput" accept=".csv, .xls, .xlsx" class="hidden" onchange="importTableFile(event)">
                     </div>
                 </div>
 
@@ -96,26 +94,26 @@
                         <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Column Settings</div>
                         <div class="space-y-3 mb-6">
                             <label class="flex items-center gap-3 cursor-pointer group">
-                                <input type="checkbox" checked class="w-5 h-5 rounded-lg border-slate-200 text-[var(--accent)] focus:ring-[var(--accent)]/20 transition-all">
-                                <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Contact Person</span>
+                                <input type="checkbox" data-col-index="3" class="col-setting-checkbox w-5 h-5 rounded-lg border-slate-200 text-[var(--accent)] focus:ring-[var(--accent)]/20 transition-all">
+                                <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Work Phone</span>
                             </label>
                             <label class="flex items-center gap-3 cursor-pointer group">
-                                <input type="checkbox" checked class="w-5 h-5 rounded-lg border-slate-200 text-[var(--accent)] focus:ring-[var(--accent)]/20 transition-all">
-                                <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">GSTIN</span>
+                                <input type="checkbox" data-col-index="4" class="col-setting-checkbox w-5 h-5 rounded-lg border-slate-200 text-[var(--accent)] focus:ring-[var(--accent)]/20 transition-all">
+                                <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Address</span>
                             </label>
                             <label class="flex items-center gap-3 cursor-pointer group">
-                                <input type="checkbox" checked class="w-5 h-5 rounded-lg border-slate-200 text-[var(--accent)] focus:ring-[var(--accent)]/20 transition-all">
-                                <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Balance</span>
+                                <input type="checkbox" data-col-index="5" class="col-setting-checkbox w-5 h-5 rounded-lg border-slate-200 text-[var(--accent)] focus:ring-[var(--accent)]/20 transition-all">
+                                <span class="text-[13px] font-bold text-slate-600 group-hover:text-slate-900 transition-all">Bank Details</span>
                             </label>
                         </div>
-                        <button class="w-full h-11 bg-slate-100 text-slate-400 rounded-2xl text-[12px] font-black uppercase tracking-widest mb-6 transition-all hover:bg-[var(--accent)] hover:text-white">Apply</button>
+                        <button onclick="applyColumnSettings(true)" class="w-full h-11 bg-[var(--accent)] text-white rounded-2xl text-[12px] font-black uppercase tracking-widest mb-6 transition-all hover:brightness-110 shadow-lg shadow-[var(--accent)]/20">Apply</button>
                         <div class="space-y-3 pt-4 border-t border-slate-100">
                             <label class="flex items-center gap-3 cursor-pointer group">
-                                <input type="checkbox" class="w-5 h-5 rounded-lg border-slate-200 text-[var(--accent)] focus:ring-[var(--accent)]/20 transition-all">
+                                <input type="checkbox" id="showArchived" onchange="fetchWarehouses()" class="w-5 h-5 rounded-lg border-slate-200 text-[var(--accent)] focus:ring-[var(--accent)]/20 transition-all">
                                 <span class="text-[13px] font-bold text-slate-500 group-hover:text-slate-700 transition-all">Show Archived</span>
                             </label>
                             <label class="flex items-center gap-3 cursor-pointer group">
-                                <input type="checkbox" class="w-5 h-5 rounded-lg border-slate-200 text-[var(--accent)] focus:ring-[var(--accent)]/20 transition-all">
+                                <input type="checkbox" id="showInactive" onchange="fetchWarehouses()" class="w-5 h-5 rounded-lg border-slate-200 text-[var(--accent)] focus:ring-[var(--accent)]/20 transition-all">
                                 <span class="text-[13px] font-bold text-slate-500 group-hover:text-slate-700 transition-all">Show Inactive</span>
                             </label>
                         </div>
@@ -130,28 +128,17 @@
         <table class="w-full text-left border-collapse">
             <thead>
                 <tr class="bg-[var(--accent)]">
-                    <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Stock Location Name</th>
-                    <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Contact Person</th>
-                    <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Mobile</th>
-                    <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Balance</th>
-                    <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest text-right">Action</th>
+                    <th data-col-index="0" class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Stock Location Name</th>
+                    <th data-col-index="1" class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Contact Person</th>
+                    <th data-col-index="2" class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Contact Mobile</th>
+                    <th data-col-index="3" class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Work Phone</th>
+                    <th data-col-index="4" class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Address</th>
+                    <th data-col-index="5" class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Bank Details</th>
+                    <th data-col-index="6" class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest text-right">Action</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-slate-50">
-                {% for warehouse in warehouses %}
-                <!-- Rendered when there is backend data -->
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="px-8 py-20 text-center">
-                        <div class="flex flex-col items-center gap-4">
-                            <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center">
-                                <svg class="w-10 h-10 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                            </div>
-                            <p class="text-slate-400 font-bold">No warehouses found. Click "Add Warehouse" to start.</p>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
+            <tbody id="warehouseTableBody" class="divide-y divide-slate-50">
+                <!-- Dynamically rendered rows by JS -->
             </tbody>
         </table>
     </div>
@@ -165,8 +152,65 @@
 }
 
 /* Ensure modal size and height for Warehouse (no scroll within modal form itself) */
+
+/* Recent Highlight Styles */
+tr.recent-highlighted {
+    background-color: var(--accent) !important;
+}
+tr.recent-highlighted * {
+    color: white !important;
+}
+tr.recent-highlighted span.bg-emerald-50, 
+tr.recent-highlighted span.bg-slate-50,
+tr.recent-highlighted span.bg-rose-50 {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+}
+tr.recent-highlighted button.bg-[var(--accent)],
+tr.recent-highlighted button.bg-red-500 {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+}
 </style>
 
+    <!-- Global Loading Overlay -->
+    <div id="globalLoadingOverlay" class="hidden fixed inset-0 z-[10000] flex items-center justify-center bg-black/30 backdrop-blur-sm">
+        <div class="bg-white p-5 rounded-2xl shadow-2xl flex flex-col items-center gap-3">
+            <div class="w-8 h-8 border-4 border-slate-200 border-t-[var(--accent)] rounded-full animate-spin"></div>
+            <span class="text-sm font-bold text-slate-600">Processing...</span>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div id="errorModal" class="hidden fixed inset-0 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm" style="z-index: 10000;">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden scale-in-center">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800 mb-2">Validation Error</h3>
+                <p id="errorModalMessage" class="text-sm text-slate-500">Please provide all mandatory fields.</p>
+            </div>
+            <div class="bg-slate-50 px-6 py-4 flex items-center justify-center border-t border-slate-100">
+                <button onclick="closeErrorModal()" class="px-8 py-2 rounded-lg text-[13px] font-bold text-white bg-slate-700 hover:bg-slate-800 active:scale-95 transition-all duration-150">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteWarehouseModal" class="hidden fixed inset-0 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm" style="z-index: 10000;">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden scale-in-center">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800 mb-2">Delete Warehouse?</h3>
+                <p class="text-sm text-slate-500">Are you sure you want to delete this warehouse? This action cannot be undone.</p>
+            </div>
+            <div class="bg-slate-50 px-6 py-4 flex items-center justify-end gap-3 border-t border-slate-100">
+                <button onclick="closeDeleteWarehouseModal()" class="confirm-cancel-btn px-5 py-2 rounded-lg text-[13px] font-semibold text-white bg-[#475569] hover:bg-[#334155] active:scale-95 transition-all duration-150">Cancel</button>
+                <button onclick="confirmDeleteWarehouse()" class="px-5 py-2 rounded-lg text-[13px] font-semibold text-white bg-red-500 hover:bg-red-600 active:scale-95 transition-all duration-150 shadow-sm shadow-red-500/20">Delete</button>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}
 
@@ -202,14 +246,14 @@
         <div class="flex items-center gap-4">
             <div class="relative" id="saveActionGroup">
                 <div class="flex items-stretch shadow-xl rounded-2xl overflow-hidden border-2 border-[var(--accent)]">
-                    <button class="px-8 h-12 bg-white text-[var(--accent)] rounded-l-[14px] text-[13px] font-black uppercase tracking-widest border-r border-[var(--accent)]/30 hover:bg-slate-50 transition-all">SAVE</button>
+                    <button onclick="saveWarehouse(false)" class="px-8 h-12 bg-white text-[var(--accent)] rounded-l-[14px] text-[13px] font-black uppercase tracking-widest border-r border-[var(--accent)]/30 hover:bg-slate-50 transition-all">SAVE</button>
                     <button onclick="toggleSaveDropdown(event)" class="px-4 h-12 bg-white text-[var(--accent)] rounded-r-[14px] border-l border-[var(--accent)]/30 flex items-center justify-center hover:bg-slate-50 transition-all">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
                     </button>
                 </div>
                 <div id="saveDropdownMenu" class="hidden absolute top-full right-0 mt-3 w-56 bg-white rounded-[24px] shadow-2xl border border-slate-100 py-4 z-[110] overflow-hidden">
-                    <button class="w-full text-left px-7 py-3 text-[12px] font-black text-slate-600 hover:bg-[var(--accent)] hover:text-white transition-all uppercase tracking-widest border-b border-slate-50">Save & New</button>
-                    <button class="w-full text-left px-7 py-3 text-[12px] font-black text-slate-600 hover:bg-[var(--accent)] hover:text-white transition-all uppercase tracking-widest">Save</button>
+                    <button onclick="saveWarehouse(true)" class="w-full text-left px-7 py-3 text-[12px] font-black text-slate-600 hover:bg-[var(--accent)] hover:text-white transition-all uppercase tracking-widest border-b border-slate-50">Save & New</button>
+                    <button onclick="saveWarehouse(false)" class="w-full text-left px-7 py-3 text-[12px] font-black text-slate-600 hover:bg-[var(--accent)] hover:text-white transition-all uppercase tracking-widest">Save</button>
                 </div>
             </div>
             <button onclick="closeModal()" class="px-8 h-12 bg-slate-700 text-white rounded-2xl text-[13px] font-black uppercase tracking-widest hover:bg-slate-800 shadow-lg">CANCEL</button>
@@ -227,22 +271,22 @@
                 <div class="grid grid-cols-2 gap-6">
                     <div class="space-y-1">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">STOCK LOCATION NAME</label>
-                        <input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all">
+                        <input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all" id="wh-name">
                     </div>
                     <div class="space-y-1">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">CONTACT PERSON</label>
-                        <input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all">
+                        <input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all" id="wh-contact-person">
                     </div>
                 </div>
                 
                 <div class="grid grid-cols-2 gap-6">
                     <div class="space-y-1">
                         <label class="text-[10px] font-black text-red-500 uppercase tracking-widest">LEDGER NAME *</label>
-                        <input type="text" required class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white border-l-4 border-l-red-500 shadow-inner transition-all">
+                        <input type="text" required class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white border-l-4 border-l-red-500 shadow-inner transition-all" id="wh-ledger-name">
                     </div>
                     <div class="space-y-1">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">EMAIL ID</label>
-                        <input type="email" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all">
+                        <input type="email" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all" id="wh-email">
                     </div>
                 </div>
                 
@@ -255,16 +299,33 @@
                                 <div class="absolute -bottom-2 left-4 w-4 h-4 bg-white border-b border-r border-slate-100 rotate-45"></div>
                                 <p class="text-[13px] font-bold text-slate-600 leading-relaxed normal-case tracking-normal">15-digit Goods and Services Tax Identification Number assigned to every GST registered client or supplier</p>
                             </div>
-                            <button type="button" onclick="toggleGstMenu()" class="ml-auto text-slate-400 hover:text-slate-600 focus:outline-none transition-all">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v.01M12 12v.01M12 19v.01"/></svg>
+                            <button type="button" onclick="toggleGstMenu()" class="ml-auto bg-[var(--accent)] text-white w-5 h-5 flex items-center justify-center rounded hover:brightness-110 focus:outline-none transition-all shadow-sm">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 5v.01M12 12v.01M12 19v.01"/></svg>
                             </button>
                         </label>
-                        <input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all">
+                        <input type="text" id="warehouseGstin" maxlength="15" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all">
                         <div id="gstinMenu" class="hidden absolute top-[100%] right-0 mt-1 w-56 bg-white rounded-xl shadow-xl border border-slate-100 p-3 z-50">
                             <label class="flex items-center gap-3 cursor-pointer">
-                                <input type="checkbox" class="w-4 h-4 rounded border-slate-200 accent-[var(--accent)]">
+                                <input type="checkbox" id="msmeCheck" onchange="toggleWarehouseMsmeFields()" class="w-4 h-4 rounded border-slate-200 accent-[var(--accent)]">
                                 <span class="text-[12px] font-bold text-slate-600">Registered in MSME/Udyam</span>
                             </label>
+                            
+                            <!-- MSME fields placed INSIDE gstinMenu dropdown -->
+                            <div id="warehouseMsmeFieldsContainer" class="hidden mt-3 space-y-3 pt-3 border-t border-slate-100">
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">MSME Type</label>
+                                    <select id="msmeType" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all appearance-none cursor-pointer">
+                                        <option value="">Select Type</option>
+                                        <option value="micro">Micro</option>
+                                        <option value="small">Small</option>
+                                        <option value="medium">Medium</option>
+                                    </select>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">MSME Reg. No</label>
+                                    <input type="text" id="msmeNumber" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all">
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="space-y-1">
@@ -276,18 +337,18 @@
                                 <p class="text-[12px] font-medium text-slate-600 leading-normal normal-case tracking-normal">Permanent account number(10-digit) issued by income tax department to an client or supplier</p>
                             </div>
                         </label>
-                        <input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all">
+                        <input type="text" maxlength="10" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all" id="wh-pan">
                     </div>
                 </div>
                 
                 <div class="grid grid-cols-2 gap-6">
                     <div class="space-y-1">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">CONTACT MOBILE</label>
-                        <input type="text" placeholder="+91" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all">
+                        <input type="text" placeholder="+91" maxlength="20" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all" id="wh-mobile">
                     </div>
                     <div class="space-y-1">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">WORK PHONE</label>
-                        <input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all">
+                        <input type="text" maxlength="20" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all" id="wh-work-phone">
                     </div>
                 </div>
                 
@@ -299,14 +360,20 @@
                 </div>
             </div>
             
+            
+            <div id="warehouseAttachmentsContainer" class="flex flex-wrap gap-2 mt-4 hidden"></div>
+
             <div class="flex items-center justify-between pt-4 mt-auto border-t border-slate-100">
                 <div class="flex items-center gap-3">
                     <label class="text-[11px] font-black text-slate-600 uppercase tracking-widest">ACTIVE</label>
-                    <input type="checkbox" checked class="w-10 h-5 rounded-full bg-slate-200 checked:bg-[var(--accent)] appearance-none cursor-pointer relative after:content-[''] after:absolute after:w-3.5 after:h-3.5 after:bg-white after:rounded-full after:top-0.5 after:left-0.5 checked:after:left-6 after:transition-all">
+                    <input type="checkbox" id="warehouseIsActive" checked class="w-10 h-5 rounded-full bg-slate-200 checked:bg-[var(--accent)] appearance-none cursor-pointer relative after:content-[''] after:absolute after:w-3.5 after:h-3.5 after:bg-white after:rounded-full after:top-0.5 after:left-0.5 checked:after:left-6 after:transition-all">
                 </div>
-                <button type="button" class="w-10 h-10 flex items-center justify-center rounded-xl bg-[var(--accent)] text-white hover:brightness-110 transition-all shadow-lg shadow-[var(--accent)]/20" title="Attach Files">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.414a4 4 0 00-5.656-5.656l-6.415 6.414a6 6 0 108.486 8.486L20.5 13"/></svg>
-                </button>
+                <div class="flex items-center gap-3">
+                    <input type="file" id="warehouseAttachmentInput" multiple class="hidden" onchange="handleWarehouseAttachments(this)">
+                    <button type="button" onclick="document.getElementById('warehouseAttachmentInput').click()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-[var(--accent)] text-white hover:brightness-110 transition-all shadow-lg shadow-[var(--accent)]/20" title="Attach Files">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.414a4 4 0 00-5.656-5.656l-6.415 6.414a6 6 0 108.486 8.486L20.5 13"/></svg>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -323,50 +390,38 @@
                     <!-- Tab 1: Address -->
                     <div id="modalTab-Address" class="modal-pane absolute inset-0 block space-y-4">
                         <div class="grid grid-cols-2 gap-6">
-                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">ADDRESS LINE 1</label><input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] transition-all"></div>
-                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">ADDRESS LINE 2</label><input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] transition-all"></div>
+                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">ADDRESS LINE 1</label><input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] transition-all" id="wh-addr1"></div>
+                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">ADDRESS LINE 2</label><input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] transition-all" id="wh-addr2"></div>
                         </div>
                         <div class="grid grid-cols-2 gap-6">
-                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">CITY / TOWN</label><input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] transition-all"></div>
-                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">POSTAL / ZIP CODE</label><input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] transition-all"></div>
+                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">CITY / TOWN</label><input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] transition-all" id="wh-city"></div>
+                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">POSTAL / ZIP CODE</label><input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] transition-all" id="wh-postal"></div>
                         </div>
                         <div class="grid grid-cols-2 gap-6">
-                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">COUNTRY</label><select class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold appearance-none shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] cursor-pointer transition-all"><option>India</option></select></div>
-                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">STATE</label><select class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold appearance-none shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] cursor-pointer transition-all"><option>Tamil Nadu</option></select></div>
+                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">COUNTRY</label><select class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold appearance-none shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] cursor-pointer transition-all" id="wh-country"><option>India</option></select></div>
+                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">STATE</label><select class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold appearance-none shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] cursor-pointer transition-all" id="wh-state"><option>Tamil Nadu</option></select></div>
                         </div>
-                        <div class="flex items-center gap-4">
-                            <label class="flex items-center gap-3 cursor-pointer w-max shrink-0">
-                                <input type="checkbox" id="addr-branchCheck" onchange="toggleBranchDropdown('addr')" class="w-4 h-4 rounded border-slate-200 accent-[var(--accent)]">
-                                <span class="text-[12px] font-bold text-slate-600">Assign under branch</span>
-                            </label>
-                            <div id="addr-branchDrop" class="hidden flex-1 max-w-xs">
-                                <select class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold appearance-none shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] cursor-pointer transition-all">
-                                    <option>Main Branch</option>
-                                </select>
-                            </div>
-                        </div>
-
                         <div class="pt-2 space-y-2 border-t border-slate-100 mt-2">
                             <button onclick="toggleMapInput('address')" class="w-10 h-10 flex items-center justify-center rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] hover:bg-[var(--accent)] hover:text-white transition-all shadow-sm">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="3"/></svg>
                             </button>
-                            <div id="address-mapInput" class="hidden"><input type="text" placeholder="Enter Latitude, Longitude" class="w-full h-[36px] bg-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none border border-transparent focus:border-[var(--accent)]/50 transition-all shadow-inner"></div>
+                            <div id="address-mapInput" class="hidden"><input type="text" id="wh-map-input" placeholder="Enter Latitude, Longitude" class="w-full h-[36px] bg-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none border border-transparent focus:border-[var(--accent)]/50 transition-all shadow-inner"></div>
                         </div>
                     </div>
 
                     <!-- Tab 2: Bank Details -->
                     <div id="modalTab-BankDetails" class="modal-pane absolute inset-0 hidden space-y-4">
                         <div class="grid grid-cols-2 gap-6">
-                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">ACCOUNT NAME</label><input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] transition-all"></div>
-                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">ACCOUNT NUMBER</label><input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] transition-all"></div>
+                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">ACCOUNT NAME</label><input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] transition-all" id="wh-bank-account-name"></div>
+                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">ACCOUNT NUMBER</label><input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] transition-all" id="wh-bank-account-number"></div>
                         </div>
                         <div class="grid grid-cols-2 gap-6">
-                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">ACCOUNT TYPE</label><input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] transition-all"></div>
-                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">BANK NAME</label><input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] transition-all"></div>
+                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">ACCOUNT TYPE</label><input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] transition-all" id="wh-bank-account-type"></div>
+                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">BANK NAME</label><input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] transition-all" id="wh-bank-name"></div>
                         </div>
                         <div class="grid grid-cols-2 gap-6">
-                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">BANK BRANCH</label><input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] transition-all"></div>
-                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">IFSC CODE</label><input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] transition-all"></div>
+                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">BANK BRANCH</label><input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] transition-all" id="wh-bank-branch"></div>
+                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">IFSC CODE</label><input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] transition-all" id="wh-bank-ifsc"></div>
                         </div>
                         <div class="grid grid-cols-2 gap-6">
                             <div class="space-y-1">
@@ -378,7 +433,7 @@
                                         <p class="text-[12px] font-medium text-slate-600 leading-normal normal-case tracking-normal">11-digit (international) code that identifies the particular bank worldwide</p>
                                     </div>
                                 </label>
-                                <input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] transition-all">
+                                <input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] transition-all" id="wh-bank-swift">
                             </div>
                             <div class="space-y-1">
                                 <label class="text-[10px] font-black text-slate-400 normal-case tracking-widest flex items-center gap-1.5 relative group/tooltip cursor-help">
@@ -389,41 +444,437 @@
                                         <p class="text-[12px] font-medium text-slate-600 leading-normal normal-case tracking-normal">14-digit authorized code given by banks to companies who has IEC(Import Export Code)</p>
                                     </div>
                                 </label>
-                                <input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] transition-all">
+                                <input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] transition-all" id="wh-bank-ad">
                             </div>
                         </div>
                         <div class="space-y-1">
                             <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">CORRESPONDENT BANK</label>
-                            <textarea class="w-full h-[40px] bg-slate-50 border border-slate-100 rounded-xl px-4 py-2 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] resize-none transition-all"></textarea>
+                            <textarea class="w-full h-[40px] bg-slate-50 border border-slate-100 rounded-xl px-4 py-2 text-[13px] font-bold shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] resize-none transition-all" id="wh-bank-correspondent"></textarea>
                         </div>
                         
-                        <div class="pt-2 border-t border-slate-100 mt-4 flex items-center gap-4">
-                            <label class="flex items-center gap-3 cursor-pointer w-max shrink-0">
-                                <input type="checkbox" id="bank-branchCheck" onchange="toggleBranchDropdown('bank')" class="w-4 h-4 rounded border-slate-200 accent-[var(--accent)]">
-                                <span class="text-[12px] font-bold text-slate-600">Assign under branch</span>
-                            </label>
-                            <div id="bank-branchDrop" class="hidden flex-1 max-w-xs">
-                                <select class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold appearance-none shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] cursor-pointer transition-all">
-                                    <option>Main Branch</option>
-                                </select>
-                            </div>
-                        </div>
+                    </div>
+                </div>
+                
+                <div class="pt-4 border-t border-slate-100 mt-4 flex items-center gap-4 shrink-0">
+                    <label class="flex items-center gap-3 cursor-pointer w-max shrink-0">
+                        <input type="checkbox" id="common-branchCheck" onchange="toggleBranchDropdown('common')" class="w-4 h-4 rounded border-slate-200 accent-[var(--accent)]">
+                        <span class="text-[12px] font-bold text-slate-600">Assign under branch</span>
+                    </label>
+                    <div id="common-branchDrop" class="hidden flex-1 max-w-xs">
+                        <select id="common-branch-select" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold appearance-none shadow-inner focus:bg-white outline-none focus:border-[var(--accent)] cursor-pointer transition-all">
+                            <option value="">Select Branch</option>
+                            {% for b in branches %}
+                            <option value="{{ b.id }}">{{ b.name }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    
+<div id="globalLoadingOverlay" class="fixed inset-0 bg-white/80 z-[9999] hidden flex items-center justify-center backdrop-blur-sm">
+    <div class="w-12 h-12 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
+window.globalLoadingOverlay = {
+    show: function() {
+        const overlay = document.getElementById('globalLoadingOverlay');
+        if(overlay) overlay.classList.remove('hidden');
+    },
+    hide: function() {
+        const overlay = document.getElementById('globalLoadingOverlay');
+        if(overlay) overlay.classList.add('hidden');
+    }
+};
+
+
+
 let activeMenu = null;
+let editingWarehouseId = null;
+let deletingWarehouseId = null;
+let sortedWarehouseRecentIndices = [];
+let currentRecentWarehouseIndex = -1;
+
+async function saveWarehouse(saveAndNew = false) {
+    const ledgerName = document.getElementById('wh-ledger-name')?.value;
+    if (!ledgerName || ledgerName.trim() === '') {
+        showErrorModal("LEDGER NAME is a mandatory field. Please provide it before saving.");
+        return;
+    }
+
+    const data = {
+        id: editingWarehouseId,
+        name: document.getElementById('wh-name')?.value,
+        contact_person: document.getElementById('wh-contact-person')?.value || null,
+        ledger_name: document.getElementById('wh-ledger-name')?.value,
+        email: document.getElementById('wh-email')?.value || null,
+        gstin: document.getElementById('warehouseGstin')?.value || null,
+        pan: document.getElementById('wh-pan')?.value || null,
+        is_msme: document.getElementById('msmeCheck')?.checked,
+        msme_type: document.getElementById('msmeType')?.value || null,
+        msme_number: document.getElementById('msmeNumber')?.value || null,
+        mobile: document.getElementById('wh-mobile')?.value || null,
+        work_phone: document.getElementById('wh-work-phone')?.value || null,
+        is_active: document.getElementById('warehouseIsActive')?.checked,
+        address_branch: document.getElementById('common-branchCheck')?.checked ? document.getElementById('common-branch-select')?.value || null : null,
+        bank_branch_assigned: document.getElementById('common-branchCheck')?.checked ? document.getElementById('common-branch-select')?.value || null : null,
+        bank_details: [],
+        shipping_addresses: [],
+        attachments: warehouseAttachments.length > 0 ? JSON.stringify(warehouseAttachments) : null
+    };
+    
+    if (document.getElementById('wh-addr1')?.value || document.getElementById('wh-city')?.value || document.getElementById('wh-map-input')?.value) {
+        data.shipping_addresses.push({
+            address1: document.getElementById('wh-addr1')?.value,
+            address2: document.getElementById('wh-addr2')?.value,
+            city: document.getElementById('wh-city')?.value,
+            postal_code: document.getElementById('wh-postal')?.value,
+            country: document.getElementById('wh-country')?.value,
+            state: document.getElementById('wh-state')?.value,
+            map_coordinates: document.getElementById('wh-map-input')?.value || null
+        });
+    }
+    
+    if (document.getElementById('wh-bank-account-name')?.value || document.getElementById('wh-bank-account-number')?.value || document.getElementById('wh-bank-name')?.value) {
+        data.bank_details.push({
+            account_name: document.getElementById('wh-bank-account-name')?.value,
+            account_number: document.getElementById('wh-bank-account-number')?.value,
+            account_type: document.getElementById('wh-bank-account-type')?.value,
+            bank_name: document.getElementById('wh-bank-name')?.value,
+            branch_name: document.getElementById('wh-bank-branch')?.value,
+            ifsc_code: document.getElementById('wh-bank-ifsc')?.value,
+            swift_code: document.getElementById('wh-bank-swift')?.value,
+            ad_code: document.getElementById('wh-bank-ad')?.value,
+            correspondent_bank: document.getElementById('wh-bank-correspondent')?.value
+        });
+    }
+
+    if (window.globalLoadingOverlay) window.globalLoadingOverlay.show();
+    try {
+        let url = '/api/warehouses/';
+        let method = 'POST';
+        if (editingWarehouseId) {
+            url += editingWarehouseId + '/';
+            method = 'PUT';
+        }
+        
+        const res = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(data)
+        });
+        
+        if (res.ok) {
+            if (saveAndNew) {
+                resetWarehouseModal();
+            } else {
+                closeModal();
+            }
+            document.getElementById('saveDropdownMenu').classList.add('hidden');
+            if (window.globalLoadingOverlay) window.globalLoadingOverlay.hide();
+            fetchWarehouses('', true);
+        } else {
+            if (window.globalLoadingOverlay) window.globalLoadingOverlay.hide();
+            console.error("Save failed", await res.text());
+            showErrorModal('Failed to save warehouse');
+        }
+    } catch(err) {
+        if (window.globalLoadingOverlay) window.globalLoadingOverlay.hide();
+        console.error("Save failed", err);
+        showErrorModal('Failed to save warehouse');
+    }
+}
+
+function resetWarehouseModal() {
+    editingWarehouseId = null;
+    document.querySelectorAll('#modalOverlay input[type="text"], #modalOverlay input[type="email"], #modalOverlay textarea').forEach(el => el.value = '');
+    const msme = document.getElementById('msmeCheck');
+    if(msme) msme.checked = false;
+    const active = document.getElementById('warehouseIsActive');
+    if(active) active.checked = true;
+    const msmeContainer = document.getElementById('warehouseMsmeFieldsContainer');
+    if(msmeContainer) {
+        msmeContainer.classList.add('hidden');
+    }
+    const mapInputContainer = document.getElementById('address-mapInput');
+    if(mapInputContainer) mapInputContainer.classList.add('hidden');
+    const commonBranch = document.getElementById('common-branchCheck');
+    if (commonBranch) {
+        commonBranch.checked = false;
+        toggleBranchDropdown('common');
+    }
+    
+    warehouseAttachments = [];
+    renderWarehouseAttachmentsUI();
+    const attachInput = document.getElementById('warehouseAttachmentInput');
+    if (attachInput) attachInput.value = '';
+}
+
+function editWarehouse(id) {
+    if (window.globalLoadingOverlay) window.globalLoadingOverlay.show();
+    const w = allWarehouses.find(x => x.id === id);
+    if (!w) {
+        if (window.globalLoadingOverlay) window.globalLoadingOverlay.hide();
+        return;
+    }
+    
+    resetWarehouseModal();
+    editingWarehouseId = w.id;
+    
+    if(document.getElementById('wh-name')) document.getElementById('wh-name').value = w.name || '';
+    if(document.getElementById('wh-contact-person')) document.getElementById('wh-contact-person').value = w.contact_person || '';
+    if(document.getElementById('wh-ledger-name')) document.getElementById('wh-ledger-name').value = w.ledger_name || '';
+    if(document.getElementById('wh-email')) document.getElementById('wh-email').value = w.email || '';
+    if(document.getElementById('warehouseGstin')) document.getElementById('warehouseGstin').value = w.gstin || '';
+    if(document.getElementById('wh-pan')) document.getElementById('wh-pan').value = w.pan || '';
+    
+    const msme = document.getElementById('msmeCheck');
+    if(msme) {
+        msme.checked = w.is_msme || false;
+        toggleWarehouseMsmeFields(msme);
+    }
+    if(document.getElementById('msmeType')) document.getElementById('msmeType').value = w.msme_type || '';
+    if(document.getElementById('msmeNumber')) document.getElementById('msmeNumber').value = w.msme_number || '';
+    
+    if(document.getElementById('wh-mobile')) document.getElementById('wh-mobile').value = w.mobile || '';
+    if(document.getElementById('wh-work-phone')) document.getElementById('wh-work-phone').value = w.work_phone || '';
+    if(document.getElementById('warehouseIsActive')) document.getElementById('warehouseIsActive').checked = w.is_active;
+    
+    if (w.shipping_addresses && w.shipping_addresses.length > 0) {
+        const s = w.shipping_addresses[0];
+        if(document.getElementById('wh-addr1')) document.getElementById('wh-addr1').value = s.address1 || '';
+        if(document.getElementById('wh-addr2')) document.getElementById('wh-addr2').value = s.address2 || '';
+        if(document.getElementById('wh-city')) document.getElementById('wh-city').value = s.city || '';
+        if(document.getElementById('wh-postal')) document.getElementById('wh-postal').value = s.postal_code || '';
+        if(document.getElementById('wh-country')) document.getElementById('wh-country').value = s.country || '';
+        if(document.getElementById('wh-state')) document.getElementById('wh-state').value = s.state || '';
+        if(document.getElementById('wh-map-input')) document.getElementById('wh-map-input').value = s.map_coordinates || '';
+        if (s.map_coordinates && document.getElementById('address-mapInput')) {
+            document.getElementById('address-mapInput').classList.remove('hidden');
+        } else if (document.getElementById('address-mapInput')) {
+            document.getElementById('address-mapInput').classList.add('hidden');
+        }
+    } else {
+        if(document.getElementById('wh-addr1')) document.getElementById('wh-addr1').value = '';
+        if(document.getElementById('wh-addr2')) document.getElementById('wh-addr2').value = '';
+        if(document.getElementById('wh-city')) document.getElementById('wh-city').value = '';
+        if(document.getElementById('wh-postal')) document.getElementById('wh-postal').value = '';
+        if(document.getElementById('wh-country')) document.getElementById('wh-country').value = '';
+        if(document.getElementById('wh-state')) document.getElementById('wh-state').value = '';
+        if(document.getElementById('wh-map-input')) document.getElementById('wh-map-input').value = '';
+        if (document.getElementById('address-mapInput')) document.getElementById('address-mapInput').classList.add('hidden');
+    }
+    
+    if (w.bank_details && w.bank_details.length > 0) {
+        const b = w.bank_details[0];
+        if(document.getElementById('wh-bank-account-name')) document.getElementById('wh-bank-account-name').value = b.account_name || '';
+        if(document.getElementById('wh-bank-account-number')) document.getElementById('wh-bank-account-number').value = b.account_number || '';
+        if(document.getElementById('wh-bank-account-type')) document.getElementById('wh-bank-account-type').value = b.account_type || '';
+        if(document.getElementById('wh-bank-name')) document.getElementById('wh-bank-name').value = b.bank_name || '';
+        if(document.getElementById('wh-bank-branch')) document.getElementById('wh-bank-branch').value = b.branch_name || '';
+        if(document.getElementById('wh-bank-ifsc')) document.getElementById('wh-bank-ifsc').value = b.ifsc_code || '';
+        if(document.getElementById('wh-bank-swift')) document.getElementById('wh-bank-swift').value = b.swift_code || '';
+        if(document.getElementById('wh-bank-ad')) document.getElementById('wh-bank-ad').value = b.ad_code || '';
+        if(document.getElementById('wh-bank-correspondent')) document.getElementById('wh-bank-correspondent').value = b.correspondent_bank || '';
+    } else {
+        if(document.getElementById('wh-bank-account-name')) document.getElementById('wh-bank-account-name').value = '';
+        if(document.getElementById('wh-bank-account-number')) document.getElementById('wh-bank-account-number').value = '';
+        if(document.getElementById('wh-bank-account-type')) document.getElementById('wh-bank-account-type').value = '';
+        if(document.getElementById('wh-bank-name')) document.getElementById('wh-bank-name').value = '';
+        if(document.getElementById('wh-bank-branch')) document.getElementById('wh-bank-branch').value = '';
+        if(document.getElementById('wh-bank-ifsc')) document.getElementById('wh-bank-ifsc').value = '';
+        if(document.getElementById('wh-bank-swift')) document.getElementById('wh-bank-swift').value = '';
+        if(document.getElementById('wh-bank-ad')) document.getElementById('wh-bank-ad').value = '';
+        if(document.getElementById('wh-bank-correspondent')) document.getElementById('wh-bank-correspondent').value = '';
+    }
+
+    const commonBranchCheck = document.getElementById('common-branchCheck');
+    if (commonBranchCheck) {
+        const branchId = w.address_branch || w.bank_branch_assigned;
+        commonBranchCheck.checked = !!branchId;
+        toggleBranchDropdown('common');
+        if (branchId && document.getElementById('common-branch-select')) {
+            document.getElementById('common-branch-select').value = branchId;
+        }
+    }
+    
+    warehouseAttachments = [];
+    if (w.attachments) {
+        try {
+            warehouseAttachments = typeof w.attachments === 'string' ? JSON.parse(w.attachments) : w.attachments;
+        } catch(e) {
+            console.error('Failed to parse warehouse attachments', e);
+        }
+    }
+    renderWarehouseAttachmentsUI();
+    
+    if (window.globalLoadingOverlay) window.globalLoadingOverlay.hide();
+    openModal('Edit Warehouse');
+}
+
+function showErrorModal(message) {
+    const msgEl = document.getElementById('errorModalMessage');
+    if (msgEl) msgEl.innerText = message;
+    const modal = document.getElementById('errorModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    } else {
+        alert(message);
+    }
+}
+
+function closeErrorModal() {
+    const modal = document.getElementById('errorModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+}
+
+function openDeleteWarehouseModal(id) {
+    try {
+        deletingWarehouseId = id;
+        const modal = document.getElementById('deleteWarehouseModal');
+        if (!modal) {
+            showErrorModal('Delete modal not found in DOM.');
+            return;
+        }
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        modal.style.display = 'flex';
+        modal.style.zIndex = '999999';
+    } catch(e) {
+        showErrorModal('Error opening delete modal: ' + e.message);
+    }
+}
+
+function closeDeleteWarehouseModal() {
+    deletingWarehouseId = null;
+    const modal = document.getElementById('deleteWarehouseModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+    }
+}
+
+async function confirmDeleteWarehouse() {
+    if (!deletingWarehouseId) return;
+    
+    if (window.globalLoadingOverlay) window.globalLoadingOverlay.show();
+    
+    try {
+        const res = await fetch(`/api/warehouses/${deletingWarehouseId}/`, {
+            method: 'DELETE',
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        });
+        if (res.ok) {
+            if (window.globalLoadingOverlay) window.globalLoadingOverlay.hide();
+            closeDeleteWarehouseModal();
+            fetchWarehouses();
+        } else {
+            if (window.globalLoadingOverlay) window.globalLoadingOverlay.hide();
+            console.error("Delete failed", await res.text());
+            showErrorModal('Failed to delete warehouse');
+        }
+    } catch(err) {
+        if (window.globalLoadingOverlay) window.globalLoadingOverlay.hide();
+        console.error("Delete error", err);
+        showErrorModal('Error deleting warehouse');
+    }
+}
+
+let warehouseAttachments = [];
+
+async function handleWarehouseAttachments(input) {
+    const files = input.files;
+    if (!files || files.length === 0) return;
+    
+    const readPromises = Array.from(files).map(file => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                resolve({ name: file.name, data: e.target.result });
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+    
+    const newAttachments = await Promise.all(readPromises);
+    warehouseAttachments = warehouseAttachments.concat(newAttachments);
+    renderWarehouseAttachmentsUI();
+}
+
+function removeWarehouseAttachment(index) {
+    warehouseAttachments.splice(index, 1);
+    renderWarehouseAttachmentsUI();
+}
+
+function renderWarehouseAttachmentsUI() {
+    const container = document.getElementById('warehouseAttachmentsContainer');
+    if (!container) return;
+    
+    if (warehouseAttachments.length > 0) {
+        container.classList.remove('hidden');
+        container.innerHTML = '';
+        warehouseAttachments.forEach((att, idx) => {
+            const badge = document.createElement('div');
+            badge.className = 'flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200';
+            
+            const actionsDiv = document.createElement('div');
+            actionsDiv.className = 'flex items-center gap-1';
+            
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'text-[12px] font-bold text-slate-600 truncate max-w-[150px] cursor-pointer hover:text-[var(--accent)]';
+            nameSpan.title = att.name;
+            nameSpan.textContent = att.name;
+            nameSpan.onclick = () => {
+                const win = window.open();
+                if (win) {
+                    win.document.write('<iframe src="' + att.data + '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>');
+                }
+            };
+            
+            const downloadBtn = document.createElement('a');
+            downloadBtn.href = att.data;
+            downloadBtn.download = att.name;
+            downloadBtn.className = 'text-blue-500 hover:text-blue-700 transition-colors p-0.5 rounded-full hover:bg-blue-50';
+            downloadBtn.title = 'Download file';
+            downloadBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>';
+            
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'text-red-500 hover:text-red-700 transition-colors p-0.5 rounded-full hover:bg-red-50';
+            btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>';
+            btn.onclick = () => removeWarehouseAttachment(idx);
+            
+            actionsDiv.appendChild(downloadBtn);
+            actionsDiv.appendChild(btn);
+            
+            badge.appendChild(nameSpan);
+            badge.appendChild(actionsDiv);
+            container.appendChild(badge);
+        });
+    } else {
+        container.classList.add('hidden');
+        container.innerHTML = '';
+    }
+}
 
 // Override global openModal for Warehouse specific default tab
 function openModal(title) {
     const overlay = document.getElementById('modalOverlay');
     if (overlay) overlay.classList.remove('hidden');
     setModalTab('Address');
+    if (!title || title === 'Warehouse') resetWarehouseModal();
 }
 
 function toggleToolbarMenu(id) {
@@ -438,6 +889,11 @@ document.addEventListener('click', (e) => {
     if (activeMenu && !activeMenu.parentElement.contains(e.target)) {
         activeMenu.classList.add('hidden');
         activeMenu = null;
+    }
+    const autocompleteWrapper = document.getElementById('warehouseAutocompleteWrapper');
+    const autocompleteDropdown = document.getElementById('warehouseAutocompleteDropdown');
+    if (autocompleteWrapper && autocompleteDropdown && !autocompleteWrapper.contains(e.target)) {
+        autocompleteDropdown.classList.add('hidden');
     }
 });
 
@@ -457,7 +913,7 @@ function toggleSaveDropdown(e) {
 }
 function toggleMapInput(paneId) {
     const el = document.getElementById(paneId + '-mapInput');
-    if (el) el.classList.remove('hidden');
+    if (el) el.classList.toggle('hidden');
 }
 function toggleBranchDropdown(tabId) {
     const chk = document.getElementById(tabId + '-branchCheck');
@@ -492,5 +948,438 @@ function setModalTab(tabName) {
     const activePane = document.getElementById('modalTab-' + tabName.replace(/\s+/g, ''));
     if(activePane) activePane.classList.remove('hidden');
 }
+
+function toggleWarehouseMsmeFields() {
+    const checkbox = document.getElementById('msmeCheck');
+    const container = document.getElementById('warehouseMsmeFieldsContainer');
+    if (container && checkbox) {
+        if (checkbox.checked) {
+            container.classList.remove('hidden');
+        } else {
+            container.classList.add('hidden');
+        }
+    }
+}
+
+// Column settings logic
+function applyColumnSettings(closeMenu = false) {
+    const checkboxes = document.querySelectorAll('.col-setting-checkbox');
+    const table = document.getElementById('warehouseTableBody').parentElement;
+    const rows = table.querySelectorAll('tr');
+    
+    checkboxes.forEach(chk => {
+        const colIndex = chk.getAttribute('data-col-index');
+        const isChecked = chk.checked;
+        
+        rows.forEach(row => {
+            const cell = row.children[colIndex];
+            if (cell) {
+                if (isChecked) cell.classList.remove('hidden');
+                else cell.classList.add('hidden');
+            }
+        });
+    });
+    
+    if (closeMenu) {
+        document.getElementById('settingsDropdown').classList.add('hidden');
+        if (activeMenu === document.getElementById('settingsDropdown')) {
+            activeMenu = null;
+        }
+    }
+}
+
+// Filtering logic
+let warehouseStatusFilter = 'All';
+function filterByStatus(status) {
+    warehouseStatusFilter = status;
+    fetchWarehouses();
+}
+
+let allWarehouses = [];
+
+let currentWarehouseDropdownFocus = -1;
+
+function handleWarehouseDropdownKeydown(e) {
+    const list = document.getElementById('warehouseAutocompleteDropdown');
+    if (!list || list.classList.contains('hidden')) return;
+    
+    const items = list.getElementsByClassName('autocomplete-item');
+    if (items.length === 0) return;
+    
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        currentWarehouseDropdownFocus++;
+        addWarehouseActiveDropdownItem(items);
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        currentWarehouseDropdownFocus--;
+        addWarehouseActiveDropdownItem(items);
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (currentWarehouseDropdownFocus > -1) {
+            items[currentWarehouseDropdownFocus].click();
+        }
+    } else if (e.key === 'Escape') {
+        list.classList.add('hidden');
+    }
+}
+
+function addWarehouseActiveDropdownItem(items) {
+    if (!items) return;
+    removeWarehouseActiveDropdownItem(items);
+    if (currentWarehouseDropdownFocus >= items.length) currentWarehouseDropdownFocus = 0;
+    if (currentWarehouseDropdownFocus < 0) currentWarehouseDropdownFocus = (items.length - 1);
+    items[currentWarehouseDropdownFocus].classList.add('bg-[var(--accent)]', 'text-white');
+    items[currentWarehouseDropdownFocus].classList.remove('text-slate-700', 'hover:bg-slate-50');
+    items[currentWarehouseDropdownFocus].scrollIntoView({ block: "nearest", behavior: "smooth" });
+}
+
+function removeWarehouseActiveDropdownItem(items) {
+    for (let i = 0; i < items.length; i++) {
+        items[i].classList.remove('bg-[var(--accent)]', 'text-white');
+        items[i].classList.add('text-slate-700', 'hover:bg-slate-50');
+    }
+}
+
+document.addEventListener('click', (e) => {
+    const wrapper = document.getElementById('warehouseAutocompleteWrapper');
+    const list = document.getElementById('warehouseAutocompleteDropdown');
+    if (wrapper && list && !wrapper.contains(e.target)) {
+        list.classList.add('hidden');
+    }
+});
+
+function filterWarehouseDropdown(value) {
+    currentWarehouseDropdownFocus = -1;
+    const dropdown = document.getElementById('warehouseAutocompleteDropdown');
+    dropdown.innerHTML = '';
+    
+    if (!value && allWarehouses.length === 0) {
+        dropdown.classList.add('hidden');
+        return;
+    }
+    
+    dropdown.classList.remove('hidden');
+    
+    const currentVal = document.getElementById('warehouseFilterInput').value;
+    
+    if (currentVal) {
+        dropdown.innerHTML += `
+            <div class="autocomplete-item px-5 py-2.5 text-[13px] font-bold cursor-pointer transition-colors flex items-center gap-2 text-red-500 hover:bg-red-50" onclick="clearWarehouseFilter(event)">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                <span>Clear Filter</span>
+            </div>
+        `;
+    }
+    
+    const filtered = allWarehouses.filter(w => (w.name || '').toLowerCase().includes((value || '').toLowerCase()));
+    
+    if (filtered.length === 0) {
+        dropdown.innerHTML += `<div class="px-5 py-2.5 text-[13px] text-slate-400 font-bold">No matches found</div>`;
+        return;
+    }
+    
+    filtered.forEach(w => {
+        const isSelected = (currentVal === w.name);
+        dropdown.innerHTML += `
+            <div class="autocomplete-item px-5 py-2.5 text-[13px] font-bold cursor-pointer transition-colors flex items-center justify-between ${isSelected ? 'bg-[var(--accent)] text-white' : 'text-slate-600 hover:bg-[var(--accent)] hover:text-white'}" onclick="selectWarehouseFilter('${w.name}')">
+                <span>${w.name}</span>
+                ${isSelected ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>' : ''}
+            </div>
+        `;
+    });
+}
+
+function clearWarehouseFilter(e) {
+    if (e) e.stopPropagation();
+    document.getElementById('warehouseFilterInput').value = '';
+    document.getElementById('warehouseAutocompleteDropdown').classList.add('hidden');
+    fetchWarehouses();
+}
+
+function selectWarehouseFilter(name) {
+    document.getElementById('warehouseFilterInput').value = name;
+    document.getElementById('warehouseAutocompleteDropdown').classList.add('hidden');
+    fetchWarehouses(name);
+}
+
+function fetchWarehouses(searchQuery = '', skipLoader = false) {
+    const showArchived = document.getElementById('showArchived')?.checked;
+    const showInactive = document.getElementById('showInactive')?.checked;
+    
+    let url = '/api/warehouses/?format=json';
+    if (warehouseStatusFilter === 'Active') url += '&status=active';
+    else if (warehouseStatusFilter === 'Inactive') url += '&status=inactive';
+    
+    if (!skipLoader && window.globalLoadingOverlay) window.globalLoadingOverlay.show();
+    
+    fetch(url)
+        .then(res => res.json())
+        .then(data => {
+            allWarehouses = data;
+            
+            // Apply client side filters
+            let displayData = data;
+            if (searchQuery) {
+                displayData = displayData.filter(w => (w.name || '').toLowerCase().includes(searchQuery.toLowerCase()));
+            }
+            if (!showArchived && !showInactive) {
+                // Assuming backend already filters inactive based on the url param, but we can do extra logic here if needed.
+            }
+            
+            renderWarehouseTable(displayData);
+            updateWarehouseCounts(data);
+            
+            const recentEl = document.getElementById('recentWarehouseText');
+            if (recentEl) {
+                if (displayData.length > 0) {
+                    sortedWarehouseRecentIndices = displayData.map((w, i) => ({i, id: w.id})).sort((a,b) => b.id - a.id).map(x => x.i);
+                    currentRecentWarehouseIndex = 0;
+                    recentEl.innerText = displayData[sortedWarehouseRecentIndices[currentRecentWarehouseIndex]].name || 'Unnamed Warehouse';
+                } else {
+                    recentEl.innerText = '-';
+                    sortedWarehouseRecentIndices = [];
+                    currentRecentWarehouseIndex = -1;
+                }
+            }
+            if (!skipLoader && window.globalLoadingOverlay) window.globalLoadingOverlay.hide();
+        })
+        .catch(err => {
+            console.error("Error fetching warehouses", err);
+            if (!skipLoader && window.globalLoadingOverlay) window.globalLoadingOverlay.hide();
+        });
+}
+
+function renderWarehouseTable(data) {
+    const tbody = document.getElementById('warehouseTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    
+    if (data.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="px-8 py-20 text-center">
+                    <div class="flex flex-col items-center gap-4">
+                        <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center">
+                            <svg class="w-10 h-10 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                        </div>
+                        <p class="text-slate-400 font-bold">No warehouses found. Click "Add Warehouse" to start.</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    data.forEach(w => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 transition-colors border-b border-slate-50/50';
+        
+        tr.innerHTML = `
+            <td class="px-8 py-4 text-[13px] font-bold text-slate-700">${w.name || '-'}</td>
+            <td class="px-8 py-4 text-[13px] font-bold text-slate-700">${w.contact_person || '-'}</td>
+            <td class="px-8 py-4 text-[13px] font-bold text-slate-700">${w.mobile || '-'}</td>
+            <td class="px-8 py-4 text-[13px] font-bold text-slate-700">${w.work_phone || '-'}</td>
+            <td class="px-8 py-4 text-[13px] font-medium text-slate-500 max-w-[200px] truncate">${w.shipping_addresses && w.shipping_addresses.length > 0 ? w.shipping_addresses[0].address1 || '-' : '-'}</td>
+            <td class="px-8 py-4 text-[13px] font-medium text-slate-500">
+                ${w.bank_details && w.bank_details.length > 0 ? `
+                    <div class="flex flex-col gap-0.5 leading-tight">
+                        ${w.bank_details[0].bank_name ? `<span class="font-bold text-slate-700">${w.bank_details[0].bank_name}</span>` : ''}
+                        ${w.bank_details[0].account_number ? `<span class="text-[11px]">A/c: ${w.bank_details[0].account_number}</span>` : ''}
+                        ${w.bank_details[0].ifsc_code ? `<span class="text-[11px]">IFSC: ${w.bank_details[0].ifsc_code}</span>` : ''}
+                        ${w.bank_details[0].branch_name ? `<span class="text-[11px]">Branch: ${w.bank_details[0].branch_name}</span>` : ''}
+                    </div>
+                ` : '-'}
+            </td>
+            <td class="px-8 py-4 text-center">
+                <div class="flex items-center justify-center gap-2 transition-opacity">
+                    <button type="button" onclick="editWarehouse(${w.id}); event.stopPropagation();" class="w-8 h-8 rounded-lg bg-[var(--accent)] text-white hover:brightness-110 flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.89 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.89l12.683-12.683z" /></svg>
+                    </button>
+                    <button type="button" onclick="event.stopPropagation(); openDeleteWarehouseModal(${w.id});" class="w-8 h-8 rounded-lg bg-red-500 text-white hover:bg-red-600 flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                    </button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+    
+    // Apply current column settings to newly rendered rows
+    applyColumnSettings();
+}
+
+function updateWarehouseCounts(data) {
+    // Ideally the backend should return the aggregate counts. 
+    // Here we compute based on fetched data for demonstration.
+    document.getElementById('countTotal').innerText = data.length;
+    document.getElementById('countActive').innerText = data.filter(w => w.is_active).length;
+    document.getElementById('countInactive').innerText = data.filter(w => !w.is_active).length;
+}
+
+function exportTableToCSV() {
+    const rows = document.querySelectorAll('table tr');
+    let csvContent = [];
+    rows.forEach(row => {
+        if (row.style.display === 'none') return;
+        const cols = row.querySelectorAll('th:not(.hidden), td:not(.hidden)');
+        let rowData = [];
+        cols.forEach(c => {
+            if (c.tagName.toLowerCase() === 'th' && c.innerText.trim().toLowerCase() === 'action') return;
+            if (c.tagName.toLowerCase() === 'td' && c.querySelector('button.bg-red-500')) return; 
+            let text = c.innerText.replace(/(\r\n|\n|\r)/gm, " ").trim();
+            rowData.push('"' + text + '"');
+        });
+        if(rowData.length > 0) csvContent.push(rowData.join(','));
+    });
+    
+    const blob = new Blob([csvContent.join('\n')], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'warehouses.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+
+function exportTableToXLS() {
+    let tableHtml = '<table border="1">';
+    const rows = document.querySelectorAll('table tr');
+    rows.forEach(row => {
+        if (row.style.display === 'none') return;
+        tableHtml += '<tr>';
+        const cols = row.querySelectorAll('th:not(.hidden), td:not(.hidden)');
+        cols.forEach(c => {
+            if (c.tagName.toLowerCase() === 'th' && c.innerText.trim().toLowerCase() === 'action') return;
+            if (c.tagName.toLowerCase() === 'td' && c.querySelector('button.bg-red-500')) return;
+            
+            let tag = c.tagName.toLowerCase();
+            let text = c.innerText.replace(/(\r\n|\n|\r)/gm, " ").trim();
+            tableHtml += `<${tag}>${text}</${tag}>`;
+        });
+        tableHtml += '</tr>';
+    });
+    tableHtml += '</table>';
+    
+    const blob = new Blob([tableHtml], { type: 'application/vnd.ms-excel' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'warehouses.xls';
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+
+function exportTableToPDF() {
+    if (typeof window.jspdf === 'undefined') {
+        showErrorModal("PDF Generator is loading. Please try again in a few seconds.");
+        return;
+    }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    const headers = [];
+    document.querySelectorAll('table thead th:not(.hidden)').forEach(th => {
+        if (th.innerText.trim().toLowerCase() !== 'action') {
+            headers.push(th.innerText.trim());
+        }
+    });
+
+    const data = [];
+    document.querySelectorAll('table tbody tr').forEach(row => {
+        if (row.style.display === 'none' || row.querySelector('td[colspan]')) return;
+        const rowData = [];
+        const cols = row.querySelectorAll('td:not(.hidden)');
+        cols.forEach(col => {
+            if (col.querySelector('button.bg-red-500')) return; 
+            rowData.push(col.innerText.replace(/(\r\n|\n|\r)/gm, " ").trim());
+        });
+        if (rowData.length > 0) data.push(rowData);
+    });
+
+    doc.text("Warehouses List", 14, 15);
+    doc.autoTable({
+        startY: 20,
+        head: [headers],
+        body: data,
+        theme: 'grid',
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [59, 130, 246] } 
+    });
+
+    doc.save('warehouses.pdf');
+}
+
+function importTableFile(e) {
+    if (e.target.files && e.target.files[0]) {
+        alert("Import successfully parsed file: " + e.target.files[0].name + " (Frontend UI hook invoked)");
+    }
+}
+
+function navigateRecentWarehouse(direction) {
+    if (sortedWarehouseRecentIndices.length === 0) return;
+    const tbody = document.getElementById('warehouseTableBody');
+    const rows = tbody.querySelectorAll('tr');
+    
+    // Clear old highlight
+    if (currentRecentWarehouseIndex >= 0 && currentRecentWarehouseIndex < sortedWarehouseRecentIndices.length) {
+        const oldRowIndex = sortedWarehouseRecentIndices[currentRecentWarehouseIndex];
+        if (rows[oldRowIndex]) {
+            rows[oldRowIndex].classList.remove('recent-highlighted');
+        }
+    }
+
+    let newIndex = currentRecentWarehouseIndex;
+    const total = sortedWarehouseRecentIndices.length;
+
+    if (direction === 'prev') {
+        newIndex = (currentRecentWarehouseIndex - 1 + total) % total;
+    } else if (direction === 'next') {
+        newIndex = (currentRecentWarehouseIndex + 1) % total;
+    }
+
+    // Ensure row exists (in case table was filtered)
+    let tries = 0;
+    while (tries < total) {
+        const mappedRowIdx = sortedWarehouseRecentIndices[newIndex];
+        if (rows[mappedRowIdx] && rows[mappedRowIdx].style.display !== 'none') break;
+        if (direction === 'prev') newIndex = (newIndex - 1 + total) % total;
+        else newIndex = (newIndex + 1) % total;
+        tries++;
+    }
+
+    currentRecentWarehouseIndex = newIndex;
+    const mappedRowIdx = sortedWarehouseRecentIndices[currentRecentWarehouseIndex];
+    
+    const targetRow = rows[mappedRowIdx];
+    if (targetRow && targetRow.style.display !== 'none') {
+        targetRow.classList.add('recent-highlighted');
+        targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    const recentEl = document.getElementById('recentWarehouseText');
+    if (recentEl) {
+        const nameCell = targetRow.querySelector('td:first-child');
+        recentEl.innerText = nameCell ? nameCell.innerText.trim() : 'Unnamed Warehouse';
+    }
+}
+
+function clearRecentWarehouseHighlight() {
+    const highlighted = document.querySelectorAll('#warehouseTableBody tr.recent-highlighted');
+    highlighted.forEach(row => row.classList.remove('recent-highlighted'));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const tbody = document.getElementById('warehouseTableBody');
+    if (tbody) {
+        tbody.addEventListener('mousemove', clearRecentWarehouseHighlight);
+    }
+    document.addEventListener('keydown', clearRecentWarehouseHighlight);
+});
+
+// Initial fetch
+fetchWarehouses();
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 {% endblock %}

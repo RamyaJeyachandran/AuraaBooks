@@ -1,0 +1,962 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storage Location - Settings - Auraa Books</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/static/images/logo1.png">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS (via CDN for simplicity, or link to pre-compiled) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        accent: 'var(--accent)',
+                        accent2: 'var(--accent2)',
+                        'accent-light': 'var(--accent-light)',
+                        'accent-text': 'var(--accent-text)',
+                        surface: 'var(--surface)',
+                        border: 'var(--border)',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Custom 2026 3D Styles -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    
+</head>
+<body class="antialiased bg-[var(--bg)] text-[var(--text-primary)] transition-all duration-200">
+    <div class="flex h-screen overflow-hidden rounded-[16px] relative">
+        
+        <!-- SIDEBAR -->
+        <aside id="sidebar" class="sidebar-premium w-[230px] h-full flex-shrink-0 flex flex-col relative z-20 group/sidebar transition-all duration-700 ease-out [transform-style:preserve-3d] [perspective:1000px]">
+            <script>
+                if (localStorage.getItem('sidebarState') === 'collapsed') {
+                    document.getElementById('sidebar').classList.add('sidebar-collapsed');
+                }
+            </script>
+            <div class="sb-glass-reflect"></div>
+            <div class="sb-edge-line"></div>
+            
+            <!-- Sidebar Header -->
+            <div class="h-[60px] flex items-center px-4 mb-4 mt-2 relative z-10">
+                <div class="sidebar-logo-avatar w-14 h-14 rounded-full flex items-center justify-center bg-white flex-shrink-0 transition-transform hover:scale-105 overflow-hidden shadow-md">
+                    <img src="/static/images/logo1.png" alt="Auraa Books Logo" class="w-full h-full object-cover scale-[1.35]">
+                </div>
+                <span class="ml-3 text-[16px] font-black text-white drop-shadow-md tracking-wide">Auraa Books</span>
+            </div>
+
+            <!-- Navigation -->
+            <div class="flex-1 px-3 space-y-0.5 overflow-y-auto no-scrollbar relative z-10">
+                <!-- Navigation Items -->
+<div class="space-y-1">
+    
+        
+            <!-- Single Menu -->
+            <a href="/" title="Dashboard" class="nav-item flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl ">
+                <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        
+                            <path d="M3 3h7v7H3V3zm11 0h7v7h-7V3zm0 11h7v7h-7v-7zm-11 0h7v7H3v-7z"/>
+                        
+                    </svg>
+                </div>
+                <span class="text-[13px] flex-1 font-medium">Dashboard</span>
+            </a>
+            <div class="h-1"></div>
+        
+    
+        
+            <!-- Parent Menu with Children -->
+            <div class="nav-group">
+                <div title="Masters" class="nav-parent flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl" onclick="toggleNavGroup(this)">
+                    <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                            
+                        </svg>
+                    </div>
+                    <span class="text-[13px] flex-1 font-medium">Masters</span>
+                    <svg class="w-3 h-3 transition-transform chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+                </div>
+                <div class="nav-children mt-1 space-y-1 ml-6 mr-1 overflow-hidden transition-all duration-300 relative z-20 max-h-0">
+                    
+                        <a href="/customers/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Customer</a>
+                    
+                        <a href="/suppliers/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Suppliers</a>
+                    
+                        <a href="/items/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Items</a>
+                    
+                        <a href="/referrers/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Referred By</a>
+                    
+                        <a href="/warehouse/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Warehouse</a>
+                    
+                        <a href="/branch/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Branch</a>
+                    
+                        <a href="/franchisee/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Franchisee</a>
+                    
+                        <a href="/sales-rep/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Sales Rep</a>
+                    
+                        <a href="/rate-sheet/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Rate Sheet</a>
+                    
+                        <a href="/stock-journal/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Stock Journal</a>
+                    
+                </div>
+            </div>
+            <div class="h-1"></div>
+        
+    
+        
+            <!-- Parent Menu with Children -->
+            <div class="nav-group">
+                <div title="Sales" class="nav-parent flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl" onclick="toggleNavGroup(this)">
+                    <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            
+                                <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2m4 0v2m0 4v.01M8 4h8a2 2 0 012 2v2H6V6a2 2 0 012-2z"/>
+                            
+                        </svg>
+                    </div>
+                    <span class="text-[13px] flex-1 font-medium">Sales</span>
+                    <svg class="w-3 h-3 transition-transform chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+                </div>
+                <div class="nav-children mt-1 space-y-1 ml-6 mr-1 overflow-hidden transition-all duration-300 relative z-20 max-h-0">
+                    
+                        <a href="/sales/quotes/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Quotes</a>
+                    
+                        <a href="/sales/orders/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Sales Order</a>
+                    
+                        <a href="/sales/invoices/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Invoice</a>
+                    
+                        <a href="/sales/delivery-challan/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Delivery challan</a>
+                    
+                        <a href="/sales/credit-note/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Credit Note</a>
+                    
+                        <a href="/sales/receipt/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Receipt</a>
+                    
+                </div>
+            </div>
+            <div class="h-1"></div>
+        
+    
+        
+            <!-- Parent Menu with Children -->
+            <div class="nav-group">
+                <div title="Purchase" class="nav-parent flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl" onclick="toggleNavGroup(this)">
+                    <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            
+                                <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            
+                        </svg>
+                    </div>
+                    <span class="text-[13px] flex-1 font-medium">Purchase</span>
+                    <svg class="w-3 h-3 transition-transform chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+                </div>
+                <div class="nav-children mt-1 space-y-1 ml-6 mr-1 overflow-hidden transition-all duration-300 relative z-20 max-h-0">
+                    
+                        <a href="/purchase/quotes/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Purchase Quote</a>
+                    
+                        <a href="/purchase/orders/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Purchase Order</a>
+                    
+                        <a href="/purchase/goods-receipt/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Goods Receipt</a>
+                    
+                        <a href="/purchase/bills/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Purchase Bill</a>
+                    
+                        <a href="/purchase/payments/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Payment</a>
+                    
+                        <a href="/purchase/credit-note/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Supplier Credit Note</a>
+                    
+                </div>
+            </div>
+            <div class="h-1"></div>
+        
+    
+        
+            <!-- Parent Menu with Children -->
+            <div class="nav-group">
+                <div title="Expenses" class="nav-parent flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl" onclick="toggleNavGroup(this)">
+                    <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            
+                                <path d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zM12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z"/>
+                            
+                        </svg>
+                    </div>
+                    <span class="text-[13px] flex-1 font-medium">Expenses</span>
+                    <svg class="w-3 h-3 transition-transform chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+                </div>
+                <div class="nav-children mt-1 space-y-1 ml-6 mr-1 overflow-hidden transition-all duration-300 relative z-20 max-h-0">
+                    
+                        <a href="/expenses/credit/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Credit Expenses</a>
+                    
+                        <a href="/expenses/asset/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Asset Expenses</a>
+                    
+                        <a href="/expenses/cash/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Cash Expenses</a>
+                    
+                        <a href="/expenses/reclaim/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Reclaim Expenses</a>
+                    
+                </div>
+            </div>
+            <div class="h-1"></div>
+        
+    
+        
+            <!-- Parent Menu with Children -->
+            <div class="nav-group">
+                <div title="Accounting" class="nav-parent flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl" onclick="toggleNavGroup(this)">
+                    <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            
+                                <rect x="2" y="4" width="20" height="16" rx="2" /><line x1="2" y1="10" x2="22" y2="10" /><line x1="7" y1="15" x2="7" y2="15.01" /><line x1="12" y1="15" x2="12" y2="15.01" /><line x1="17" y1="15" x2="17" y2="15.01" />
+                            
+                        </svg>
+                    </div>
+                    <span class="text-[13px] flex-1 font-medium">Accounting</span>
+                    <svg class="w-3 h-3 transition-transform chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+                </div>
+                <div class="nav-children mt-1 space-y-1 ml-6 mr-1 overflow-hidden transition-all duration-300 relative z-20 max-h-0">
+                    
+                        <a href="/accounting/accounts/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Accounts</a>
+                    
+                        <a href="/accounting/opening-balance/" class="block px-4 py-2 text-[12px] cursor-pointer rounded-xl transition-all duration-150 relative ml-4 mb-0.5 text-white hover:bg-white/5 ">Opening Balance</a>
+                    
+                </div>
+            </div>
+            <div class="h-1"></div>
+        
+    
+        
+            <!-- Single Menu -->
+            <a href="/bank-cash/" title="Bank / Cash" class="nav-item flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl ">
+                <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        
+                            <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+                        
+                    </svg>
+                </div>
+                <span class="text-[13px] flex-1 font-medium">Bank / Cash</span>
+            </a>
+            <div class="h-1"></div>
+        
+    
+        
+            <!-- Single Menu -->
+            <a href="/projects/" title="Project" class="nav-item flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl ">
+                <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        
+                            <path d="M3 3h6v6H3zM15 3h6v6h-6zM3 15h6v6H3zM15 15h6v6h-6z"/>
+                        
+                    </svg>
+                </div>
+                <span class="text-[13px] flex-1 font-medium">Project</span>
+            </a>
+            <div class="h-1"></div>
+        
+    
+        
+            <!-- Single Menu -->
+            <a href="/settings/" title="Settings" class="nav-item flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 relative group/item [transform-style:preserve-3d] z-10 text-white hover:bg-white/5 rounded-xl ">
+                <div class="nav-icon w-7 h-7 rounded-lg flex items-center justify-center bg-white/10 text-white">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        
+                            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        
+                    </svg>
+                </div>
+                <span class="text-[13px] flex-1 font-medium">Settings</span>
+            </a>
+            
+        
+    
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const currentPath = window.location.pathname;
+        
+        // Single menu items
+        const singleItems = document.querySelectorAll('.nav-item');
+        singleItems.forEach(item => {
+            const href = item.getAttribute('href');
+            if (href === currentPath || (href !== '/' && href !== '#' && currentPath.startsWith(href))) {
+                item.classList.add('active');
+            }
+        });
+
+        // Children links
+        const childrenLinks = document.querySelectorAll('.nav-children a');
+        childrenLinks.forEach(link => {
+            if (link.getAttribute('href') === currentPath || (link.getAttribute('href') !== '/' && currentPath.startsWith(link.getAttribute('href')))) {
+                link.classList.add('active-child');
+                const parentGroup = link.closest('.nav-group');
+                if (parentGroup) {
+                    const parentDiv = parentGroup.querySelector('.nav-parent');
+                    parentDiv.classList.add('active-parent');
+                    const chevron = parentGroup.querySelector('.chevron');
+                    if (chevron) chevron.classList.add('rotate-90');
+                    const childrenDiv = parentGroup.querySelector('.nav-children');
+                    if (childrenDiv) childrenDiv.classList.remove('max-h-0');
+                }
+            }
+        });
+    });
+</script>
+
+            </div>
+
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <div class="flex-1 flex flex-col overflow-hidden bg-[var(--bg)] min-w-0">
+            <!-- HEADER / NAVBAR -->
+            <header class="topbar-premium h-[52px] flex-shrink-0 flex items-center justify-between px-6 sticky top-0 z-[999] transition-all">
+                <div class="flex items-center gap-4">
+                    <!-- Hamburger Menu -->
+                    <button id="sidebarToggle" class="topbar-btn !p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                        <svg class="w-6 h-6 text-[var(--text-primary)]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+                    
+                    <!-- Search & Add -->
+                    <div class="relative flex items-center drop-shadow-sm hidden md:flex">
+                        <div class="search-capsule w-[280px] relative h-9 flex items-center px-3 !rounded-r-none !border-r-0">
+                            <input type="text" placeholder="Search..." class="w-full h-full bg-transparent border-none outline-none text-[13px] placeholder:text-[var(--text-muted)]/70 text-[var(--text-primary)]">
+                            <svg class="w-3.5 h-3.5 text-[var(--text-muted)] ml-2 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                        <button id="quickAddToggle" class="h-9 w-9 bg-[var(--accent)] hover:brightness-110 flex items-center justify-center text-white rounded-r-full transition-all flex-shrink-0 border border-[var(--accent)] shadow-inner">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                        </button>
+                        
+                        <!-- Quick Add Dropdown -->
+                        <div id="quickAddPanel" class="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-[var(--surface)] rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] border border-[var(--border)] hidden z-[100] overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                            <div class="flex flex-col">
+                                <!-- Group 1: Sales -->
+                                <div class="py-1">
+                                    <a href="#" class="flex items-center justify-between px-4 py-2 hover:bg-[var(--bg)] transition-colors group">
+                                        <span class="text-[13px] font-medium text-[var(--text-primary)] group-hover:text-[var(--accent)]">Invoice</span>
+                                        <span class="text-[11px] font-medium text-[var(--text-muted)]">Alt + I</span>
+                                    </a>
+                                    <a href="#" class="flex items-center justify-between px-4 py-2 hover:bg-[var(--bg)] transition-colors group">
+                                        <span class="text-[13px] font-medium text-[var(--text-primary)] group-hover:text-[var(--accent)]">Cash Invoice</span>
+                                        <span class="text-[11px] font-medium text-[var(--text-muted)]">Alt + N</span>
+                                    </a>
+                                    <a href="#" class="flex items-center justify-between px-4 py-2 hover:bg-[var(--bg)] transition-colors group">
+                                        <span class="text-[13px] font-medium text-[var(--text-primary)] group-hover:text-[var(--accent)]">Receipt</span>
+                                        <span class="text-[11px] font-medium text-[var(--text-muted)]">Alt + R</span>
+                                    </a>
+                                </div>
+                                <div class="h-[1px] w-full bg-[var(--border)]"></div>
+                                <!-- Group 2: Purchases -->
+                                <div class="py-1">
+                                    <a href="#" class="flex items-center justify-between px-4 py-2 hover:bg-[var(--bg)] transition-colors group">
+                                        <span class="text-[13px] font-medium text-[var(--text-primary)] group-hover:text-[var(--accent)]">Purchase Bill</span>
+                                        <span class="text-[11px] font-medium text-[var(--text-muted)]">Alt + B</span>
+                                    </a>
+                                    <a href="#" class="flex items-center justify-between px-4 py-2 hover:bg-[var(--bg)] transition-colors group">
+                                        <span class="text-[13px] font-medium text-[var(--text-primary)] group-hover:text-[var(--accent)]">Expense</span>
+                                        <span class="text-[11px] font-medium text-[var(--text-muted)]">Alt + X</span>
+                                    </a>
+                                    <a href="#" class="flex items-center justify-between px-4 py-2 hover:bg-[var(--bg)] transition-colors group">
+                                        <span class="text-[13px] font-medium text-[var(--text-primary)] group-hover:text-[var(--accent)]">Payment</span>
+                                        <span class="text-[11px] font-medium text-[var(--text-muted)]">Alt + Y</span>
+                                    </a>
+                                </div>
+                                <div class="h-[1px] w-full bg-[var(--border)]"></div>
+                                <!-- Group 3: Masters -->
+                                <div class="py-1">
+                                    <a href="#" class="flex items-center justify-between px-4 py-2 hover:bg-[var(--bg)] transition-colors group">
+                                        <span class="text-[13px] font-medium text-[var(--text-primary)] group-hover:text-[var(--accent)]">Contacts</span>
+                                        <span class="text-[11px] font-medium text-[var(--text-muted)]">Alt + C</span>
+                                    </a>
+                                    <a href="#" class="flex items-center justify-between px-4 py-2 hover:bg-[var(--bg)] transition-colors group">
+                                        <span class="text-[13px] font-medium text-[var(--text-primary)] group-hover:text-[var(--accent)]">Items</span>
+                                        <span class="text-[11px] font-medium text-[var(--text-muted)]">Alt + T</span>
+                                    </a>
+                                </div>
+                                <div class="h-[1px] w-full bg-[var(--border)]"></div>
+                                <!-- Group 4: Accounting -->
+                                <div class="py-1">
+                                    <a href="#" class="flex items-center justify-between px-4 py-2 hover:bg-[var(--bg)] transition-colors group">
+                                        <span class="text-[13px] font-medium text-[var(--text-primary)] group-hover:text-[var(--accent)]">Journal</span>
+                                        <span class="text-[11px] font-medium text-[var(--text-muted)]">Alt + J</span>
+                                    </a>
+                                    <a href="#" class="flex items-center justify-between px-4 py-2 hover:bg-[var(--bg)] transition-colors group">
+                                        <span class="text-[13px] font-medium text-[var(--text-primary)] group-hover:text-[var(--accent)]">Contra</span>
+                                        <span class="text-[11px] font-medium text-[var(--text-muted)]">Alt + O</span>
+                                    </a>
+                                    <a href="#" class="flex items-center justify-between px-4 py-2 hover:bg-[var(--bg)] transition-colors group">
+                                        <span class="text-[13px] font-medium text-[var(--text-primary)] group-hover:text-[var(--accent)]">Bank Transaction</span>
+                                        <span class="text-[11px] font-medium text-[var(--text-muted)]">Alt + K</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <!-- Context Dropdown (Company & Branch) -->
+                    <div class="relative hidden sm:block">
+                        <button id="contextToggle" class="flex items-center gap-2 h-9 px-4 rounded-lg bg-[var(--accent)] hover:brightness-110 border border-[var(--accent)] transition-all shadow-sm group">
+                            <div class="flex flex-col items-end">
+                                <span class="text-[13px] font-black text-white leading-tight tracking-wide">Auraa Crackers</span>
+                                <span class="text-[10px] font-bold text-white/80 leading-tight uppercase tracking-wider">Main Branch</span>
+                            </div>
+                            <svg class="w-4 h-4 ml-1 text-white/70 group-hover:text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div id="contextPanel" class="absolute right-0 mt-2 w-64 bg-white dark:bg-[var(--surface)] rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] border border-[var(--border)] hidden z-[100] overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                            <div class="py-2 px-2 space-y-1">
+                                <!-- Company Group 1 -->
+                                <div class="rounded-lg overflow-hidden">
+                                    <button onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.chevron').classList.toggle('rotate-90')" class="w-full flex items-center justify-between px-3 py-2 hover:bg-[var(--bg)] transition-colors text-left group/comp">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-6 h-6 rounded-full flex items-center justify-center bg-white flex-shrink-0 overflow-hidden shadow-sm border border-[var(--border)]">
+                                                <img src="/static/images/logo1.png" alt="Logo" class="w-full h-full object-cover scale-[1.35]">
+                                            </div>
+                                            <span class="text-[13px] font-bold text-[var(--text-primary)]">Auraa Crackers</span>
+                                        </div>
+                                        <!-- Side arrow chevron (starts unrotated) -->
+                                        <svg class="chevron w-3.5 h-3.5 text-[var(--text-muted)] transition-transform duration-200 group-hover/comp:text-[var(--accent)]" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                                    </button>
+                                    <!-- Branches Container (hidden by default) -->
+                                    <div class="hidden bg-slate-50/50 dark:bg-slate-800/30 pl-[42px] py-1 border-l-2 border-[var(--accent)]/20 ml-6">
+                                        <!-- Selected Branch (Primary Text) -->
+                                        <a href="#" class="block py-1.5 text-[12px] font-bold text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors relative">
+                                            <div class="absolute left-[-11px] top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></div>
+                                            Main Branch
+                                        </a>
+                                        <!-- Other Branch (Muted Text) -->
+                                        <a href="#" class="block py-1.5 text-[12px] font-medium text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors relative">
+                                            Secondary Branch
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <!-- Company Group 2 (Example) -->
+                                <div class="rounded-lg overflow-hidden">
+                                    <button onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.chevron').classList.toggle('rotate-90')" class="w-full flex items-center justify-between px-3 py-2 hover:bg-[var(--bg)] transition-colors text-left group/comp">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-6 h-6 rounded-full flex items-center justify-center bg-white flex-shrink-0 overflow-hidden shadow-sm border border-[var(--border)]">
+                                                <img src="/static/images/logo1.png" alt="Logo" class="w-full h-full object-cover scale-[1.35]">
+                                            </div>
+                                            <span class="text-[13px] font-bold text-[var(--text-primary)]">Auraa Books</span>
+                                        </div>
+                                        <!-- Side arrow chevron -->
+                                        <svg class="chevron w-3.5 h-3.5 text-[var(--text-muted)] transition-transform duration-200 group-hover/comp:text-[var(--accent)]" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                                    </button>
+                                    <!-- Branches Container -->
+                                    <div class="hidden bg-slate-50/50 dark:bg-slate-800/30 pl-[42px] py-1 border-l-2 border-[var(--accent)]/20 ml-6">
+                                        <a href="#" class="block py-1.5 text-[12px] font-medium text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors relative">
+                                            HQ Branch
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="h-6 w-[1px] bg-[var(--border)] mx-1 hidden sm:block"></div>
+
+                    <!-- Utilities -->
+                    <button id="themeToggle" class="topbar-btn">
+                        <!-- Icon toggled by JS -->
+                        <svg class="sun-icon hidden w-[22px] h-[22px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 100 10 5 5 0 000-10z"/></svg>
+                        <svg class="moon-icon w-[22px] h-[22px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+                    </button>
+                    
+                    <div class="relative">
+                        <button id="paletteToggle" class="topbar-btn">
+                            <svg class="w-[22px] h-[22px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9a1 1 0 001-1v-1.17c0-.64.53-1.17 1.17-1.17h1.17a1 1 0 001-1c0-4.97-4.03-9-9-9z"/>
+                                <circle cx="7.5" cy="12.5" r="1.5" fill="#ef4444" stroke="none"/>
+                                <circle cx="9.5" cy="8.5" r="1.5" fill="#f59e0b" stroke="none"/>
+                                <circle cx="13.5" cy="8.5" r="1.5" fill="#10b981" stroke="none"/>
+                                <circle cx="17.5" cy="12.5" r="1.5" fill="#3b82f6" stroke="none"/>
+                            </svg>
+                        </button>
+                        <!-- Theme Panel -->
+                        <div id="themePanel" class="absolute right-0 mt-2 w-48 bg-white dark:bg-[var(--surface)] rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] border border-[var(--border)] hidden z-[100] overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                            <div class="p-3 border-b border-[var(--border)]">
+                                <span class="text-[11px] font-black uppercase tracking-widest text-[var(--text-muted)]">Select Theme</span>
+                            </div>
+                            <div class="p-2 grid grid-cols-1 gap-1">
+                                <button onclick="applyTheme('sky')" class="flex items-center gap-3 w-full p-2 hover:bg-[var(--bg)] rounded-xl transition-all">
+                                    <div class="w-4 h-4 rounded-full bg-[#2F80ED]"></div>
+                                    <span class="text-[13px] font-medium">Sky Blue</span>
+                                </button>
+                                <button onclick="applyTheme('violet')" class="flex items-center gap-3 w-full p-2 hover:bg-[var(--bg)] rounded-xl transition-all">
+                                    <div class="w-4 h-4 rounded-full bg-[#7c3aed]"></div>
+                                    <span class="text-[13px] font-medium">Violet Dream</span>
+                                </button>
+                                <button onclick="applyTheme('teal')" class="flex items-center gap-3 w-full p-2 hover:bg-[var(--bg)] rounded-xl transition-all">
+                                    <div class="w-4 h-4 rounded-full bg-[#0d9488]"></div>
+                                    <span class="text-[13px] font-medium">Forest Teal</span>
+                                </button>
+                                <button onclick="applyTheme('coral')" class="flex items-center gap-3 w-full p-2 hover:bg-[var(--bg)] rounded-xl transition-all">
+                                    <div class="w-4 h-4 rounded-full bg-[#e11d48]"></div>
+                                    <span class="text-[13px] font-medium">Coral Rose</span>
+                                </button>
+                                <button onclick="applyTheme('green')" class="flex items-center gap-3 w-full p-2 hover:bg-[var(--bg)] rounded-xl transition-all">
+                                    <div class="w-4 h-4 rounded-full bg-[#16a34a]"></div>
+                                    <span class="text-[13px] font-medium">Forest Green</span>
+                                </button>
+                                <button onclick="applyTheme('amber')" class="flex items-center gap-3 w-full p-2 hover:bg-[var(--bg)] rounded-xl transition-all">
+                                    <div class="w-4 h-4 rounded-full bg-[#d97706]"></div>
+                                    <span class="text-[13px] font-medium">Golden Amber</span>
+                                </button>
+                            </div>
+                            <div class="p-3 border-t border-[var(--border)] bg-slate-50/50 dark:bg-slate-800/50 flex flex-col gap-2">
+                                <label for="customColorPicker" class="text-[11px] font-black uppercase tracking-widest text-[var(--text-muted)] cursor-pointer hover:text-[var(--text-primary)] transition-colors flex items-center justify-between">
+                                    Custom Color
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                </label>
+                                <div class="relative w-full h-8 rounded-lg overflow-hidden border border-[var(--border)] group hover:border-[var(--accent)] transition-colors">
+                                    <input type="color" id="customColorPicker" class="absolute -top-2 -left-2 w-[150%] h-[150%] cursor-pointer p-0 m-0" onchange="applyTheme('custom', this.value)" value="#3b82f6">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="topbar-btn relative">
+                        <svg class="w-[22px] h-[22px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                        <div class="notif-dot"></div>
+                    </button>
+                    
+                    <div class="h-6 w-[1px] bg-[var(--border)] mx-1"></div>
+                    
+                    <!-- User Profile Avatar -->
+                    <div class="relative">
+                        <button id="profileToggle" class="flex items-center gap-1 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 p-1.5 rounded-full transition-all border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                            <div class="w-7 h-7 rounded-full bg-[#9333ea] flex items-center justify-center text-white text-[11px] font-bold shadow-md">RA</div>
+                            <svg class="w-3 h-3 text-[var(--text-muted)]" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        
+                        <!-- Profile Dropdown -->
+                        <div id="profilePanel" class="absolute right-0 mt-2 w-56 bg-white dark:bg-[var(--surface)] rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] border border-[var(--border)] hidden z-[100] overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                            <div class="py-1">
+                                <a href="#" class="block px-4 py-2.5 text-[13px] text-[var(--text-primary)] hover:bg-[var(--bg)] font-medium">Edit Profile</a>
+                                <a href="#" class="block px-4 py-2.5 text-[13px] text-[var(--text-primary)] hover:bg-[var(--bg)] font-medium">About</a>
+                                <a href="#" class="block px-4 py-2.5 text-[13px] text-[var(--text-primary)] hover:bg-[var(--bg)] font-medium">My Companies</a>
+                                <a href="#" class="block px-4 py-2.5 text-[13px] text-[var(--text-primary)] hover:bg-[var(--bg)] font-medium">My Devices</a>
+                                <a href="#" class="block px-4 py-2.5 text-[13px] text-[var(--text-primary)] hover:bg-[var(--bg)] font-medium">Current Device Settings</a>
+                                <div class="h-[1px] w-full bg-[var(--border)] my-1"></div>
+                                <a href="#" class="block px-4 py-2.5 text-[13px] text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 font-bold">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- MAIN CONTENT -->
+            <main class="flex-1 overflow-y-auto p-6 no-scrollbar">
+                
+<div class="stagger-in">
+
+    <!-- Page Header -->
+    <div class="flex items-center justify-between mb-5">
+        <div>
+            <h1 class="text-[22px] font-extrabold text-[var(--text-primary)] tracking-tight flex items-center gap-2 mb-1">
+                <a href="/settings/" class="text-accent hover:underline cursor-pointer font-extrabold">Settings</a>
+                <span class="text-[var(--text-muted)] font-medium">/</span>
+                Storage
+            </h1>
+            <p class="text-[12px] text-[var(--text-muted)]">Manage storage locations, codes, and suffix number ranges for your inventory.</p>
+        </div>
+        <button onclick="openAddModal()"
+                class="flex items-center gap-2 px-4 py-2 rounded-xl text-white text-[13px] font-semibold shadow-sm hover:opacity-90 active:scale-95 transition-all duration-150"
+                style="background-color: var(--accent);">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            </svg>
+            Add Storage
+        </button>
+    </div>
+
+    <!-- Data Table -->
+    <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl overflow-hidden shadow-sm">
+        <table class="w-full text-[13px]" id="storageTable">
+            <thead>
+                <tr style="background-color: var(--accent);" class="border-b border-[var(--border)]">
+                    <th class="text-left px-5 py-3 font-semibold text-white w-[200px]">Storage Code</th>
+                    <th class="text-left px-5 py-3 font-semibold text-white">Name</th>
+                    <th class="text-left px-5 py-3 font-semibold text-white w-[200px]">Number Range</th>
+                    <th class="px-5 py-3 w-[80px]"></th>
+                </tr>
+            </thead>
+            <tbody id="storageTableBody">
+                <!-- Populated by JS -->
+            </tbody>
+        </table>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="flex flex-col items-center justify-center py-16 text-center">
+            <div class="w-14 h-14 rounded-full bg-[var(--bg)] flex items-center justify-center mb-3">
+                <svg class="w-7 h-7 text-[var(--text-muted)]" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M2 17h20v2H2z"/>
+                    <rect x="3" y="19" width="3" height="3"/><rect x="10.5" y="19" width="3" height="3"/><rect x="18" y="19" width="3" height="3"/>
+                    <path d="M6 7h12v9H6z"/>
+                </svg>
+            </div>
+            <p class="text-[13px] font-semibold text-[var(--text-muted)]">No storage locations found.</p>
+            <p class="text-[12px] text-[var(--text-muted)] mt-1">Click <span class="font-semibold">"Add Storage"</span> to create one.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ──────────────────────────────────────────────
+     MODAL OVERLAY
+────────────────────────────────────────────── -->
+<div id="storageModal" class="fixed inset-0 z-[9998] flex items-center justify-center hidden">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onclick="closeModal()"></div>
+
+    <!-- Dialog -->
+    <div class="relative z-10 w-full max-w-[560px] rounded-2xl overflow-hidden shadow-2xl mx-4">
+
+        <!-- Modal Header — primary color -->
+        <div class="flex items-center justify-between px-6 py-4" style="background-color: var(--accent);">
+            <h2 class="text-[15px] font-bold text-white tracking-tight">Storage Location Details</h2>
+            <!-- × Close — red background -->
+            <button onclick="closeModal()"
+                    class="w-7 h-7 flex items-center justify-center rounded-lg bg-red-500 hover:bg-red-600 text-white text-[16px] font-bold transition-colors duration-150 leading-none">
+                &times;
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="bg-white px-6 py-6 space-y-5">
+
+            <!-- Storage Code -->
+            <div class="flex items-center gap-4">
+                <label class="text-[13px] font-semibold text-slate-700 w-[170px] shrink-0">Storage Code:</label>
+                <input id="modalStorageCode" type="text" placeholder=""
+                       class="w-48 h-9 border border-slate-300 rounded-lg px-3 text-[13px] text-slate-800 outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]/30 transition-all duration-150"/>
+            </div>
+
+            <!-- Storage Name -->
+            <div class="flex items-start gap-4">
+                <label class="text-[13px] font-semibold text-slate-700 w-[170px] shrink-0 pt-2">Storage Name :</label>
+                <div class="flex-1 space-y-2">
+                    <input id="modalStorageName" type="text" placeholder=""
+                           class="w-full h-9 border border-slate-300 rounded-lg px-3 text-[13px] text-slate-800 outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]/30 transition-all duration-150"/>
+                    <!-- Help Text -->
+                    <div class="text-[11.5px] text-slate-500 leading-relaxed space-y-0.5 pl-0.5">
+                        <p>To maintain multiple level storage please provide "-" as separator</p>
+                        <p>Ex: For Building-Chamber-Floor-Pallet, Enter: "B1-C1-GF-A"</p>
+                        <p>Ex: Floor-Pallet, "GF-A" (or)</p>
+                        <p>Ex: Just Pallet alone, "A"</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suffix Number Range -->
+            <div class="flex items-center gap-4">
+                <label class="text-[13px] font-semibold text-slate-700 w-[170px] shrink-0">Suffix Number Range<br><span class="font-normal text-slate-400">(optional):</span></label>
+                <div class="flex items-center gap-3">
+                    <span class="text-[13px] text-slate-600 font-medium">From</span>
+                    <input id="modalRangeFrom" type="number" min="0" placeholder=""
+                           class="w-24 h-9 border border-slate-300 rounded-lg px-3 text-[13px] text-slate-800 outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]/30 transition-all duration-150"/>
+                    <span class="text-[13px] text-slate-600 font-medium">To</span>
+                    <input id="modalRangeTo" type="number" min="0" placeholder=""
+                           class="w-24 h-9 border border-slate-300 rounded-lg px-3 text-[13px] text-slate-800 outline-none focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]/30 transition-all duration-150"/>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="bg-slate-50 border-t border-slate-200 px-6 py-4 flex justify-end gap-3">
+            <!-- Cancel — dark grey -->
+            <button onclick="closeModal()"
+                    class="px-5 py-2 rounded-lg text-[13px] font-semibold text-white bg-slate-700 hover:bg-slate-800 active:scale-95 transition-all duration-150">
+                Cancel
+            </button>
+            <!-- Save — primary color -->
+            <button onclick="saveStorage()"
+                    class="px-5 py-2 rounded-lg text-[13px] font-semibold text-white hover:opacity-90 active:scale-95 transition-all duration-150"
+                    style="background-color: var(--accent);">
+                Save
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="storageToast" class="fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3 bg-slate-900 text-white rounded-xl shadow-2xl opacity-0 translate-y-4 pointer-events-none transition-all duration-300">
+    <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+    </svg>
+    <span id="storageToastText" class="text-[12px] font-semibold tracking-wide"></span>
+</div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- BACKGROUND -->
+    <div class="mesh-bg"></div>
+
+    <!-- MODAL CONTAINER -->
+    <div id="modalOverlay" class="fixed inset-0 z-[9999] flex items-center justify-center p-6 hidden">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity" onclick="closeModal()"></div>
+        <div id="modalContent" class="w-full h-full relative z-10 flex items-center justify-center pointer-events-none">
+            <div class="w-full h-full flex items-center justify-center pointer-events-auto">
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- GLOBAL CANCEL CONFIRMATION MODAL -->
+    <div id="globalCancelConfirmModal" class="hidden fixed inset-0 z-[10000] items-center justify-center p-6" style="background-color: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px);">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full mx-4 transform transition-all border border-slate-100">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center shrink-0 border border-rose-100">
+                    <svg class="w-6 h-6 text-rose-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                </div>
+                <div>
+                    <p class="text-[14px] font-bold text-slate-700 mt-0.5">Are you sure to cancel this action?</p>
+                </div>
+            </div>
+            <div class="flex gap-3 justify-end mt-2">
+                <button onclick="hideGlobalCancelModal()" class="px-6 py-2.5 rounded-xl text-[13px] font-black text-white bg-slate-700 hover:bg-slate-800 transition-all confirm-cancel-btn uppercase tracking-widest cursor-pointer shadow-lg">Cancel</button>
+                <button id="globalCancelOkBtn" class="px-6 py-2.5 rounded-xl text-[13px] font-black text-white bg-rose-500 hover:bg-rose-600 shadow-lg shadow-rose-500/20 transition-all confirm-cancel-btn uppercase tracking-widest cursor-pointer">Ok</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/js/theme.js"></script>
+    <script src="/static/js/app.js"></script>
+    <script>
+        // Global Cancel Interceptor
+        let pendingCancelAction = null;
+
+        document.addEventListener('click', function(e) {
+            let target = e.target.closest('[onclick]');
+            if (!target) return;
+
+            let onclickAttr = target.getAttribute('onclick');
+            if (!onclickAttr) return;
+
+            let attrLower = onclickAttr.toLowerCase();
+            let isModalAction = (attrLower.includes('close') || attrLower.includes('toggle')) && attrLower.includes('modal');
+
+            if (isModalAction) {
+                // Ignore the confirm modal's own buttons
+                if (target.classList.contains('confirm-cancel-btn')) return;
+
+                // Only intercept if the button specifically says "Cancel" (ignores X buttons)
+                let text = target.innerText.trim().toLowerCase();
+                if (text === 'cancel') {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    pendingCancelAction = function() {
+                        try {
+                            new Function('event', onclickAttr).call(target, e);
+                        } catch (err) {
+                            console.error('Error executing original close function:', err);
+                        }
+                    };
+
+                    const confirmModal = document.getElementById('globalCancelConfirmModal');
+                    confirmModal.classList.remove('hidden');
+                    confirmModal.classList.add('flex');
+                }
+            }
+        }, true); // Important: capture phase intercepts before inline onclick runs
+
+        function hideGlobalCancelModal() {
+            const confirmModal = document.getElementById('globalCancelConfirmModal');
+            confirmModal.classList.add('hidden');
+            confirmModal.classList.remove('flex');
+            pendingCancelAction = null;
+        }
+
+        document.getElementById('globalCancelOkBtn').addEventListener('click', function() {
+            if (pendingCancelAction) {
+                pendingCancelAction();
+            }
+            hideGlobalCancelModal();
+        });
+    </script>
+    
+<script>
+    // ── State ──────────────────────────────────────────
+    let storageList = [{"id": 1, "code": "RACK-1", "name": "Main Rack", "from": "A1", "to": "A10"}];
+    let editIndex = -1;
+
+    // ── Render Table ───────────────────────────────────
+    function renderTable() {
+        const tbody = document.getElementById('storageTableBody');
+        const empty = document.getElementById('emptyState');
+
+        if (storageList.length === 0) {
+            tbody.innerHTML = '';
+            empty.classList.remove('hidden');
+            return;
+        }
+        empty.classList.add('hidden');
+
+        tbody.innerHTML = storageList.map((row, i) => {
+            const range = (row.from !== '' && row.to !== '') ? `${row.from} – ${row.to}` : (row.from || row.to || '—');
+            return `
+            <tr class="border-b border-[var(--border)] hover:bg-[var(--bg)] transition-colors duration-100 group">
+                <td class="px-5 py-3 font-mono text-[13px] text-[var(--text-primary)]">${escHtml(row.code)}</td>
+                <td class="px-5 py-3 text-[13px] text-[var(--text-primary)]">${escHtml(row.name)}</td>
+                <td class="px-5 py-3 text-[13px] text-[var(--text-muted)]">${escHtml(range)}</td>
+                <td class="px-5 py-3">
+                    <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                        <button onclick="editStorage(${i})" title="Edit"
+                                class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-[var(--bg)] text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors duration-150">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                        </button>
+                        <button onclick="deleteStorage(${i})" title="Delete"
+                                class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-50 text-[var(--text-muted)] hover:text-red-500 transition-colors duration-150">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                        </button>
+                    </div>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    // ── Modal ──────────────────────────────────────────
+    function openAddModal() {
+        editIndex = -1;
+        document.getElementById('modalStorageCode').value = '';
+        document.getElementById('modalStorageName').value = '';
+        document.getElementById('modalRangeFrom').value = '';
+        document.getElementById('modalRangeTo').value = '';
+        document.getElementById('storageModal').classList.remove('hidden');
+    }
+
+    function editStorage(i) {
+        editIndex = i;
+        const row = storageList[i];
+        document.getElementById('modalStorageCode').value = row.code;
+        document.getElementById('modalStorageName').value = row.name;
+        document.getElementById('modalRangeFrom').value = row.from;
+        document.getElementById('modalRangeTo').value = row.to;
+        document.getElementById('storageModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document.getElementById('storageModal').classList.add('hidden');
+    }
+
+    function saveStorage() {
+        const id = editIndex >= 0 ? storageList[editIndex].id : null;
+        const code = document.getElementById('modalStorageCode').value.trim();
+        const name = document.getElementById('modalStorageName').value.trim();
+        const from = document.getElementById('modalRangeFrom').value.trim();
+        const to   = document.getElementById('modalRangeTo').value.trim();
+
+        if (!code || !name) {
+            showToast('Please fill in Storage Code and Name.', true);
+            return;
+        }
+
+        const entry = { id, code, name, from, to };
+
+        fetch('/settings/storage/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': 'cgmuMIvAuRaZzEgRl878VR4Xhod9O7l4lj2bGiaL01eVC4yKUdtIXFNVG4QyyF0H'
+            },
+            body: JSON.stringify({ action: 'save', data: entry })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                showToast(data.message);
+                setTimeout(() => location.reload(), 800); // Reload to get fresh list with IDs
+            } else {
+                showToast(data.message || 'Error saving storage location', true);
+            }
+        })
+        .catch(err => {
+            console.error('Save error:', err);
+            showToast('Error saving storage location', true);
+        });
+        
+        closeModal();
+    }
+
+    function deleteStorage(i) {
+        const row = storageList[i];
+        if (!row.id) {
+            // Unsaved row
+            storageList.splice(i, 1);
+            renderTable();
+            showToast('Storage location deleted.');
+            return;
+        }
+        
+        fetch('/settings/storage/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': 'cgmuMIvAuRaZzEgRl878VR4Xhod9O7l4lj2bGiaL01eVC4yKUdtIXFNVG4QyyF0H'
+            },
+            body: JSON.stringify({ action: 'delete', id: row.id })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                showToast(data.message);
+                setTimeout(() => location.reload(), 800);
+            } else {
+                showToast(data.message || 'Error deleting storage location', true);
+            }
+        })
+        .catch(err => {
+            console.error('Delete error:', err);
+            showToast('Error deleting storage location', true);
+        });
+    }
+
+    // ── Toast ──────────────────────────────────────────
+    let toastTimer = null;
+    function showToast(msg, isError = false) {
+        const toast = document.getElementById('storageToast');
+        document.getElementById('storageToastText').innerText = msg;
+        toast.classList.toggle('bg-red-700', isError);
+        toast.classList.toggle('bg-slate-900', !isError);
+        toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+        toast.classList.add('opacity-100', 'translate-y-0');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+            toast.classList.remove('opacity-100', 'translate-y-0');
+        }, 2200);
+    }
+
+    // ── Utils ──────────────────────────────────────────
+    function escHtml(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ── Init ───────────────────────────────────────────
+    renderTable();
+</script>
+
+</body>
+</html>

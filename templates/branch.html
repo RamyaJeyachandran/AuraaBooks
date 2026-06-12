@@ -255,9 +255,26 @@
                         <input type="text" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all">
                         <div id="gstinMenu" class="hidden absolute top-[100%] right-0 mt-1 w-56 bg-white rounded-xl shadow-xl border border-slate-100 p-3 z-50">
                             <label class="flex items-center gap-3 cursor-pointer">
-                                <input type="checkbox" class="w-4 h-4 rounded border-slate-200 accent-[var(--accent)]">
+                                <input type="checkbox" id="branchIsMsme" onchange="toggleBranchMsmeFields()" class="w-4 h-4 rounded border-slate-200 accent-[var(--accent)]">
                                 <span class="text-[12px] font-bold text-slate-600">Registered in MSME/Udyam</span>
                             </label>
+                            
+                            <!-- MSME fields placed INSIDE gstinMenu dropdown -->
+                            <div id="branchMsmeFields" class="hidden mt-3 space-y-3 pt-3 border-t border-slate-100">
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">MSME Type</label>
+                                    <select id="branchMsmeType" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all appearance-none cursor-pointer">
+                                        <option value="">Select Type</option>
+                                        <option value="micro">Micro</option>
+                                        <option value="small">Small</option>
+                                        <option value="medium">Medium</option>
+                                    </select>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">MSME Reg. No</label>
+                                    <input type="text" id="branchMsmeRegNo" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -443,31 +460,192 @@
         <!-- Header -->
         <div class="px-8 py-6 bg-blue-500 flex items-center justify-between">
             <h3 class="text-[20px] font-black text-white uppercase tracking-wider">MANAGE TAGS</h3>
-            <button onclick="closeSubModal('ManageTags')" class="px-6 py-2 rounded-xl bg-slate-800/80 text-white text-[11px] font-black uppercase tracking-widest hover:bg-slate-900 transition-all">CANCEL</button>
+            <button onclick="closeSubModal('ManageTags')" class="w-8 h-8 flex items-center justify-center rounded-xl bg-red-500 text-white hover:bg-red-600 transition-all shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
         </div>
 
         <!-- Body -->
         <div class="p-10 space-y-8">
             <!-- Add Tag Input Row -->
             <div class="flex items-center gap-4">
-                <input type="text" placeholder="Enter Tag..." class="flex-1 h-14 bg-slate-50 border border-slate-100 rounded-2xl px-6 text-[15px] font-bold text-slate-700 outline-none focus:bg-white focus:border-blue-200 shadow-inner transition-all">
-                <button class="h-14 px-8 bg-blue-500 text-white rounded-2xl text-[14px] font-black uppercase tracking-widest hover:brightness-110 shadow-lg shadow-blue-500/20 transition-all">ADD TAG</button>
+                <input type="text" id="newTagName" placeholder="Enter Tag..." class="flex-1 h-14 bg-slate-50 border border-slate-100 rounded-2xl px-6 text-[15px] font-bold text-slate-700 outline-none focus:bg-white focus:border-blue-200 shadow-inner transition-all">
+                <button id="addTagBtn" onclick="saveTag()" class="h-14 px-8 bg-blue-500 text-white rounded-2xl text-[14px] font-black uppercase tracking-widest hover:brightness-110 shadow-lg shadow-blue-500/20 transition-all">ADD TAG</button>
             </div>
 
             <!-- Tags List -->
-            <div class="space-y-4 max-h-[300px] overflow-y-auto no-scrollbar">
-                <div class="flex items-center justify-between py-4 border-b border-slate-50 group">
-                    <span class="text-[16px] font-bold text-slate-700">Retail</span>
-                    <span class="px-3 py-1 bg-slate-50 text-slate-400 text-[13px] font-bold rounded-full">2</span>
-                </div>
-                <div class="flex items-center justify-between py-4 border-b border-slate-50 group">
-                    <span class="text-[16px] font-bold text-slate-700">Wholesale</span>
-                    <span class="px-3 py-1 bg-slate-50 text-slate-400 text-[13px] font-bold rounded-full">1</span>
-                </div>
+            <div id="tagsList" class="space-y-4 max-h-[300px] overflow-y-auto no-scrollbar">
+                <!-- Populated by JS -->
             </div>
         </div>
     </div>
 </div>
+
+<script>
+var globalTags = [];
+var editingTagId = null;
+
+async function fetchTags() {
+    try {
+        const response = await fetch('/tags/');
+        const result = await response.json();
+        if (result.status === 'success') {
+            globalTags = result.tags;
+            renderTagsList();
+            
+            // Re-render dropdowns if the respective functions exist on the page
+            if (typeof renderBranchTagsDropdown === 'function') {
+                renderBranchTagsDropdown();
+            }
+            if (typeof renderFranchiseeTagsDropdown === 'function') {
+                renderFranchiseeTagsDropdown();
+            }
+        }
+    } catch (e) {
+        console.error('Failed to fetch tags', e);
+    }
+}
+
+function renderTagsList() {
+    const list = document.getElementById('tagsList');
+    if (!list) return;
+    list.innerHTML = '';
+    
+    globalTags.forEach(tag => {
+        const div = document.createElement('div');
+        div.className = 'flex items-center justify-between py-3 px-4 bg-slate-100 rounded text-[14px] text-slate-700 group';
+        
+        const safeName = tag.name.replace(/'/g, "\\'");
+        
+        div.innerHTML = `
+            <span class="w-1/2 font-semibold truncate">${tag.name}</span>
+            <span class="w-1/4 text-center font-bold text-slate-600">${tag.count}</span>
+            <div class="w-1/4 flex items-center justify-end gap-3">
+                <button onclick="editTag(${tag.id}, '${safeName}')" class="text-[var(--accent)] hover:opacity-70 transition-all focus:outline-none">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                </button>
+                <button onclick="deleteTag(${tag.id})" class="text-red-500 hover:opacity-70 transition-all focus:outline-none">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                </button>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+}
+
+async function saveTag() {
+    const input = document.getElementById('newTagName');
+    const name = input.value.trim();
+    if (!name) {
+        alert('Please enter a tag name');
+        return;
+    }
+
+    const btn = document.getElementById('addTagBtn');
+    const originalText = btn.innerText;
+    btn.innerHTML = `<svg class="w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>`;
+    btn.disabled = true;
+
+    try {
+        const payload = { name: name };
+        let method = 'POST';
+        if (editingTagId) {
+            payload.id = editingTagId;
+            method = 'PUT';
+        }
+
+        const response = await fetch('/tags/', {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+        if (result.status === 'success') {
+            input.value = '';
+            editingTagId = null;
+            btn.innerText = 'Add Tag';
+            fetchTags(); 
+        } else {
+            alert(result.message);
+            btn.innerText = originalText;
+        }
+    } catch (e) {
+        console.error(e);
+        alert('Failed to save tag');
+        btn.innerText = originalText;
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+function editTag(id, currentName) {
+    editingTagId = id;
+    const input = document.getElementById('newTagName');
+    input.value = currentName;
+    document.getElementById('addTagBtn').innerText = 'Update Tag';
+    input.focus();
+}
+
+async function deleteTag(id, btnElement) {
+    if (btnElement) {
+        btnElement.innerHTML = `<svg class="w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>`;
+        btnElement.disabled = true;
+    }
+
+    try {
+        const response = await fetch('/tags/', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ id: id })
+        });
+        const result = await response.json();
+        if (result.status === 'success') {
+            fetchTags(); 
+        } else {
+            alert(result.message);
+            if (btnElement) {
+                btnElement.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>`;
+                btnElement.disabled = false;
+            }
+        }
+    } catch (e) {
+        console.error(e);
+        alert('Failed to delete tag');
+        if (btnElement) {
+            btnElement.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>`;
+            btnElement.disabled = false;
+        }
+    }
+}
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetchTags();
+});
+</script>
 {% endblock %}
 
 {% block extra_js %}
@@ -533,6 +711,15 @@ function toggleBranchDropdown(tabId) {
         } else {
             drop.classList.add('hidden');
         }
+    }
+}
+function toggleBranchMsmeFields() {
+    const isChecked = document.getElementById('branchIsMsme').checked;
+    const msmeFields = document.getElementById('branchMsmeFields');
+    if (isChecked) {
+        msmeFields.classList.remove('hidden');
+    } else {
+        msmeFields.classList.add('hidden');
     }
 }
 function toggleShippingFields() {

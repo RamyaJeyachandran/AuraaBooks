@@ -56,16 +56,14 @@
         <div id="profileViewMode" class="flex justify-between items-start gap-4">
             <div class="space-y-4">
                 <div>
-                    <h2 id="viewCompName" class="text-[18px] font-extrabold text-[var(--text-primary)]">Auraa Crackers</h2>
-                    <p id="viewCompAddress" class="text-[13px] text-[var(--text-secondary)] mt-1 max-w-2xl leading-relaxed">
-                        S.No.226/5, D.No.1/177_5_20, Sivakasi Vembakottai Main Road, Pernaikenpatti Village, Sivakasi Taluk, Tamilnadu - 626 189., Sivakasi - 626 189, Tamil Nadu, India
-                    </p>
+                    <h2 id="viewCompName" class="text-[18px] font-extrabold text-[var(--text-primary)]">{{ company.name|default:"Company Name" }}</h2>
+                    <p id="viewCompAddress" class="text-[13px] text-[var(--text-secondary)] mt-1 max-w-2xl leading-relaxed">{{ company.address1|default:"" }}, {{ company.address2|default:"" }}, {{ company.city|default:"" }} - {{ company.postal_code|default:"" }}, {{ company.state|default:"" }}, {{ company.country|default:"" }}</p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-12 text-[13px] text-[var(--text-secondary)]">
-                    <p>Phone : <span id="viewCompPhone" class="font-medium text-[var(--text-primary)]">-</span></p>
-                    <p>E-mail : <span id="viewCompEmail" class="font-medium text-[var(--text-primary)]">-</span></p>
-                    <p class="md:col-span-2">Time Zone : <span id="viewCompTimeZone" class="font-medium text-[var(--text-primary)]">(UTC +5:30) Indian Standard Time, Sri Lanka Time</span></p>
-                    <p class="md:col-span-2">Business Type : <span id="viewCompBusinessType" class="font-medium text-[var(--text-primary)]">Retail Shop</span></p>
+                    <p>Phone : <span id="viewCompPhone" class="font-medium text-[var(--text-primary)]">{{ company.mobileNo|default:"-" }}</span></p>
+                    <p>E-mail : <span id="viewCompEmail" class="font-medium text-[var(--text-primary)]">{{ company.emailId|default:"-" }}</span></p>
+                    <p class="md:col-span-2">Time Zone : <span id="viewCompTimeZone" class="font-medium text-[var(--text-primary)]">{{ company.timezone|default:"(UTC +5:30) Indian Standard Time, Sri Lanka Time" }}</span></p>
+                    <p class="md:col-span-2">Business Type : <span id="viewCompBusinessType" class="font-medium text-[var(--text-primary)]">{{ company.business_type|default:"Retail Shop" }}</span></p>
                 </div>
             </div>
             <button onclick="toggleProfileEdit(true)" class="px-5 py-1.5 bg-[var(--accent)] hover:brightness-110 text-white rounded-lg text-[12px] font-bold shadow-sm transition-all cursor-pointer">
@@ -86,26 +84,26 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-[13px]">
                 <div class="md:col-span-2 space-y-1.5">
                     <label class="block font-bold text-[var(--text-primary)]">Name <span class="text-rose-500">*</span></label>
-                    <input type="text" id="editCompName" value="Auraa Crackers" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                    <input type="text" id="editCompName" value="{{ company.name|default:"" }}" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
                 </div>
 
                 <div class="space-y-1.5">
                     <label class="block font-bold text-[var(--text-primary)]">Address Line 1</label>
-                    <input type="text" id="editCompAddr1" value="S.No.226/5, D.No.1/177_5_20, Sivakasi Vembakottai Main Road" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                    <input type="text" id="editCompAddr1" value="{{ company.address1|default:"" }}" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
                 </div>
                 <div class="space-y-1.5">
                     <label class="block font-bold text-[var(--text-primary)]">Address Line 2</label>
-                    <input type="text" id="editCompAddr2" value="Pernaikenpatti Village, Sivakasi Taluk, Tamilnadu - 626 189." class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                    <input type="text" id="editCompAddr2" value="{{ company.address2|default:"" }}" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
                 </div>
 
                 <div class="grid grid-cols-2 gap-4 md:col-span-2">
                     <div class="space-y-1.5">
                         <label class="block font-bold text-[var(--text-primary)]">City</label>
-                        <input type="text" id="editCompCity" value="Sivakasi" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                        <input type="text" id="editCompCity" value="{{ company.city|default:"" }}" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
                     </div>
                     <div class="space-y-1.5">
                         <label class="block font-bold text-[var(--text-primary)]">Postal code</label>
-                        <input type="text" id="editCompPostal" value="626 189" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                        <input type="text" id="editCompPostal" value="{{ company.postal_code|default:"" }}" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
                     </div>
                 </div>
 
@@ -113,27 +111,27 @@
                     <div class="space-y-1.5">
                         <label class="block font-bold text-[var(--text-primary)]">Country <span class="text-rose-500">*</span></label>
                         <select id="editCompCountry" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
-                            <option value="India" selected>India</option>
-                            <option value="Sri Lanka">Sri Lanka</option>
+                            <option value="India" {% if company.country == "India" %}selected{% endif %}>India</option>
+                            <option value="Sri Lanka" {% if company.country == "Sri Lanka" %}selected{% endif %}>Sri Lanka</option>
                         </select>
                     </div>
                     <div class="space-y-1.5">
                         <label class="block font-bold text-[var(--text-primary)]">State <span class="text-rose-500">*</span></label>
                         <select id="editCompState" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
-                            <option value="Tamil Nadu" selected>Tamil Nadu</option>
-                            <option value="Karnataka">Karnataka</option>
-                            <option value="Kerala">Kerala</option>
+                            <option value="Tamil Nadu" {% if company.state == "Tamil Nadu" %}selected{% endif %}>Tamil Nadu</option>
+                            <option value="Karnataka" {% if company.state == "Karnataka" %}selected{% endif %}>Karnataka</option>
+                            <option value="Kerala" {% if company.state == "Kerala" %}selected{% endif %}>Kerala</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="space-y-1.5">
                     <label class="block font-bold text-[var(--text-primary)]">Phone</label>
-                    <input type="text" id="editCompPhone" value="" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                    <input type="text" id="editCompPhone" value="{{ company.mobileNo|default:"" }}" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
                 </div>
                 <div class="space-y-1.5">
                     <label class="block font-bold text-[var(--text-primary)]">E-Mail</label>
-                    <input type="email" id="editCompEmail" value="" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                    <input type="email" id="editCompEmail" value="{{ company.emailId|default:"" }}" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
                 </div>
 
                 <div class="space-y-1.5">
@@ -156,15 +154,15 @@
                             </span>
                         </span>
                     </label>
-                    <textarea id="editCompAddInfo" rows="2" class="w-full p-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none resize-none"></textarea>
+                    <textarea id="editCompAddInfo" rows="2" class="w-full p-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none resize-none">{{ company.notes|default:"" }}</textarea>
                 </div>
 
                 <div class="space-y-1.5">
                     <label class="block font-bold text-[var(--text-primary)]">Business Type</label>
                     <select id="editCompBusType" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
-                        <option value="Retail Shop" selected>Retail Shop</option>
-                        <option value="Wholesale">Wholesale</option>
-                        <option value="Manufacturing">Manufacturing</option>
+                        <option value="Retail Shop" {% if company.business_type == "Retail Shop" %}selected{% endif %}>Retail Shop</option>
+                        <option value="Wholesale" {% if company.business_type == "Wholesale" %}selected{% endif %}>Wholesale</option>
+                        <option value="Manufacturing" {% if company.business_type == "Manufacturing" %}selected{% endif %}>Manufacturing</option>
                     </select>
                 </div>
 
@@ -194,7 +192,7 @@
                             <span class="company-tooltip-box text-[11px] font-semibold text-[var(--text-secondary)]">Goods and Services Tax Identification Number.</span>
                         </span>
                     </span>
-                    <p id="viewTaxGSTIN" class="text-[14px] font-bold text-[var(--text-secondary)]">00XXXXX0000X0Z0</p>
+                    <p id="viewTaxGSTIN" class="text-[14px] font-bold text-[var(--text-secondary)]">{{ company.taxId|default:"-" }}</p>
                 </div>
                 <div class="space-y-1">
                     <span class="text-[12px] font-bold text-[var(--text-muted)] flex items-center gap-1">
@@ -206,7 +204,7 @@
                             <span class="company-tooltip-box text-[11px] font-semibold text-[var(--text-secondary)]">Permanent Account Number.</span>
                         </span>
                     </span>
-                    <p id="viewTaxPAN" class="text-[14px] font-bold text-[var(--text-secondary)]">XXXXX0000X</p>
+                    <p id="viewTaxPAN" class="text-[14px] font-bold text-[var(--text-secondary)]">{{ company.registrationNo|default:"-" }}</p>
                 </div>
                 <div class="md:col-span-2 py-1 flex items-center gap-2">
                     <input type="checkbox" id="viewTaxMSME" disabled class="rounded border-slate-300">
@@ -251,11 +249,11 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-[13px]">
                 <div class="space-y-1.5">
                     <label class="block font-bold text-[var(--text-primary)]">GSTIN</label>
-                    <input type="text" id="editTaxGSTIN" value="00XXXXX0000X0Z0" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                    <input type="text" id="editTaxGSTIN" value="{{ company.taxId|default:"" }}" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
                 </div>
                 <div class="space-y-1.5">
                     <label class="block font-bold text-[var(--text-primary)]">PAN</label>
-                    <input type="text" id="editTaxPAN" value="XXXXX0000X" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
+                    <input type="text" id="editTaxPAN" value="{{ company.registrationNo|default:"" }}" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[13px] focus:border-accent outline-none">
                 </div>
                 <div class="md:col-span-2 flex items-center gap-2 py-1">
                     <input type="checkbox" id="editTaxMSME" class="rounded border-slate-300">
@@ -419,7 +417,7 @@
 </div>
 
 <!-- Status Toast -->
-<div id="compToast" class="fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3.5 bg-slate-900 text-white rounded-xl shadow-2xl opacity-0 translate-y-4 pointer-events-none transition-all duration-300">
+<div id="compToast" class="fixed top-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3.5 bg-[var(--accent)] text-white rounded-xl shadow-2xl opacity-0 -translate-y-4 pointer-events-none transition-all duration-300">
     <div id="compToastIcon" class="flex items-center justify-center"></div>
     <span id="compToastText" class="text-[13px] font-semibold tracking-wide"></span>
 </div>
@@ -442,32 +440,51 @@
             return;
         }
 
-        showToast('Saving profile details...', 'loading');
-        setTimeout(() => {
-            document.getElementById('viewCompName').innerText = name;
-            
-            const addr1 = document.getElementById('editCompAddr1').value.trim();
-            const addr2 = document.getElementById('editCompAddr2').value.trim();
-            const city = document.getElementById('editCompCity').value.trim();
-            const postal = document.getElementById('editCompPostal').value.trim();
-            const country = document.getElementById('editCompCountry').value;
-            const state = document.getElementById('editCompState').value;
-            
-            document.getElementById('viewCompAddress').innerText = `${addr1}, ${addr2}, ${city} - ${postal}, ${state}, ${country}`;
-            
-            const phone = document.getElementById('editCompPhone').value.trim();
-            document.getElementById('viewCompPhone').innerText = phone || '-';
-            
-            const email = document.getElementById('editCompEmail').value.trim();
-            document.getElementById('viewCompEmail').innerText = email || '-';
-            
-            document.getElementById('viewCompTimeZone').innerText = document.getElementById('editCompTimeZone').value;
-            document.getElementById('viewCompBusinessType').innerText = document.getElementById('editCompBusType').value;
+        const data = {
+            name: name,
+            address1: document.getElementById('editCompAddr1').value.trim(),
+            address2: document.getElementById('editCompAddr2').value.trim(),
+            city: document.getElementById('editCompCity').value.trim(),
+            postal_code: document.getElementById('editCompPostal').value.trim(),
+            country: document.getElementById('editCompCountry').value,
+            state: document.getElementById('editCompState').value,
+            phone: document.getElementById('editCompPhone').value.trim(),
+            email: document.getElementById('editCompEmail').value.trim(),
+            timezone: document.getElementById('editCompTimeZone').value,
+            business_type: document.getElementById('editCompBusType').value,
+            notes: document.getElementById('editCompAddInfo').value.trim()
+        };
 
-            toggleProfileEdit(false);
-            showToast('Company profile updated!', 'success');
-            hideToast(1500);
-        }, 600);
+        showToast('Saving profile details...', 'loading');
+        
+        fetch('{% url "company-settings" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            if(result.status === 'success') {
+                document.getElementById('viewCompName').innerText = data.name;
+                document.getElementById('viewCompAddress').innerText = `${data.address1}, ${data.address2}, ${data.city} - ${data.postal_code}, ${data.state}, ${data.country}`;
+                document.getElementById('viewCompPhone').innerText = data.phone || '-';
+                document.getElementById('viewCompEmail').innerText = data.email || '-';
+                document.getElementById('viewCompTimeZone').innerText = data.timezone;
+                document.getElementById('viewCompBusinessType').innerText = data.business_type;
+
+                toggleProfileEdit(false);
+                showToast('Company profile updated!', 'success');
+                hideToast(1500);
+            } else {
+                showToast(result.message || 'Error saving profile.', 'error');
+            }
+        })
+        .catch(error => {
+            showToast('Network error while saving.', 'error');
+            console.error(error);
+        });
     }
 
     // 2. Taxation section helpers
@@ -477,18 +494,40 @@
     }
 
     function saveTaxation() {
-        showToast('Saving taxation settings...', 'loading');
-        setTimeout(() => {
-            document.getElementById('viewTaxGSTIN').innerText = document.getElementById('editTaxGSTIN').value.trim() || '-';
-            document.getElementById('viewTaxPAN').innerText = document.getElementById('editTaxPAN').value.trim() || '-';
-            document.getElementById('viewTaxMSME').checked = document.getElementById('editTaxMSME').checked;
-            document.getElementById('viewTaxRate').innerText = document.getElementById('editTaxRate').value;
-            document.getElementById('viewTaxBranch').innerText = document.getElementById('editTaxBranch').value.trim() || 'Main Branch';
+        const data = {
+            taxId: document.getElementById('editTaxGSTIN').value.trim(),
+            pan: document.getElementById('editTaxPAN').value.trim()
+        };
 
-            toggleTaxationEdit(false);
-            showToast('Taxation settings updated!', 'success');
-            hideToast(1500);
-        }, 600);
+        showToast('Saving taxation settings...', 'loading');
+        
+        fetch('{% url "company-settings" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            if(result.status === 'success') {
+                document.getElementById('viewTaxGSTIN').innerText = data.taxId || '-';
+                document.getElementById('viewTaxPAN').innerText = data.pan || '-';
+                document.getElementById('viewTaxMSME').checked = document.getElementById('editTaxMSME').checked;
+                document.getElementById('viewTaxRate').innerText = document.getElementById('editTaxRate').value;
+                document.getElementById('viewTaxBranch').innerText = document.getElementById('editTaxBranch').value.trim() || 'Main Branch';
+
+                toggleTaxationEdit(false);
+                showToast('Taxation settings updated!', 'success');
+                hideToast(1500);
+            } else {
+                showToast(result.message || 'Error saving taxation settings.', 'error');
+            }
+        })
+        .catch(error => {
+            showToast('Network error while saving.', 'error');
+            console.error(error);
+        });
     }
 
     // 3. Logo preview logic
@@ -593,14 +632,14 @@
             iconDiv.innerHTML = '<svg class="w-4.5 h-4.5 text-rose-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>';
         }
 
-        toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+        toast.classList.remove('opacity-0', '-translate-y-4', 'pointer-events-none');
         toast.classList.add('opacity-100', 'translate-y-0');
     }
 
     function hideToast(delay = 1500) {
         const toast = document.getElementById('compToast');
         compToastTimeout = setTimeout(() => {
-            toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+            toast.classList.add('opacity-0', '-translate-y-4', 'pointer-events-none');
             toast.classList.remove('opacity-100', 'translate-y-0');
         }, delay);
     }

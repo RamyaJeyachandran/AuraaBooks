@@ -8,6 +8,11 @@ env = environ.Env(
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Read .env file
+env_file = BASE_DIR / '.env'
+if env_file.exists():
+    environ.Env.read_env(env_file)
+
 # Quick-start development settings - unsuitable for production
 SECRET_KEY = env('SECRET_KEY', default='django-insecure-project-key-2026')
 DEBUG = env('DEBUG')
@@ -54,6 +59,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.core.context_processors.sidebar_modules',
             ],
         },
     },
@@ -101,3 +107,6 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
+
+# Max memory size for request body (50MB) to allow large base64 file uploads
+DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800

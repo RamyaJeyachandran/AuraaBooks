@@ -127,9 +127,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Dropdown Toggles
     const dropdowns = [
         { toggle: 'paletteToggle', panel: 'themePanel' },
-        { toggle: 'branchToggle', panel: 'branchPanel' },
-        { toggle: 'companyToggle', panel: 'companyPanel' },
-        { toggle: 'profileToggle', panel: 'profilePanel' }
+        { toggle: 'contextToggle', panel: 'contextPanel' },
+        { toggle: 'profileToggle', panel: 'profilePanel' },
+        { toggle: 'quickAddToggle', panel: 'quickAddPanel' }
     ];
 
     dropdowns.forEach(({ toggle, panel }) => {

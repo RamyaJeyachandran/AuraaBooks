@@ -28,7 +28,7 @@ services:
       - .:/app
     environment:
       - DEBUG=1
-      - DATABASE_URL=postgres://abuser:abpass@db:5432/abproject_db
+      # - DATABASE_URL=postgres://abuser:abpass@db:5432/abproject_db
       - REDIS_URL=redis://redis:6379/0
     ports:
       - "8001:8000"
@@ -44,7 +44,7 @@ services:
     volumes:
       - .:/app
     environment:
-      - DATABASE_URL=postgres://abuser:abpass@db:5432/abproject_db
+      # - DATABASE_URL=postgres://abuser:abpass@db:5432/abproject_db
       - REDIS_URL=redis://redis:6379/0
     depends_on:
       db:

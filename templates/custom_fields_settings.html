@@ -40,17 +40,17 @@
     </div>
 
     <!-- Custom Fields Grid -->
-    <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-sm overflow-hidden">
+    <div class="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-sm">
         <table class="w-full text-left border-collapse text-[13px]">
             <thead>
                 <!-- Styled table headers in primary color -->
                 <tr class="bg-[var(--accent)] text-white text-[12px] font-bold border-b border-[var(--border)]/60 select-none">
-                    <th class="py-3.5 px-6 w-12 text-center"></th> <!-- Drag handle col -->
+                    <th class="py-3.5 px-6 w-12 text-center rounded-tl-2xl"></th> <!-- Drag handle col -->
                     <th class="py-3.5 px-6">Name</th>
                     <th class="py-3.5 px-6">Type</th>
                     <th class="py-3.5 px-6 text-center">Grid</th>
                     <th class="py-3.5 px-6 text-center">Active</th>
-                    <th class="py-3.5 px-6 text-right pr-12 w-28">Actions</th>
+                    <th class="py-3.5 px-6 text-right pr-12 w-28 rounded-tr-2xl">Actions</th>
                 </tr>
             </thead>
             <tbody id="customFieldsTableBody" class="divide-y divide-[var(--border)]/60 text-[var(--text-primary)]">
@@ -79,14 +79,18 @@
                 <div class="space-y-1.5">
                     <label class="block font-bold text-[var(--text-primary)]">Module <span class="text-rose-500">*</span></label>
                     <select id="modalModule" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] focus:border-accent outline-none font-semibold">
+                        {% for module in available_modules %}
+                        <option value="{{ module.id }}">{{ module.module_name }}</option>
+                        {% empty %}
                         <option value="Invoice">Invoice</option>
                         <option value="Delivery Challan">Delivery Challan</option>
                         <option value="Customer">Customer</option>
                         <option value="Supplier">Supplier</option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="space-y-1.5 relative">
-                    <label class="block font-bold text-[var(--text-primary)]">Sub-type</label>
+                    <label class="block font-bold text-[var(--text-primary)]">&nbsp;</label>
                     <button type="button" onclick="toggleSubtypeDropdown(event)" id="subtypeDropdownBtn" class="w-full h-10 px-3 border border-[var(--border)] rounded-lg bg-[var(--surface)] focus:border-accent outline-none text-left flex justify-between items-center font-semibold">
                         <span id="subtypeSelectionText">All</span>
                         <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -201,7 +205,7 @@
 </div>
 
 <!-- Status Toast -->
-<div id="fieldsToast" class="fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3.5 bg-slate-900 text-white rounded-xl shadow-2xl opacity-0 translate-y-4 pointer-events-none transition-all duration-300">
+<div id="fieldsToast" class="fixed top-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3.5 bg-slate-900 text-white rounded-xl shadow-2xl opacity-0 -translate-y-4 pointer-events-none transition-all duration-300">
     <div id="fieldsToastIcon" class="flex items-center justify-center"></div>
     <span id="fieldsToastText" class="text-[13px] font-semibold tracking-wide"></span>
 </div>
@@ -209,14 +213,8 @@
 
 {% block extra_js %}
 <script>
-    // State Databases (Default mockup data)
-    let customFieldsData = [
-        { id: 1, name: 'Delivery Note No#', module: 'Invoice', fieldType: 'Text', defaultVal: '', itemGrid: false, includeTotal: false, required: false, displayInPrint: true, subtypes: ['All'], active: true },
-        { id: 2, name: 'Delivery Note Date', module: 'Invoice', fieldType: 'Date', defaultVal: '', itemGrid: false, includeTotal: false, required: false, displayInPrint: true, subtypes: ['All'], active: true },
-        { id: 3, name: 'Despatch Method', module: 'Invoice', fieldType: 'Text', defaultVal: '', itemGrid: false, includeTotal: false, required: false, displayInPrint: true, subtypes: ['All'], active: true },
-        { id: 4, name: 'Despatch Date', module: 'Invoice', fieldType: 'Date', defaultVal: '', itemGrid: false, includeTotal: false, required: false, displayInPrint: true, subtypes: ['All'], active: true },
-        { id: 5, name: 'Transportation Mode', module: 'Invoice', fieldType: 'Text', defaultVal: '', itemGrid: false, includeTotal: false, required: false, displayInPrint: true, subtypes: ['All'], active: true }
-    ];
+    // State Databases
+    let customFieldsData = {{ customFieldsData|safe|default:"[]" }};
 
     let activeEditingFieldId = null;
 
@@ -234,7 +232,7 @@
             tr.innerHTML = `
                 <td class="py-4 px-6 text-center text-slate-400 font-bold select-none text-[16px] cursor-grab">⋮</td>
                 <td class="py-4 px-6 font-semibold text-[13.5px]">${field.name}</td>
-                <td class="py-4 px-6 text-slate-600 font-medium">${field.module}</td>
+                <td class="py-4 px-6 text-slate-600 font-medium">${field.moduleName}</td>
                 <td class="py-4 px-6 text-center">
                     ${field.itemGrid ? `
                         <span class="inline-flex items-center text-[var(--accent)] font-extrabold">
@@ -279,27 +277,58 @@
         document.querySelectorAll('[id^="dropdown-menu-"]').forEach(menu => {
             if (menu.id !== `dropdown-menu-${id}`) {
                 menu.classList.add('hidden');
+                const row = menu.closest('tr');
+                if(row) row.classList.remove('z-50');
             }
         });
 
         const menu = document.getElementById(`dropdown-menu-${id}`);
         menu.classList.toggle('hidden');
+        const row = menu.closest('tr');
+        if (!menu.classList.contains('hidden')) {
+            if(row) row.classList.add('z-50');
+        } else {
+            if(row) row.classList.remove('z-50');
+        }
     }
 
     // Close action dropdowns on clicking window
     window.addEventListener('click', () => {
-        document.querySelectorAll('[id^="dropdown-menu-"]').forEach(menu => menu.classList.add('hidden'));
+        document.querySelectorAll('[id^="dropdown-menu-"]').forEach(menu => {
+            menu.classList.add('hidden');
+            const row = menu.closest('tr');
+            if(row) row.classList.remove('z-50');
+        });
         document.getElementById('subtypeDropdownMenu').classList.add('hidden');
     });
 
     function deleteField(id) {
         showToast('Deleting custom field...', 'loading');
-        setTimeout(() => {
-            customFieldsData = customFieldsData.filter(f => f.id !== id);
-            renderCustomFields();
-            showToast('Custom field deleted successfully!', 'success');
-            hideToast(1500);
-        }, 500);
+        fetch('/settings/custom-fields/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ action: 'delete', fieldId: id })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                customFieldsData = customFieldsData.filter(f => f.id !== id);
+                renderCustomFields();
+                showToast('Custom field deleted successfully!', 'success');
+                hideToast(1500);
+            } else {
+                showToast(data.message || 'Error deleting custom field', 'error');
+                hideToast(3000);
+            }
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            showToast('Error deleting custom field', 'error');
+            hideToast(3000);
+        });
     }
 
     // Modal helpers
@@ -311,7 +340,7 @@
             // Edit mode
             const field = customFieldsData.find(f => f.id === fieldId);
             document.getElementById('modalFieldName').value = field.name;
-            document.getElementById('modalModule').value = field.module;
+            document.getElementById('modalModule').value = field.moduleId;
             document.getElementById('modalFieldType').value = field.fieldType;
             document.getElementById('modalDefaultValues').value = field.defaultVal || '';
             document.getElementById('modalItemGrid').checked = field.itemGrid;
@@ -330,7 +359,13 @@
         } else {
             // Add mode
             document.getElementById('modalFieldName').value = '';
-            document.getElementById('modalModule').value = 'Invoice';
+            
+            // Set module to first available option
+            const moduleSelect = document.getElementById('modalModule');
+            if(moduleSelect.options.length > 0) {
+                moduleSelect.value = moduleSelect.options[0].value;
+            }
+            
             document.getElementById('modalFieldType').value = 'Text';
             document.getElementById('modalDefaultValues').value = '';
             document.getElementById('modalItemGrid').checked = false;
@@ -427,7 +462,9 @@
             return;
         }
 
-        const module = document.getElementById('modalModule').value;
+        const moduleSelect = document.getElementById('modalModule');
+        const module = moduleSelect.value;
+        const moduleName = moduleSelect.options.length > 0 ? moduleSelect.options[moduleSelect.selectedIndex].text : '';
         const fieldType = document.getElementById('modalFieldType').value;
         const defaultVal = document.getElementById('modalDefaultValues').value.trim();
         const itemGrid = document.getElementById('modalItemGrid').checked;
@@ -445,43 +482,55 @@
 
         showToast('Saving custom field...', 'loading');
 
-        setTimeout(() => {
-            if (activeEditingFieldId !== null) {
-                // Update
-                const field = customFieldsData.find(f => f.id === activeEditingFieldId);
-                field.name = name;
-                field.module = module;
-                field.fieldType = fieldType;
-                field.defaultVal = defaultVal;
-                field.itemGrid = itemGrid;
-                field.required = required;
-                field.displayInPrint = displayInPrint;
-                field.includeTotal = includeTotal;
-                field.subtypes = subtypes;
-                field.active = active;
-            } else {
-                // Add new
-                const nextId = customFieldsData.length > 0 ? Math.max(...customFieldsData.map(f => f.id)) + 1 : 1;
-                customFieldsData.push({
-                    id: nextId,
-                    name,
-                    module,
-                    fieldType,
-                    defaultVal,
-                    itemGrid,
-                    required,
-                    displayInPrint,
-                    includeTotal,
-                    subtypes,
-                    active
-                });
-            }
+        const newFieldData = {
+            id: activeEditingFieldId, // null for new
+            name,
+            moduleId: module,
+            moduleName: moduleName,
+            fieldType,
+            defaultVal,
+            itemGrid,
+            required,
+            displayInPrint,
+            includeTotal,
+            subtypes,
+            active
+        };
 
-            closeFieldDetailsModal();
-            renderCustomFields();
-            showToast('Custom field saved successfully!', 'success');
-            hideToast(1500);
-        }, 700);
+        fetch('/settings/custom-fields/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ action: 'save', fieldData: newFieldData })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                if (activeEditingFieldId !== null) {
+                    // Update
+                    const field = customFieldsData.find(f => f.id === activeEditingFieldId);
+                    Object.assign(field, newFieldData);
+                } else {
+                    // Add new
+                    newFieldData.id = data.id; // Get the generated DB id
+                    customFieldsData.push(newFieldData);
+                }
+                closeFieldDetailsModal();
+                renderCustomFields();
+                showToast('Custom field saved successfully!', 'success');
+                hideToast(1500);
+            } else {
+                showToast(data.message || 'Error saving custom field', 'error');
+                hideToast(3000);
+            }
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            showToast('Error saving custom field', 'error');
+            hideToast(3000);
+        });
     }
 
     // Toast helpers
@@ -494,23 +543,32 @@
         if (toastTimeout) clearTimeout(toastTimeout);
 
         textSpan.innerText = text;
+        
+        let bgClass = 'bg-slate-900';
+        if (type === 'success') bgClass = 'bg-[var(--accent)]';
+        else if (type === 'error') bgClass = 'bg-red-500';
+        
+        toast.className = `fixed top-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3.5 ${bgClass} text-white rounded-xl shadow-2xl opacity-0 -translate-y-4 pointer-events-none transition-all duration-300`;
 
         if (type === 'loading') {
             iconDiv.innerHTML = '<div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>';
         } else if (type === 'success') {
-            iconDiv.innerHTML = '<svg class="w-4.5 h-4.5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
+            iconDiv.innerHTML = '<svg class="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
         } else {
-            iconDiv.innerHTML = '<svg class="w-4.5 h-4.5 text-rose-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>';
+            iconDiv.innerHTML = '<svg class="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>';
         }
-
-        toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+        
+        // Force browser reflow to reset transition
+        void toast.offsetWidth;
+        
+        toast.classList.remove('opacity-0', '-translate-y-4', 'pointer-events-none');
         toast.classList.add('opacity-100', 'translate-y-0');
     }
 
     function hideToast(delay = 1500) {
         const toast = document.getElementById('fieldsToast');
         toastTimeout = setTimeout(() => {
-            toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+            toast.classList.add('opacity-0', '-translate-y-4', 'pointer-events-none');
             toast.classList.remove('opacity-100', 'translate-y-0');
         }, delay);
     }

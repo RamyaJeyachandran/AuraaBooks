@@ -5,6 +5,7 @@
 {% block breadcrumb_active %}Franchisee{% endblock %}
 
 {% block content %}
+{% csrf_token %}
 <div class="p-8 stagger-in max-w-[1600px] mx-auto">
     <!-- Header Section -->
     <div class="flex items-center justify-between mb-6 relative z-[300]">
@@ -15,17 +16,17 @@
             <div class="flex-1 flex items-center justify-around bg-white border border-slate-200 rounded-2xl px-6 py-3 shadow-sm max-w-[550px]">
                 <div onclick="filterByStatus('All')" class="flex flex-col items-center cursor-pointer hover:bg-slate-50 px-8 py-2 rounded-xl transition-all active:scale-95 min-w-[120px]" title="Total Franchisees">
                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-2">Total</span>
-                    <span class="text-[30px] font-black text-slate-700 leading-none">12</span>
+                    <span class="text-[30px] font-black text-slate-700 leading-none" id="totalFranchisees">{{ total_franchisees }}</span>
                 </div>
                 <div class="w-px h-12 bg-slate-200"></div>
                 <div onclick="filterByStatus('Active')" class="flex flex-col items-center cursor-pointer hover:bg-slate-50 px-6 py-2 rounded-xl transition-all active:scale-95 min-w-[100px]" title="Filter Active">
                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-2">Active</span>
-                    <span class="text-[30px] font-black text-emerald-500 leading-none">10</span>
+                    <span class="text-[30px] font-black text-emerald-500 leading-none" id="activeFranchisees">{{ active_franchisees }}</span>
                 </div>
                 <div class="w-px h-12 bg-slate-200"></div>
                 <div onclick="filterByStatus('Inactive')" class="flex flex-col items-center cursor-pointer hover:bg-slate-50 px-6 py-2 rounded-xl transition-all active:scale-95 min-w-[100px]" title="Filter Inactive">
                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-2">In-Active</span>
-                    <span class="text-[30px] font-black text-rose-500 leading-none">2</span>
+                    <span class="text-[30px] font-black text-rose-500 leading-none" id="inactiveFranchisees">{{ inactive_franchisees }}</span>
                 </div>
             </div>
         </div>
@@ -34,19 +35,19 @@
             <div class="relative">
                 <div class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-[var(--accent)] z-10 border-2 border-white box-content"></div>
                 <div class="flex items-center bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden h-[52px]">
-                    <button type="button" class="px-3 h-full hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-all border-r border-slate-200">
+                    <button type="button" onclick="navigateRecentFranchisee(-1)" class="px-3 h-full hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-all border-r border-slate-200">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
                     </button>
                     <div class="px-5 flex flex-col items-center min-w-[100px] justify-center">
                         <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Recent</span>
-                        <span class="text-[14px] font-black text-slate-700 leading-none">FR-001</span>
+                        <span id="recentFranchiseeDisplay" class="text-[14px] font-black text-slate-700 leading-none">FR-001</span>
                     </div>
-                    <button type="button" class="px-3 h-full hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-all border-l border-slate-200">
+                    <button type="button" onclick="navigateRecentFranchisee(1)" class="px-3 h-full hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-all border-l border-slate-200">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
                     </button>
                 </div>
             </div>
-            <button onclick="openModal('Franchisee')" class="px-8 h-[52px] bg-[var(--accent)] text-white rounded-2xl text-[14px] font-black flex items-center gap-2 shadow-xl shadow-[var(--accent)]/20 hover:brightness-110 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-widest">
+            <button onclick="newFranchisee()" class="px-8 h-[52px] bg-[var(--accent)] text-white rounded-2xl text-[14px] font-black flex items-center gap-2 shadow-xl shadow-[var(--accent)]/20 hover:brightness-110 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-widest">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
                 Add Franchisee
             </button>
@@ -59,12 +60,15 @@
     <div class="mb-4 relative z-[110]">
         <div class="bg-white px-6 py-2 rounded-[24px] border border-slate-100 shadow-sm flex items-center justify-between gap-6">
             <div class="flex items-center gap-4 flex-1">
-                <label class="text-[11px] font-black text-slate-400 uppercase tracking-widest">Filter</label>
-                <div class="relative min-w-[300px]">
-                    <select class="w-full h-8 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold text-slate-700 appearance-none focus:bg-white focus:ring-4 focus:ring-[var(--accent)]/10 transition-all outline-none shadow-inner">
-                        <option>Select Franchisee</option>
-                    </select>
+                <div class="relative min-w-[300px]" id="franchiseeAutocompleteContainer">
+                    <input type="text" id="franchiseeFilterInput" placeholder="Select Franchisee" autocomplete="off"
+                        class="w-full h-8 bg-slate-50 border border-slate-100 rounded-xl pl-4 pr-10 text-[13px] font-bold text-slate-700 focus:bg-white focus:ring-4 focus:ring-[var(--accent)]/10 transition-all outline-none shadow-inner">
+                    <button type="button" id="clearFranchiseeFilter" class="hidden absolute right-8 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
                     <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                    <div id="franchiseeAutocompleteMenu" class="hidden absolute top-[calc(100%+4px)] left-0 right-0 max-h-60 overflow-y-auto bg-white rounded-xl shadow-xl border border-slate-100 z-[120]">
+                    </div>
                 </div>
             </div>
 
@@ -77,15 +81,12 @@
                     </button>
                     <div id="exportDropdown" class="hidden absolute top-full right-0 mt-3 w-56 bg-white rounded-3xl shadow-2xl border border-slate-100 py-3 z-50 overflow-hidden scale-in-tr">
                         <div class="px-5 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50 mb-2">Export</div>
-                        <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Export CSV</button>
-                        <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Export XLS</button>
-                        <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Export PDF</button>
-                        <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Export Tally XML</button>
+                        <button onclick="exportFranchiseeCSV()" class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Export CSV</button>
+                        <button onclick="exportFranchiseeXLS()" class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Export XLS</button>
+                        <button onclick="exportFranchiseePDF()" class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Export PDF</button>
                         <div class="px-5 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest border-y border-slate-50 my-2 bg-slate-50/50">Import</div>
-                        <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Import CSV</button>
-                        <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Import XLS</button>
-                        <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Import From Tally</button>
-                        <button class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Import From Tally XML</button>
+                        <button onclick="triggerFranchiseeImport()" class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Import CSV</button>
+                        <button onclick="triggerFranchiseeImport()" class="w-full text-left px-5 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-all">Import XLS</button>
                     </div>
                 </div>
 
@@ -126,38 +127,67 @@
     <div class="bg-white rounded-[40px] shadow-sm border border-slate-100 overflow-hidden">
         <table class="w-full text-left border-collapse">
             <thead>
-                <tr class="bg-slate-50/50">
-                    <th class="px-8 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Franchisee Name</th>
-                    <th class="px-8 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Mobile</th>
-                    <th class="px-8 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">City</th>
-                    <th class="px-8 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Status</th>
-                    <th class="px-8 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 text-right">Action</th>
+                <tr class="bg-[var(--accent)]">
+                    <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest border-b border-white/20">Franchisee Name</th>
+                    <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest border-b border-white/20">Mobile</th>
+                    <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest border-b border-white/20">City</th>
+                    <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest border-b border-white/20">Status</th>
+                    <th class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest border-b border-white/20 text-center">Action</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-50">
-                <tr class="hover:bg-slate-50/50 group transition-all cursor-pointer">
+                {% for franchisee in franchisees %}
+                <tr class="hover:bg-slate-50/50 group transition-all cursor-pointer franchisee-row" data-f-name="{{ franchisee.name|lower }}" data-status="{{ franchisee.is_active|yesno:'Active,Inactive' }}">
                     <td class="px-8 py-6">
-                        <div class="text-[15px] font-black text-slate-800 uppercase tracking-tight">ABC Franchise</div>
+                        <div class="text-[15px] font-black text-slate-800 uppercase tracking-tight">{{ franchisee.name }}</div>
                     </td>
                     <td class="px-8 py-6">
-                        <div class="text-[14px] font-bold text-slate-600">98xxxx</div>
+                        <div class="text-[14px] font-bold text-slate-600">{{ franchisee.mobile|default:"-" }}</div>
                     </td>
                     <td class="px-8 py-6">
-                        <div class="text-[14px] font-bold text-slate-500">Chennai</div>
+                        <div class="text-[14px] font-bold text-slate-500">{{ franchisee.city|default:"-" }}</div>
                     </td>
                     <td class="px-8 py-6">
+                        {% if franchisee.is_active %}
                         <span class="px-3 py-1 bg-green-50 text-green-600 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm border border-green-100">Active</span>
+                        {% else %}
+                        <span class="px-3 py-1 bg-red-50 text-red-600 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm border border-red-100">Inactive</span>
+                        {% endif %}
                     </td>
-                    <td class="px-8 py-6 text-right">
-                        <button class="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-50 text-slate-300 hover:bg-[var(--accent)] hover:text-white transition-all ml-auto">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                        </button>
+                    <td class="px-8 py-6 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick="editFranchisee({{ franchisee.id }}, this); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--accent)] text-white hover:brightness-110 transition-all shadow-sm relative group" title="Edit">
+                                <svg class="w-4 h-4 btn-icon" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                <div class="hidden absolute inset-0 items-center justify-center btn-loader flex">
+                                    <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                                </div>
+                            </button>
+                            <button onclick="deleteFranchisee({{ franchisee.id }}, this); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500 text-white hover:bg-red-600 transition-all shadow-sm relative group" title="Delete">
+                                <svg class="w-4 h-4 btn-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                <div class="hidden absolute inset-0 items-center justify-center btn-loader flex">
+                                    <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                                </div>
+                            </button>
+                        </div>
                     </td>
                 </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="px-8 py-20 text-center">
+                        <div class="flex flex-col items-center gap-4">
+                            <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center">
+                                <svg class="w-10 h-10 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                            </div>
+                            <p class="text-slate-400 font-bold">No franchisees found. Click "Add Franchisee" to start.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
+</script>
 {% endblock %}
 
 {% block modal_content %}
@@ -192,14 +222,20 @@
         <div class="flex items-center gap-4">
             <div class="relative" id="saveActionGroup">
                 <div class="flex items-stretch shadow-xl rounded-2xl overflow-hidden border-2 border-white/30">
-                    <button class="px-8 h-12 bg-white text-[var(--accent)] rounded-l-[14px] text-[13px] font-black uppercase tracking-widest border-r border-[var(--accent)]/10 hover:bg-slate-50 transition-all">SAVE</button>
+                    <button onclick="saveFranchisee(false)" class="px-8 h-12 bg-white text-[var(--accent)] rounded-l-[14px] text-[13px] font-black uppercase tracking-widest border-r border-[var(--accent)]/10 hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
+                        <svg id="saveBtnLoader" class="hidden animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        <span>SAVE</span>
+                    </button>
                     <button onclick="toggleSaveDropdown(event)" class="px-4 h-12 bg-white text-[var(--accent)] rounded-r-[14px] border-l border-[var(--accent)]/10 flex items-center justify-center hover:bg-slate-50 transition-all">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
                     </button>
                 </div>
                 <div id="saveDropdownMenu" class="hidden absolute top-full right-0 mt-3 w-56 bg-white rounded-[24px] shadow-2xl border border-slate-100 py-4 z-[110] overflow-hidden">
-                    <button class="w-full text-left px-7 py-3 text-[12px] font-black text-slate-600 hover:bg-[var(--accent)] hover:text-white transition-all uppercase tracking-widest border-b border-slate-50">Save & New</button>
-                    <button class="w-full text-left px-7 py-3 text-[12px] font-black text-slate-600 hover:bg-[var(--accent)] hover:text-white transition-all uppercase tracking-widest">Save</button>
+                    <button onclick="saveFranchisee(true)" class="w-full text-left px-7 py-3 text-[12px] font-black text-slate-600 hover:bg-[var(--accent)] hover:text-white transition-all uppercase tracking-widest border-b border-slate-50 flex items-center gap-2">
+                        <svg id="saveNewBtnLoader" class="hidden animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        Save & New
+                    </button>
+                    <button onclick="saveFranchisee(false)" class="w-full text-left px-7 py-3 text-[12px] font-black text-slate-600 hover:bg-[var(--accent)] hover:text-white transition-all uppercase tracking-widest">Save</button>
                 </div>
             </div>
             <button onclick="closeModal()" class="px-8 h-12 bg-slate-700 text-white rounded-2xl text-[13px] font-black uppercase tracking-widest hover:bg-slate-800 shadow-lg">CANCEL</button>
@@ -211,17 +247,19 @@
 
     <!-- Body -->
     <div class="flex-1 flex overflow-hidden min-h-0">
+        <!-- Hidden ID field -->
+        <input type="hidden" id="franchiseeId" value="">
         <!-- Left Section (48%) -->
         <div class="w-[48%] p-6 space-y-4 overflow-y-auto border-r border-slate-100 bg-white no-scrollbar rounded-bl-[40px]">
             <!-- Row 1: Franchisee & Contact Name -->
             <div class="grid grid-cols-2 gap-4">
                 <div class="space-y-1.5">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Franchisee Name</label>
-                    <input type="text" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all">
+                    <input type="text" id="franchiseeName" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all">
                 </div>
                 <div class="space-y-1.5">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Contact Name</label>
-                    <input type="text" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all">
+                    <input type="text" id="franchiseeContactName" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all">
                 </div>
             </div>
 
@@ -229,11 +267,11 @@
             <div class="grid grid-cols-2 gap-4">
                 <div class="space-y-1.5">
                     <label class="text-[10px] font-black text-red-500 uppercase tracking-widest">Ledger Name *</label>
-                    <input type="text" required class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white border-l-4 border-l-red-500 shadow-inner">
+                    <input type="text" id="franchiseeLedgerName" required class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white border-l-4 border-l-red-500 shadow-inner">
                 </div>
                 <div class="space-y-1.5">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Email ID</label>
-                    <input type="email" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white shadow-inner transition-all">
+                    <input type="email" id="franchiseeEmail" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white shadow-inner transition-all">
                 </div>
             </div>
 
@@ -241,19 +279,44 @@
             <div class="grid grid-cols-3 gap-4">
                 <div class="space-y-1.5 relative">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center justify-between">
-                        GSTIN (?)
-                        <button onclick="toggleGSTMenu()" class="text-slate-300 hover:text-slate-500">⋯</button>
+                        GSTIN
+                        <button type="button" onclick="toggleGstMenu()" class="text-slate-400 hover:text-slate-700 focus:outline-none transition-all p-0.5 rounded">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                        </button>
                     </label>
-                    <input type="text" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-3 text-[13px] font-bold outline-none focus:bg-white shadow-inner transition-all">
+                    <div class="relative">
+                        <input type="text" id="franchiseeGstin" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-3 text-[13px] font-bold outline-none focus:bg-white shadow-inner transition-all">
+                        <div id="gstinMenu" class="hidden absolute top-[100%] right-0 mt-1 w-56 bg-white rounded-xl shadow-xl border border-slate-100 p-3 z-50">
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" id="franchiseeIsMsme" onchange="toggleFranchiseeMsmeFields()" class="w-4 h-4 rounded border-slate-200 accent-[var(--accent)]">
+                                <span class="text-[12px] font-bold text-slate-600">Registered in MSME/Udyam</span>
+                            </label>
+                            <div id="franchiseeMsmeFields" class="hidden mt-3 space-y-3 pt-3 border-t border-slate-100">
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">MSME Type</label>
+                                    <select id="franchiseeMsmeType" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all appearance-none cursor-pointer">
+                                        <option value="">Select Type</option>
+                                        <option value="micro">Micro</option>
+                                        <option value="small">Small</option>
+                                        <option value="medium">Medium</option>
+                                    </select>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">MSME Reg. No</label>
+                                    <input type="text" id="franchiseeMsmeRegNo" class="w-full h-[36px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white focus:border-[var(--accent)] shadow-inner transition-all">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="space-y-1.5">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">PAN (?)</label>
-                    <input type="text" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-3 text-[13px] font-bold outline-none focus:bg-white shadow-inner transition-all">
+                    <input type="text" id="franchiseePan" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-3 text-[13px] font-bold outline-none focus:bg-white shadow-inner transition-all">
                 </div>
                 <div class="space-y-1.5">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Commission</label>
                     <div class="relative">
-                        <input type="number" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl pl-3 pr-8 text-[13px] font-bold text-right outline-none focus:bg-white shadow-inner transition-all">
+                        <input type="number" id="franchiseeCommission" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl pl-3 pr-8 text-[13px] font-bold text-right outline-none focus:bg-white shadow-inner transition-all">
                         <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] font-bold text-slate-400">%</span>
                     </div>
                 </div>
@@ -262,7 +325,7 @@
             <!-- Row 4: Composition Toggle -->
             <div class="py-1">
                 <label class="flex items-center gap-3 cursor-pointer group w-max">
-                    <input type="checkbox" class="w-10 h-5 rounded-full bg-slate-200 checked:bg-[var(--accent)] appearance-none cursor-pointer relative after:content-[''] after:absolute after:w-3.5 after:h-3.5 after:bg-white after:rounded-full after:top-0.5 after:left-0.5 checked:after:left-6 after:transition-all">
+                    <input type="checkbox" id="franchiseeComposition" class="w-4 h-4 rounded border-slate-200 accent-[var(--accent)] cursor-pointer">
                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-slate-600">Composition scheme</span>
                 </label>
             </div>
@@ -271,11 +334,11 @@
             <div class="grid grid-cols-2 gap-4 pt-2 border-t border-slate-50">
                 <div class="space-y-1.5">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Contact Mobile</label>
-                    <input type="text" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white shadow-inner transition-all">
+                    <input type="text" id="franchiseeMobile" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white shadow-inner transition-all">
                 </div>
                 <div class="space-y-1.5">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Work Phone</label>
-                    <input type="text" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white shadow-inner transition-all">
+                    <input type="text" id="franchiseeWorkPhone" class="w-full h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[13px] font-bold outline-none focus:bg-white shadow-inner transition-all">
                 </div>
             </div>
 
@@ -285,24 +348,29 @@
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Access to franchisee having Tags</label>
                     <button type="button" onclick="openSubModal('ManageTags')" class="text-[10px] font-black text-blue-500 uppercase tracking-widest hover:brightness-75 transition-all">MANAGE TAGS</button>
                 </div>
-                <div class="relative">
-                    <div class="w-full min-h-[40px] bg-slate-50 border border-slate-100 rounded-xl px-4 py-2 flex flex-wrap gap-2 cursor-pointer shadow-inner">
-                        <span class="px-2 py-1 bg-white border border-slate-200 rounded-md text-[11px] font-bold text-slate-600 flex items-center gap-1 shadow-sm">All <svg class="w-2.5 h-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-width="3"/></svg></span>
-                        <div class="flex-1"></div>
-                        <svg class="w-4 h-4 text-slate-400 self-center" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path d="M19 9l-7 7-7-7"/></svg>
+                <div class="relative" id="franchiseeTagsContainer">
+                    <div onclick="toggleFranchiseeTagsMenu()" class="w-full min-h-[40px] bg-slate-50 border border-slate-100 rounded-xl px-4 py-2 flex flex-wrap gap-2 cursor-pointer shadow-inner" id="franchiseeTagsSelected">
+                        <span class="text-slate-400 text-[13px] font-bold pt-1">Select tags...</span>
+                    </div>
+                    <div id="franchiseeTagsMenu" class="hidden absolute top-[100%] left-0 right-0 mt-1 max-h-[200px] overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-xl z-[150] p-2 space-y-1">
+                        <!-- Populated by JS -->
                     </div>
                 </div>
             </div>
 
             <!-- Row 7: Active & Attachments -->
-            <div class="pt-4 flex items-center justify-between mt-auto">
-                <label class="flex items-center gap-3 cursor-pointer group">
-                    <input type="checkbox" checked class="w-10 h-5 rounded-full bg-slate-200 checked:bg-[var(--accent)] appearance-none cursor-pointer relative after:content-[''] after:absolute after:w-3.5 after:h-3.5 after:bg-white after:rounded-full after:top-0.5 after:left-0.5 checked:after:left-6 after:transition-all">
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-slate-600">Active</span>
-                </label>
-                <button type="button" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-[var(--accent)] hover:text-white transition-all shadow-sm" title="Attach Files">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.414a4 4 0 00-5.656-5.656l-6.415 6.414a6 6 0 108.486 8.486L20.5 13"/></svg>
-                </button>
+            <div class="mt-auto">
+                <div id="franchiseeAttachmentsContainer" class="flex flex-wrap gap-2 mb-4 hidden"></div>
+                <div class="pt-4 flex items-center justify-between border-t border-slate-100">
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input type="checkbox" id="franchiseeIsActive" checked class="w-10 h-5 rounded-full bg-slate-200 checked:bg-[var(--accent)] appearance-none cursor-pointer relative after:content-[''] after:absolute after:w-3.5 after:h-3.5 after:bg-white after:rounded-full after:top-0.5 after:left-0.5 checked:after:left-6 after:transition-all">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-slate-600">Active</span>
+                    </label>
+                    <input type="file" id="franchiseeAttachmentInput" multiple class="hidden" onchange="handleFranchiseeAttachments(this)">
+                    <button type="button" onclick="document.getElementById('franchiseeAttachmentInput').click()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-[var(--accent)] text-white hover:brightness-110 transition-all shadow-sm" title="Attach Files">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.414a4 4 0 00-5.656-5.656l-6.415 6.414a6 6 0 108.486 8.486L20.5 13"/></svg>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -316,99 +384,107 @@
             </div>
 
             <!-- Tab Content Area -->
-            <div class="flex-1 overflow-y-auto no-scrollbar pr-2 pb-16">
+            <div class="flex-1 overflow-y-auto pr-2 pb-16 custom-scrollbar">
                 <!-- Tab 1: Address -->
                 <div id="pane-address" class="tab-pane hidden space-y-3">
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Address1</label><input type="text" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
-                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Address2</label><input type="text" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
+                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Address1</label><input type="text" id="franchiseeAddress1" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
+                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Address2</label><input type="text" id="franchiseeAddress2" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">City / Town</label><input type="text" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
-                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Postal / Zipcode</label><input type="text" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
+                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">City / Town</label><input type="text" id="franchiseeCity" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
+                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Postal / Zipcode</label><input type="text" id="franchiseePostalCode" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Country</label><select class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none appearance-none focus:bg-white shadow-inner transition-all"><option>India</option></select></div>
-                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">State</label><select class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold appearance-none outline-none focus:bg-white shadow-inner transition-all"><option>Tamil Nadu</option></select></div>
+                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Country</label><select id="franchiseeCountry" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none appearance-none focus:bg-white shadow-inner transition-all"><option>India</option></select></div>
+                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">State</label><select id="franchiseeState" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold appearance-none outline-none focus:bg-white shadow-inner transition-all"><option>Tamil Nadu</option></select></div>
                     </div>
                     <!-- Location Feature -->
-                    <div class="pt-1 flex items-center gap-3">
-                        <button onclick="toggleLocation('billing')" class="w-9 h-9 flex items-center justify-center rounded-xl bg-blue-50 text-blue-500 hover:bg-[var(--accent)] hover:text-white transition-all shadow-sm">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="3"/></svg>
-                        </button>
-                        <div id="location-billing" class="hidden flex-1">
-                            <input type="text" placeholder="Latitude, Longitude" class="w-full h-9 bg-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none border border-transparent transition-all">
+                    <div class="pt-2 flex items-center justify-between border-t border-slate-100 mt-2">
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="toggleLocation('billing')" class="text-slate-500 hover:text-slate-800 transition-all flex items-center justify-center">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                            </button>
+                            <div id="location-billing" class="hidden">
+                                <input type="text" id="billingLatLng" placeholder="Enter Latitude, Longitude" class="w-64 h-[40px] bg-white border border-slate-200 rounded-xl px-4 text-[13px] font-bold outline-none focus:border-[var(--accent)] transition-all shadow-sm">
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Tab 2: Shipping Address -->
-                <div id="pane-shipping" class="tab-pane hidden space-y-3">
+                <div id="pane-shipping" class="tab-pane hidden space-y-3 pr-1">
                     <div class="flex items-center justify-between mb-1">
                         <h4 class="text-[11px] font-black text-slate-800 uppercase tracking-widest">Shipping</h4>
                         <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="checkbox" id="sameAsBilling" checked onchange="toggleShippingFields(this.checked)" class="w-8 h-4 rounded-full bg-slate-200 checked:bg-[var(--accent)] appearance-none cursor-pointer relative after:content-[''] after:absolute after:w-3 after:h-3 after:bg-white after:rounded-full after:top-0.5 after:left-0.5 checked:after:left-4.5 after:transition-all">
+                            <input type="checkbox" id="sameAsBilling" checked onchange="toggleShippingFields(this.checked)" class="w-4 h-4 rounded border-slate-200 accent-[var(--accent)] cursor-pointer">
                             <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-slate-600">Same as Billing Address</span>
                         </label>
                     </div>
 
                     <div id="shippingFields" class="hidden space-y-3">
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ref Name</label><input type="text" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
-                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">GSTIN</label><input type="text" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
+                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ref Name</label><input type="text" id="shipRefName" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
+                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">GSTIN</label><input type="text" id="shipGstin" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Address1</label><input type="text" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
-                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Address2</label><input type="text" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
+                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Address1</label><input type="text" id="shipAddress1" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
+                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Address2</label><input type="text" id="shipAddress2" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Phone</label><input type="text" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
-                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Email</label><input type="email" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
+                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Phone</label><input type="text" id="shipPhone" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
+                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Email</label><input type="email" id="shipEmail" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">City / Town</label><input type="text" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
-                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Postal / Zipcode</label><input type="text" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
+                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">City / Town</label><input type="text" id="shipCity" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
+                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Postal / Zipcode</label><input type="text" id="shipPostalCode" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Country</label><select class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner appearance-none transition-all"><option>India</option></select></div>
-                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">State</label><select class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner appearance-none transition-all"><option>Tamil Nadu</option></select></div>
+                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Country</label><select id="shipCountry" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner appearance-none transition-all"><option>India</option></select></div>
+                            <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">State</label><select id="shipState" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner appearance-none transition-all"><option>Tamil Nadu</option></select></div>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <button onclick="toggleLocation('shipping')" class="w-8 h-8 shrink-0 flex items-center justify-center rounded-lg bg-[var(--accent)] text-white shadow-sm">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="3"/></svg>
-                            </button>
-                            <div id="location-shipping" class="hidden flex-1 max-w-[200px]">
-                                <input type="text" placeholder="Lat, Lng" class="w-full h-8 bg-slate-100 rounded-lg px-3 text-[11px] font-bold outline-none border border-transparent transition-all">
+                        <div class="flex items-center justify-between pt-2 border-t border-slate-100 mt-2">
+                            <div class="flex items-center gap-2">
+                                <button type="button" onclick="toggleLocation('shipping')" class="text-slate-500 hover:text-slate-800 transition-all flex items-center justify-center">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                                </button>
+                                <div id="location-shipping" class="hidden">
+                                    <input type="text" id="shipLatLng" placeholder="Enter Latitude, Longitude" class="w-64 h-[40px] bg-white border border-slate-200 rounded-xl px-4 text-[13px] font-bold outline-none focus:border-[var(--accent)] transition-all shadow-sm">
+                                </div>
                             </div>
-                            <button class="h-8 px-4 bg-blue-500 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:brightness-110 shadow-sm transition-all">Add</button>
+                            <button type="button" onclick="addShippingAddress()" class="px-6 h-10 bg-[var(--accent)] text-white rounded-xl text-[12px] font-black uppercase tracking-widest hover:brightness-110 shadow-lg shadow-[var(--accent)]/20 transition-all flex items-center gap-2">
+                                Add
+                            </button>
                         </div>
                     </div>
                     <div id="shippingMatchBilling" class="h-32 border-2 border-dashed border-slate-200 rounded-3xl flex items-center justify-center text-slate-300 font-bold uppercase tracking-widest text-[11px]">
                         Matches Billing Address
                     </div>
+                    
+                    <div id="addedShippingAddresses" class="mt-4 space-y-3"></div>
                 </div>
 
                 <!-- Tab 3: Bank Details -->
                 <div id="pane-bank" class="tab-pane hidden space-y-3">
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Account Name</label><input type="text" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
-                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Account Number</label><input type="text" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
+                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Account Name</label><input type="text" id="bankAccountName" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
+                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Account Number</label><input type="text" id="bankAccountNumber" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Account Type</label><input type="text" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
-                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Bank Name</label><input type="text" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
+                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Account Type</label><input type="text" id="bankAccountType" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
+                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Bank Name</label><input type="text" id="bankName" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Bank Branch</label><input type="text" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
-                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">IFSC Code</label><input type="text" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
+                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Bank Branch</label><input type="text" id="bankBranch" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
+                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">IFSC Code</label><input type="text" id="bankIfsc" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Swift Code</label><input type="text" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
-                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">AD Code</label><input type="text" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
+                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Swift Code</label><input type="text" id="bankSwift" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
+                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">AD Code</label><input type="text" id="bankAdCode" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all"></div>
                     </div>
                     <div class="space-y-1">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Correspondent Bank</label>
-                        <input type="text" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all">
+                        <input type="text" id="bankCorrespondent" class="w-full h-9 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[12px] font-bold outline-none focus:bg-white shadow-inner transition-all">
                     </div>
                 </div>
             </div>
@@ -416,7 +492,7 @@
             <!-- Common Section (Bottom of Right Panel) -->
             <div class="absolute bottom-0 left-0 right-0 p-3 bg-slate-50 border-t border-slate-100 flex items-center gap-4 z-10 rounded-b-[40px]">
                 <label class="flex items-center gap-2 cursor-pointer group">
-                    <input type="checkbox" id="assignUnderBranch" onchange="toggleBranch(this.checked)" class="w-7 h-3.5 rounded-full bg-slate-200 checked:bg-[var(--accent)] appearance-none cursor-pointer relative after:content-[''] after:absolute after:w-2.5 after:h-2.5 after:bg-white after:rounded-full after:top-0.5 after:left-0.5 checked:after:left-4 after:transition-all">
+                    <input type="checkbox" id="assignUnderBranch" onchange="toggleBranch(this.checked)" class="w-4 h-4 rounded border-slate-200 accent-[var(--accent)] cursor-pointer">
                     <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest group-hover:text-slate-600">Assign under branch</span>
                 </label>
                 <div class="relative flex-1 max-w-[200px]">
@@ -435,39 +511,50 @@
     </div>
 </div>
 
-<!-- Sub Modal: Manage Tags -->
-<div id="subModal-ManageTags" class="hidden fixed inset-0 z-[300] flex items-center justify-center bg-slate-900/40 backdrop-blur-[2px]">
-    <div class="w-full max-w-[500px] bg-white rounded-[40px] shadow-2xl overflow-hidden border border-slate-100 scale-in-center">
-        <!-- Header -->
-        <div class="px-8 py-6 bg-blue-500 flex items-center justify-between">
-            <h3 class="text-[20px] font-black text-white uppercase tracking-wider">MANAGE TAGS</h3>
-            <button onclick="closeSubModal('ManageTags')" class="px-6 py-2 rounded-xl bg-slate-800/80 text-white text-[11px] font-black uppercase tracking-widest hover:bg-slate-900 transition-all">CANCEL</button>
+{% include 'includes/manage_tags_modal.html' %}
+
+<!-- GLOBAL LOADER OVERLAY -->
+<div id="globalLoaderOverlay" class="fixed inset-0 z-[11000] flex items-center justify-center bg-slate-900/40 backdrop-blur-[2px] hidden">
+    <div class="bg-white p-6 rounded-3xl shadow-2xl flex flex-col items-center gap-4 animate-bounce">
+        <svg class="animate-spin w-10 h-10 text-[var(--accent)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+        <span class="text-[14px] font-black text-slate-700 tracking-widest uppercase">Processing...</span>
+    </div>
+</div>
+
+<!-- ERROR MODAL -->
+<div id="errorModalOverlay" class="fixed inset-0 z-[12000] flex items-center justify-center bg-slate-900/40 backdrop-blur-[2px] hidden">
+    <div class="bg-white p-6 rounded-3xl shadow-2xl w-[400px] flex flex-col gap-4 animate-in zoom-in-95 duration-200">
+        <div class="flex items-center gap-3 text-red-500">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            <h3 class="text-[16px] font-black tracking-wide">ERROR</h3>
         </div>
-
-        <!-- Body -->
-        <div class="p-10 space-y-8">
-            <!-- Add Tag Input Row -->
-            <div class="flex items-center gap-4">
-                <input type="text" placeholder="Enter Tag..." class="flex-1 h-14 bg-slate-50 border border-slate-100 rounded-2xl px-6 text-[15px] font-bold text-slate-700 outline-none focus:bg-white focus:border-blue-200 shadow-inner transition-all">
-                <button class="h-14 px-8 bg-blue-500 text-white rounded-2xl text-[14px] font-black uppercase tracking-widest hover:brightness-110 shadow-lg shadow-blue-500/20 transition-all">ADD TAG</button>
-            </div>
-
-            <!-- Tags List -->
-            <div class="space-y-4 max-h-[300px] overflow-y-auto no-scrollbar">
-                <div class="flex items-center justify-between py-4 border-b border-slate-50 group">
-                    <span class="text-[16px] font-bold text-slate-700">Retail</span>
-                    <span class="px-3 py-1 bg-slate-50 text-slate-400 text-[13px] font-bold rounded-full">2</span>
-                </div>
-                <div class="flex items-center justify-between py-4 border-b border-slate-50 group">
-                    <span class="text-[16px] font-bold text-slate-700">Wholesale</span>
-                    <span class="px-3 py-1 bg-slate-50 text-slate-400 text-[13px] font-bold rounded-full">1</span>
-                </div>
-            </div>
+        <p id="errorModalMessage" class="text-[13px] font-bold text-slate-600 break-words"></p>
+        <div class="flex justify-end mt-2">
+            <button onclick="document.getElementById('errorModalOverlay').classList.add('hidden')" class="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold text-[13px] transition-colors">Close</button>
         </div>
     </div>
 </div>
 
 <script>
+function showErrorModal(msg) {
+    const overlay = document.getElementById('errorModalOverlay');
+    const msgEl = document.getElementById('errorModalMessage');
+    if (overlay && msgEl) {
+        msgEl.textContent = msg;
+        overlay.classList.remove('hidden');
+    } else {
+        alert(msg);
+    }
+}
+function showGlobalLoader() {
+    const loader = document.getElementById('globalLoaderOverlay');
+    if (loader) loader.classList.remove('hidden');
+}
+
+function hideGlobalLoader() {
+    const loader = document.getElementById('globalLoaderOverlay');
+    if (loader) loader.classList.add('hidden');
+}
 function openSubModal(id) {
     const el = document.getElementById('subModal-' + id);
     if (el) el.classList.remove('hidden');
@@ -477,6 +564,80 @@ function closeSubModal(id) {
     if (el) el.classList.add('hidden');
 }
 let activeMenu = null;
+
+let franchiseeAttachments = [];
+
+async function handleFranchiseeAttachments(input) {
+    if (!input.files || input.files.length === 0) return;
+    
+    const files = Array.from(input.files);
+    
+    // Convert to base64
+    const readPromises = files.map(file => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = e => resolve({ name: file.name, data: e.target.result });
+            reader.readAsDataURL(file);
+        });
+    });
+    
+    const newAttachments = await Promise.all(readPromises);
+    franchiseeAttachments = franchiseeAttachments.concat(newAttachments);
+    renderFranchiseeAttachmentsUI();
+}
+
+function removeFranchiseeAttachment(index) {
+    franchiseeAttachments.splice(index, 1);
+    renderFranchiseeAttachmentsUI();
+}
+
+function renderFranchiseeAttachmentsUI() {
+    const container = document.getElementById('franchiseeAttachmentsContainer');
+    if (!container) return;
+    
+    if (franchiseeAttachments.length > 0) {
+        container.classList.remove('hidden');
+        container.innerHTML = '';
+        franchiseeAttachments.forEach((att, idx) => {
+            const badge = document.createElement('div');
+            badge.className = 'flex items-center gap-2 bg-white border border-slate-200 pl-3 pr-1 py-1 rounded-lg shadow-sm max-w-full';
+            
+            // Icon
+            const icon = document.createElement('div');
+            icon.className = 'text-slate-400 shrink-0';
+            if (att.data && att.data.startsWith('data:image')) {
+                icon.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>';
+            } else {
+                icon.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>';
+            }
+            
+            // Name
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'text-[11px] font-bold text-slate-700 truncate max-w-[150px]';
+            nameSpan.textContent = att.name || 'Attachment';
+            if (att.id) {
+                nameSpan.classList.add('cursor-pointer', 'hover:text-[var(--accent)]', 'underline');
+                nameSpan.onclick = () => window.open(att.data, '_blank');
+            }
+            
+            // Delete btn
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'w-6 h-6 flex items-center justify-center rounded-md hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors shrink-0';
+            btn.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>';
+            btn.onclick = () => removeFranchiseeAttachment(idx);
+            
+            badge.appendChild(icon);
+            badge.appendChild(nameSpan);
+            badge.appendChild(btn);
+            container.appendChild(badge);
+        });
+    } else {
+        container.classList.add('hidden');
+        container.innerHTML = '';
+    }
+}
+let selectedFranchiseeTags = new Set();
 
 function toggleToolbarMenu(id) {
     const menu = document.getElementById(id);
@@ -516,9 +677,117 @@ function setTab(tabId) {
     document.getElementById('pane-' + tabId).classList.remove('hidden');
 }
 
+function toggleFranchiseeMsmeFields() {
+    const isChecked = document.getElementById('franchiseeIsMsme').checked;
+    const msmeFields = document.getElementById('franchiseeMsmeFields');
+    if (isChecked) {
+        msmeFields.classList.remove('hidden');
+    } else {
+        msmeFields.classList.add('hidden');
+    }
+}
+function toggleGstMenu() {
+    const el = document.getElementById('gstinMenu');
+    if(el) el.classList.toggle('hidden');
+}
+
 function toggleLocation(id) {
     const el = document.getElementById('location-' + id);
-    el.classList.toggle('hidden');
+    if (el) {
+        el.classList.toggle('hidden');
+    }
+}
+
+function getLocation(inputId) {
+    if (navigator.geolocation) {
+        // Optional: show some loading state or notification
+        navigator.geolocation.getCurrentPosition(function(position) {
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.value = position.coords.latitude + ", " + position.coords.longitude;
+                // Auto-show the location input if it was hidden
+                const containerId = inputId === 'billingLatLng' ? 'location-billing' : 'location-shipping';
+                const container = document.getElementById(containerId);
+                if (container) container.classList.remove('hidden');
+            }
+        }, function(error) {
+            alert("Error getting location: " + error.message);
+        });
+    } else {
+        alert("Geolocation is not supported by this browser.");
+    }
+}
+
+let franchiseeShippingAddresses = [];
+
+function renderShippingAddresses() {
+    const container = document.getElementById('addedShippingAddresses');
+    if (!container) return;
+    container.innerHTML = '';
+    
+    franchiseeShippingAddresses.forEach((ship, index) => {
+        const div = document.createElement('div');
+        div.className = 'p-3 bg-white border border-slate-200 rounded-xl shadow-sm relative';
+        div.innerHTML = `
+            <div class="flex justify-between items-start">
+                <div>
+                    <h5 class="text-[12px] font-bold text-slate-800">${ship.shipping_ref_name || 'Shipping Address ' + (index + 1)}</h5>
+                    <p class="text-[11px] text-slate-500 mt-1">${ship.shipping_address1} ${ship.shipping_city ? ', ' + ship.shipping_city : ''}</p>
+                </div>
+                <button type="button" onclick="removeShippingAddress(${index})" class="text-red-500 hover:text-red-600 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                </button>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function addShippingAddress() {
+    const ship = {
+        shipping_ref_name: document.getElementById('shipRefName').value,
+        shipping_gstin: document.getElementById('shipGstin').value,
+        shipping_address1: document.getElementById('shipAddress1').value,
+        shipping_address2: document.getElementById('shipAddress2').value,
+        shipping_phone: document.getElementById('shipPhone').value,
+        shipping_email: document.getElementById('shipEmail').value,
+        shipping_city: document.getElementById('shipCity').value,
+        shipping_postal_code: document.getElementById('shipPostalCode').value,
+        shipping_country: document.getElementById('shipCountry').value,
+        shipping_state: document.getElementById('shipState').value,
+        shipping_latitude: '',
+        shipping_longitude: ''
+    };
+    
+    const latlng = document.getElementById('shipLatLng').value;
+    if (latlng) {
+        const parts = latlng.split(',');
+        if (parts.length === 2) {
+            ship.shipping_latitude = parts[0].trim();
+            ship.shipping_longitude = parts[1].trim();
+        }
+    }
+    
+    // Add only if there's some content
+    if (!ship.shipping_address1 && !ship.shipping_city && !ship.shipping_ref_name) {
+        showErrorModal("Please enter some shipping details before adding.");
+        return;
+    }
+    
+    franchiseeShippingAddresses.push(ship);
+    renderShippingAddresses();
+    
+    // Clear fields
+    ['shipRefName', 'shipGstin', 'shipAddress1', 'shipAddress2', 'shipPhone', 'shipEmail', 'shipCity', 'shipPostalCode', 'shipLatLng'].forEach(id => {
+        document.getElementById(id).value = '';
+    });
+    const locShip = document.getElementById('location-shipping');
+    if (locShip) locShip.classList.add('hidden');
+}
+
+function removeShippingAddress(index) {
+    franchiseeShippingAddresses.splice(index, 1);
+    renderShippingAddresses();
 }
 
 function toggleShippingFields(isSame) {
@@ -562,6 +831,642 @@ function openModal(title) {
 }
 function closeModal() {
     document.getElementById('modalOverlay').classList.add('hidden');
+}
+
+function newFranchisee() {
+    // Clear hidden ID (marks this as a new record)
+    document.getElementById('franchiseeId').value = '';
+
+    // Basic Info
+    const textFields = [
+        'franchiseeName', 'franchiseeContactName', 'franchiseeLedgerName',
+        'franchiseeEmail', 'franchiseeMobile', 'franchiseeWorkPhone',
+        'franchiseeGstin', 'franchiseePan', 'franchiseeCommission',
+        // Billing
+        'franchiseeAddress1', 'franchiseeAddress2', 'franchiseeCity',
+        'franchiseePostalCode', 'billingLatLng',
+        // Shipping
+        'shipRefName', 'shipGstin', 'shipAddress1', 'shipAddress2',
+        'shipCity', 'shipPostalCode', 'shipPhone', 'shipEmail', 'shipLatLng',
+        // Bank
+        'bankAccountName', 'bankAccountNumber', 'bankAccountType',
+        'bankName', 'bankBranch', 'bankIfsc', 'bankSwift',
+        'bankAdCode', 'bankCorrespondent'
+    ];
+    textFields.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+
+    // Hide location inputs by default for new entries
+    const locBilling = document.getElementById('location-billing');
+    if (locBilling) locBilling.classList.add('hidden');
+    const locShipping = document.getElementById('location-shipping');
+    if (locShipping) locShipping.classList.add('hidden');
+
+    // Selects with defaults
+    const franchiseeState = document.getElementById('franchiseeState');
+    if (franchiseeState) franchiseeState.value = franchiseeState.options[0]?.value || '';
+    const franchiseeCountry = document.getElementById('franchiseeCountry');
+    if (franchiseeCountry) franchiseeCountry.value = 'India';
+    const shipState = document.getElementById('shipState');
+    if (shipState) shipState.value = shipState.options[0]?.value || '';
+    const shipCountry = document.getElementById('shipCountry');
+    if (shipCountry) shipCountry.value = 'India';
+
+    // Checkboxes
+    const isActive = document.getElementById('franchiseeIsActive');
+    if (isActive) isActive.checked = true;
+    const compCheck = document.getElementById('franchiseeComposition');
+    if (compCheck) compCheck.checked = false;
+    const msmeCheck = document.getElementById('franchiseeIsMsme');
+    if (msmeCheck) { msmeCheck.checked = false; toggleFranchiseeMsmeFields(); }
+    const sameChk = document.getElementById('sameAsBilling');
+    if (sameChk) { sameChk.checked = true; toggleShippingFields(true); }
+    const assignChk = document.getElementById('assignUnderBranch');
+    if (assignChk) { assignChk.checked = false; toggleBranch(false); }
+
+    // Reset branch dropdown
+    const branchDrop = document.getElementById('branchDropdown');
+    if (branchDrop) branchDrop.value = branchDrop.options[0]?.value || '';
+
+    // Clear tags
+    selectedFranchiseeTags.clear();
+    updateFranchiseeTagsDisplay();
+
+    // Clear shipping list
+    franchiseeShippingAddresses = [];
+    renderShippingAddresses();
+    
+    // Clear attachments
+    franchiseeAttachments = [];
+    renderFranchiseeAttachmentsUI();
+    const attachInput = document.getElementById('franchiseeAttachmentInput');
+    if (attachInput) attachInput.value = '';
+
+    // Reset to first tab
+    setTab('address');
+
+    openModal('Franchisee');
+}
+function renderFranchiseeTagsDropdown() {
+    const menu = document.getElementById('franchiseeTagsMenu');
+    if (!menu) return;
+    menu.innerHTML = '';
+    
+    if (typeof globalTags === 'undefined' || globalTags.length === 0) {
+        menu.innerHTML = '<div class="p-2 text-slate-400 text-[12px] text-center font-bold">No tags available</div>';
+        return;
+    }
+    
+    globalTags.forEach(tag => {
+        const isSelected = selectedFranchiseeTags.has(tag.id);
+        const div = document.createElement('div');
+        div.className = 'flex items-center gap-3 p-2 hover:bg-slate-50 rounded-lg cursor-pointer transition-colors';
+        div.onclick = (e) => {
+            e.stopPropagation();
+            toggleFranchiseeTagSelection(tag.id, tag.name);
+        };
+        
+        div.innerHTML = `
+            <div class="w-4 h-4 rounded border ${isSelected ? 'bg-[var(--accent)] border-[var(--accent)]' : 'border-slate-300 bg-white'} flex items-center justify-center transition-colors">
+                ${isSelected ? '<svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>' : ''}
+            </div>
+            <span class="text-[13px] font-bold text-slate-700">${tag.name}</span>
+        `;
+        menu.appendChild(div);
+    });
+    
+    updateFranchiseeTagsDisplay();
+}
+
+function toggleFranchiseeTagSelection(id, name) {
+    if (selectedFranchiseeTags.has(id)) {
+        selectedFranchiseeTags.delete(id);
+    } else {
+        selectedFranchiseeTags.add(id);
+    }
+    renderFranchiseeTagsDropdown();
+}
+
+function removeFranchiseeTag(e, id) {
+    e.stopPropagation();
+    selectedFranchiseeTags.delete(id);
+    renderFranchiseeTagsDropdown();
+}
+
+function updateFranchiseeTagsDisplay() {
+    const container = document.getElementById('franchiseeTagsSelected');
+    if (!container) return;
+    
+    if (selectedFranchiseeTags.size === 0) {
+        container.innerHTML = '<span class="text-slate-400 text-[13px] font-bold pt-1">Select tags...</span>';
+        return;
+    }
+    
+    container.innerHTML = '';
+    selectedFranchiseeTags.forEach(id => {
+        const tag = globalTags.find(t => t.id === id);
+        if (tag) {
+            const span = document.createElement('span');
+            span.className = 'px-2 py-1 bg-white border border-slate-200 rounded-md text-[11px] font-bold text-slate-600 flex items-center gap-1 shadow-sm';
+            span.innerHTML = `${tag.name} <button type="button" onclick="removeFranchiseeTag(event, ${tag.id})" class="text-slate-400 hover:text-red-500 transition-colors">×</button>`;
+            container.appendChild(span);
+        }
+    });
+}
+
+function toggleFranchiseeTagsMenu() {
+    const menu = document.getElementById('franchiseeTagsMenu');
+    if (menu) menu.classList.toggle('hidden');
+}
+
+// Close menu when clicking outside
+document.addEventListener('click', (e) => {
+    const container = document.getElementById('franchiseeTagsContainer');
+    const menu = document.getElementById('franchiseeTagsMenu');
+    if (container && menu && !container.contains(e.target)) {
+        menu.classList.add('hidden');
+    }
+});
+
+const franchiseesData = {{ franchisee_data|safe }};
+let autocompleteCursor = -1;
+
+function initFranchiseeAutocomplete() {
+    const input = document.getElementById('franchiseeFilterInput');
+    const menu = document.getElementById('franchiseeAutocompleteMenu');
+    const clearBtn = document.getElementById('clearFranchiseeFilter');
+
+    if (!input || !menu) return;
+
+    function renderMenu(items) {
+        menu.innerHTML = '';
+        if (items.length === 0) {
+            menu.classList.add('hidden');
+            return;
+        }
+        items.forEach((item, index) => {
+            const div = document.createElement('div');
+            div.className = 'px-4 py-2 text-[13px] font-bold text-slate-700 cursor-pointer hover:bg-[var(--accent)]/10 hover:text-[var(--accent)] transition-colors autocomplete-item';
+            div.textContent = item.name;
+            div.onclick = () => selectItem(item.name);
+            menu.appendChild(div);
+        });
+        menu.classList.remove('hidden');
+    }
+
+    function selectItem(name) {
+        input.value = name;
+        menu.classList.add('hidden');
+        clearBtn.classList.remove('hidden');
+        filterTable(name);
+    }
+
+    input.addEventListener('input', (e) => {
+        const val = e.target.value.toLowerCase();
+        if (val) {
+            clearBtn.classList.remove('hidden');
+            const filtered = franchiseesData.filter(f => f.name.toLowerCase().includes(val));
+            renderMenu(filtered);
+            filterTable(val);
+        } else {
+            clearBtn.classList.add('hidden');
+            menu.classList.add('hidden');
+            filterTable('');
+        }
+        autocompleteCursor = -1;
+    });
+
+    input.addEventListener('keydown', (e) => {
+        const items = menu.querySelectorAll('.autocomplete-item');
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            autocompleteCursor = Math.min(autocompleteCursor + 1, items.length - 1);
+            updateCursor(items);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            autocompleteCursor = Math.max(autocompleteCursor - 1, -1);
+            updateCursor(items);
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (autocompleteCursor >= 0 && items[autocompleteCursor]) {
+                items[autocompleteCursor].click();
+            } else {
+                menu.classList.add('hidden');
+                filterTable(input.value);
+            }
+        }
+    });
+
+    function updateCursor(items) {
+        items.forEach((el, idx) => {
+            if (idx === autocompleteCursor) {
+                el.classList.add('bg-[var(--accent)]/10', 'text-[var(--accent)]');
+                el.scrollIntoView({ block: 'nearest' });
+            } else {
+                el.classList.remove('bg-[var(--accent)]/10', 'text-[var(--accent)]');
+            }
+        });
+    }
+
+    clearBtn.addEventListener('click', () => {
+        input.value = '';
+        clearBtn.classList.add('hidden');
+        menu.classList.add('hidden');
+        filterTable('');
+        input.focus();
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!input.contains(e.target) && !menu.contains(e.target)) {
+            menu.classList.add('hidden');
+        }
+    });
+}
+
+function filterTable(val) {
+    const rows = document.querySelectorAll('.franchisee-row');
+    const lowerVal = val.toLowerCase();
+    rows.forEach(row => {
+        const name = row.getAttribute('data-f-name');
+        if (name.includes(lowerVal)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    initFranchiseeAutocomplete();
+    initRecentFranchisee();
+});
+
+let currentRecentIndex = 0;
+function initRecentFranchisee() {
+    if (franchiseesData && franchiseesData.length > 0) {
+        currentRecentIndex = 0;
+        updateRecentFranchiseeDisplay();
+    } else {
+        const display = document.getElementById('recentFranchiseeDisplay');
+        if (display) display.textContent = 'None';
+    }
+}
+
+function updateRecentFranchiseeDisplay() {
+    const display = document.getElementById('recentFranchiseeDisplay');
+    if (display && franchiseesData.length > 0) {
+        display.textContent = franchiseesData[currentRecentIndex].name;
+    }
+}
+
+function navigateRecentFranchisee(dir) {
+    if (!franchiseesData || franchiseesData.length === 0) return;
+    currentRecentIndex += dir;
+    if (currentRecentIndex < 0) currentRecentIndex = franchiseesData.length - 1;
+    if (currentRecentIndex >= franchiseesData.length) currentRecentIndex = 0;
+    updateRecentFranchiseeDisplay();
+}
+
+async function saveFranchisee(isNew) {
+    const ledgerName = document.getElementById('franchiseeLedgerName')?.value || '';
+    if (!ledgerName.trim()) {
+        showErrorModal('Ledger Name is a mandatory field.');
+        return;
+    }
+
+    showGlobalLoader();
+
+    try {
+        let f_id = document.getElementById('franchiseeId')?.value || '';
+
+        const data = {
+            id: f_id,
+            name: document.getElementById('franchiseeName')?.value || '',
+            contact_name: document.getElementById('franchiseeContactName')?.value || '',
+            ledger_name: ledgerName,
+            email: document.getElementById('franchiseeEmail')?.value || '',
+            gstin: document.getElementById('franchiseeGstin')?.value || '',
+            pan: document.getElementById('franchiseePan')?.value || '',
+            commission: document.getElementById('franchiseeCommission')?.value || '',
+            mobile: document.getElementById('franchiseeMobile')?.value || '',
+            work_phone: document.getElementById('franchiseeWorkPhone')?.value || '',
+            is_active: document.getElementById('franchiseeIsActive')?.checked !== false,
+            is_composition_scheme: document.getElementById('franchiseeComposition')?.checked || false,
+            is_msme: document.getElementById('franchiseeIsMsme')?.checked || false,
+            msme_type: document.getElementById('franchiseeMsmeType')?.value || '',
+            msme_number: document.getElementById('franchiseeMsmeRegNo')?.value || '',
+
+            // Billing Address
+            address1: document.getElementById('franchiseeAddress1')?.value || '',
+            address2: document.getElementById('franchiseeAddress2')?.value || '',
+            city: document.getElementById('franchiseeCity')?.value || '',
+            postal_code: document.getElementById('franchiseePostalCode')?.value || '',
+            state: document.getElementById('franchiseeState')?.value || '',
+            country: document.getElementById('franchiseeCountry')?.value || 'India',
+            ...(() => {
+                const raw = (document.getElementById('billingLatLng')?.value || '').split(',');
+                return { latitude: (raw[0] || '').trim(), longitude: (raw[1] || '').trim() };
+            })(),
+
+            // Shipping
+            same_as_billing: document.getElementById('sameAsBilling')?.checked !== false,
+            shipping_addresses: franchiseeShippingAddresses,
+
+            // Branch
+            assign_under_branch: document.getElementById('assignUnderBranch')?.checked || false,
+            branch_id: document.getElementById('branchDropdown')?.value || null,
+
+            // Tags
+            tag_accesses: Array.from(selectedFranchiseeTags),
+
+            // Bank Details
+            bank_details: [{
+                account_name: document.getElementById('bankAccountName')?.value || '',
+                account_number: document.getElementById('bankAccountNumber')?.value || '',
+                account_type: document.getElementById('bankAccountType')?.value || '',
+                bank_name: document.getElementById('bankName')?.value || '',
+                bank_branch: document.getElementById('bankBranch')?.value || '',
+                ifsc_code: document.getElementById('bankIfsc')?.value || '',
+                swift_code: document.getElementById('bankSwift')?.value || '',
+                ad_code: document.getElementById('bankAdCode')?.value || '',
+                correspondent_bank: document.getElementById('bankCorrespondent')?.value || ''
+            }],
+            
+            attachment: franchiseeAttachments.length > 0 ? JSON.stringify(franchiseeAttachments) : null
+        };
+
+        const response = await fetch('/franchisee/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+            },
+            body: JSON.stringify({ action: 'save', data: data })
+        });
+
+        const result = await response.json();
+        if (result.status === 'success') {
+            if (isNew) {
+                window.location.href = '/franchisee/?openModal=1';
+            } else {
+                window.location.href = '/franchisee/';
+            }
+        } else {
+            showErrorModal('Error: ' + result.message);
+        }
+    } catch (e) {
+        console.error(e);
+        showErrorModal('Error saving franchisee.');
+    } finally {
+        hideGlobalLoader();
+    }
+}
+
+async function editFranchisee(id, btn) {
+    showGlobalLoader();
+    
+    await new Promise(r => setTimeout(r, 400));
+    
+    const f = franchiseesData.find(x => x.id == id);
+    if (f) {
+        // Hidden ID
+        document.getElementById('franchiseeId').value = f.id;
+
+        // Basic Info
+        document.getElementById('franchiseeName').value = f.name || '';
+        document.getElementById('franchiseeContactName').value = f.contact_name || '';
+        document.getElementById('franchiseeLedgerName').value = f.ledger_name || '';
+        document.getElementById('franchiseeEmail').value = f.email || '';
+        document.getElementById('franchiseeMobile').value = f.mobile || '';
+        document.getElementById('franchiseeWorkPhone').value = f.work_phone || '';
+        document.getElementById('franchiseeGstin').value = f.gstin || '';
+        document.getElementById('franchiseePan').value = f.pan || '';
+        document.getElementById('franchiseeCommission').value = f.commission || '';
+
+        // Toggles
+        const activeCheck = document.getElementById('franchiseeIsActive');
+        if (activeCheck) activeCheck.checked = f.is_active !== false;
+        const compCheck = document.getElementById('franchiseeComposition');
+        if (compCheck) compCheck.checked = f.is_composition_scheme || false;
+        const msmeCheck = document.getElementById('franchiseeIsMsme');
+        if (msmeCheck) {
+            msmeCheck.checked = f.is_msme || false;
+            toggleFranchiseeMsmeFields();
+        }
+        if (f.msme_type) {
+            const msmeTypeEl = document.getElementById('franchiseeMsmeType');
+            if (msmeTypeEl) msmeTypeEl.value = f.msme_type || '';
+        }
+        const msmeRegEl = document.getElementById('franchiseeMsmeRegNo');
+        if (msmeRegEl) msmeRegEl.value = f.msme_number || '';
+
+        // Billing Address
+        document.getElementById('franchiseeAddress1').value = f.address1 || '';
+        document.getElementById('franchiseeAddress2').value = f.address2 || '';
+        document.getElementById('franchiseeCity').value = f.city || '';
+        document.getElementById('franchiseePostalCode').value = f.postal_code || '';
+        document.getElementById('franchiseeState').value = f.state || '';
+        document.getElementById('franchiseeCountry').value = f.country || 'India';
+        const billingLatLng = [f.latitude, f.longitude].filter(Boolean).join(', ');
+        document.getElementById('billingLatLng').value = billingLatLng;
+        if (billingLatLng) document.getElementById('location-billing').classList.remove('hidden');
+
+        // Shipping Address
+        const sameChk = document.getElementById('sameAsBilling');
+        if (sameChk) {
+            sameChk.checked = f.same_as_billing !== false;
+            toggleShippingFields(sameChk.checked);
+        }
+        document.getElementById('shipPhone').value = '';
+        document.getElementById('shipEmail').value = '';
+        document.getElementById('shipLatLng').value = '';
+        document.getElementById('location-shipping').classList.add('hidden');
+        
+        franchiseeShippingAddresses = f.shipping_addresses || [];
+        renderShippingAddresses();
+
+        // Bank Details
+        document.getElementById('bankAccountName').value = f.account_name || '';
+        document.getElementById('bankAccountNumber').value = f.account_number || '';
+        document.getElementById('bankAccountType').value = f.account_type || '';
+        document.getElementById('bankName').value = f.bank_name || '';
+        document.getElementById('bankBranch').value = f.bank_branch || '';
+        document.getElementById('bankIfsc').value = f.ifsc_code || '';
+        document.getElementById('bankSwift').value = f.swift_code || '';
+        document.getElementById('bankAdCode').value = f.ad_code || '';
+        document.getElementById('bankCorrespondent').value = f.correspondent_bank || '';
+
+        // Branch Assignment
+        const assignChk = document.getElementById('assignUnderBranch');
+        if (assignChk) {
+            assignChk.checked = f.assign_under_branch || false;
+            toggleBranch(f.assign_under_branch || false);
+        }
+        if (f.branch_id) {
+            const branchDrop = document.getElementById('branchDropdown');
+            if (branchDrop) branchDrop.value = f.branch_id;
+        }
+
+        // Tags
+        selectedFranchiseeTags.clear();
+        if (f.tag_accesses) {
+            f.tag_accesses.forEach(tName => {
+                const tg = globalTags.find(x => x.name === tName);
+                if (tg) selectedFranchiseeTags.add(tg.id);
+            });
+        }
+        updateFranchiseeTagsDisplay();
+        
+        // Attachments
+        if (f.attachments && f.attachments.length > 0) {
+            franchiseeAttachments = typeof f.attachments === 'string' ? JSON.parse(f.attachments) : f.attachments;
+        } else {
+            franchiseeAttachments = [];
+        }
+        renderFranchiseeAttachmentsUI();
+        
+        openModal('Franchisee');
+    }
+    
+    hideGlobalLoader();
+}
+
+async function deleteFranchisee(id, btn) {
+    if (!confirm('Are you sure you want to delete this franchisee?')) return;
+    
+    showGlobalLoader();
+    
+    try {
+        const response = await fetch('/franchisee/', {
+            method: 'POST',
+            body: JSON.stringify({ action: 'delete', id: id }),
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        });
+        
+        const res = await response.json();
+        if (res.status === 'success') {
+            window.location.reload();
+        } else {
+            showErrorModal('Failed to delete: ' + res.message);
+        }
+    } catch (e) {
+        console.error(e);
+        showErrorModal('Error deleting franchisee.');
+    } finally {
+        hideGlobalLoader();
+    }
+}
+
+function exportFranchiseeCSV() {
+    let csv = 'Franchisee Name,Mobile,City,Status\n';
+    franchiseesData.forEach(f => {
+        csv += `"${(f.name || '').replace(/"/g, '""')}","${f.mobile || ''}","${f.city || ''}","${f.is_active ? 'Active' : 'Inactive'}"\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'franchisees.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+
+function exportFranchiseeXLS() {
+    let table = '<table border="1"><tr><th>Franchisee Name</th><th>Mobile</th><th>City</th><th>Status</th></tr>';
+    franchiseesData.forEach(f => {
+        table += `<tr><td>${f.name || ''}</td><td>${f.mobile || ''}</td><td>${f.city || ''}</td><td>${f.is_active ? 'Active' : 'Inactive'}</td></tr>`;
+    });
+    table += '</table>';
+    const blob = new Blob([table], { type: 'application/vnd.ms-excel' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'franchisees.xls';
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+
+function exportFranchiseePDF() {
+    window.print();
+}
+
+function triggerFranchiseeImport() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.csv,.xls,.xlsx';
+    input.onchange = (e) => {
+        if(e.target.files.length > 0) {
+            alert('File ' + e.target.files[0].name + ' selected for import. Backend parsing is required to complete this action.');
+        }
+    };
+    input.click();
+}
+
+// Franchisee Stats Filter
+let currentFranchiseeStatusFilter = 'All';
+
+function filterByStatus(status) {
+    currentFranchiseeStatusFilter = status;
+    
+    // Update active UI styles on the top buttons
+    const filters = {
+        'All': document.querySelector('[onclick="filterByStatus(\\\'All\\\')"]'),
+        'Active': document.querySelector('[onclick="filterByStatus(\\\'Active\\\')"]'),
+        'Inactive': document.querySelector('[onclick="filterByStatus(\\\'Inactive\\\')"]')
+    };
+    
+    // Reset all to unselected
+    for(const key in filters) {
+        if(filters[key]) {
+            filters[key].classList.remove('bg-[var(--accent)]');
+            filters[key].classList.add('hover:bg-slate-50');
+            const spans = filters[key].querySelectorAll('span');
+            if(spans.length === 2) {
+                // Return text to normal colors
+                spans[0].classList.remove('text-white');
+                spans[0].classList.add('text-slate-400');
+                if(key === 'All') { spans[1].classList.remove('text-white'); spans[1].classList.add('text-slate-700'); }
+                if(key === 'Active') { spans[1].classList.remove('text-white'); spans[1].classList.add('text-emerald-500'); }
+                if(key === 'Inactive') { spans[1].classList.remove('text-white'); spans[1].classList.add('text-rose-500'); }
+            }
+        }
+    }
+    
+    // Set selected
+    const activeBtn = filters[status];
+    if(activeBtn) {
+        activeBtn.classList.add('bg-[var(--accent)]');
+        activeBtn.classList.remove('hover:bg-slate-50');
+        const spans = activeBtn.querySelectorAll('span');
+        if(spans.length === 2) {
+            spans[0].classList.remove('text-slate-400');
+            spans[0].classList.add('text-white');
+            spans[1].className = 'text-[30px] font-black text-white leading-none';
+        }
+    }
+
+    // Filter table rows
+    const searchVal = (document.getElementById('franchiseeSearchInput')?.value || '').toLowerCase();
+    const rows = document.querySelectorAll('.franchisee-row');
+    rows.forEach(row => {
+        const rowStatus = row.getAttribute('data-status');
+        const rowName = row.getAttribute('data-f-name') || '';
+        let show = true;
+        
+        if(status === 'Active' && rowStatus !== 'Active') show = false;
+        if(status === 'Inactive' && rowStatus !== 'Inactive') show = false;
+        
+        if(searchVal && !rowName.includes(searchVal)) {
+            show = false;
+        }
+        
+        row.style.display = show ? '' : 'none';
+    });
 }
 </script>
 

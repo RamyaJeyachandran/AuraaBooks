@@ -1,0 +1,11 @@
+ALTER TABLE tbl_branch ADD COLUMN additional_info TEXT NULL;
+ALTER TABLE tbl_branch ADD COLUMN is_msme BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE tbl_branch ADD COLUMN attachment VARCHAR(255) NULL;
+ALTER TABLE tbl_branch ADD COLUMN map_coordinates VARCHAR(255) NULL;
+ALTER TABLE tbl_branch ADD COLUMN parent_branch_id BIGINT NULL REFERENCES tbl_branch(id) ON DELETE SET NULL DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE tbl_branch_bank ADD COLUMN ad_code VARCHAR(50) NULL;
+ALTER TABLE tbl_branch_bank ADD COLUMN correspondent_bank VARCHAR(255) NULL;
+ALTER TABLE tbl_branch_shipping ADD COLUMN shipping_ref_name VARCHAR(255) NULL;
+ALTER TABLE tbl_branch_shipping ADD COLUMN shipping_gstin VARCHAR(15) NULL;
+ALTER TABLE tbl_branch_shipping ADD COLUMN email VARCHAR(254) NULL;
+ALTER TABLE tbl_branch_shipping ADD COLUMN map_coordinates VARCHAR(255) NULL;

@@ -145,7 +145,7 @@
 </div>
 
 <!-- Status Toast -->
-<div id="serialToast" class="fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3.5 bg-slate-900 text-white rounded-xl shadow-2xl opacity-0 translate-y-4 pointer-events-none transition-all duration-300">
+<div id="serialToast" class="fixed top-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3.5 bg-[var(--primary)] text-white rounded-xl shadow-2xl opacity-0 -translate-y-4 pointer-events-none transition-all duration-300">
     <div id="serialToastIcon" class="flex items-center justify-center"></div>
     <span id="serialToastText" class="text-[13px] font-semibold tracking-wide"></span>
 </div>
@@ -156,12 +156,9 @@
     // Module choices list for custom added rows
     const availableModules = ['Quote', 'Sales Order', 'Delivery Challan', 'Credit Note', 'Debit Note', 'Supplier Credit Note', 'Supplier Debit Note', 'E-Way Bill', 'E-Invoice'];
 
-    // Local Serial Settings Database
-    let serialData = [
-        { id: 1, module: 'Quote', series: 'Default', mode: 'Auto', prefix: 'QTE', next: 1, suffix: '/FEB/26-27', isDefault: true },
-        { id: 2, module: 'Quote', series: 'Estimate', mode: 'Auto', prefix: 'EST001', next: 1, suffix: '', isDefault: false },
-        { id: 3, module: 'Sales Order', series: 'Default', mode: 'Auto', prefix: 'ORD', next: 1, suffix: '', isDefault: true }
-    ];
+    // Local Serial Settings Database loaded from backend
+    const serialDataJson = '{{ serialData|escapejs }}';
+    let serialData = JSON.parse(serialDataJson || '[]');
 
     let isEditMode = false;
     let tempSerialData = []; // Clone storage for cancel revert
@@ -330,11 +327,30 @@
         }
 
         showToast('Saving serial number configurations...', 'loading');
-        setTimeout(() => {
-            exitEditMode(true);
-            showToast('Serial configurations saved successfully!', 'success');
-            hideToast(1800);
-        }, 800);
+        
+        fetch(window.location.href, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ serialData: tempSerialData })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                exitEditMode(true);
+                showToast(data.message || 'Serial configurations saved successfully!', 'success');
+                hideToast(1800);
+            } else {
+                showToast(data.message || 'Error saving configurations.', 'error');
+                hideToast(3000);
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            showToast('An error occurred.', 'error');
+            hideToast(3000);
+        });
     }
 
     // Toast logic
@@ -356,14 +372,14 @@
             iconDiv.innerHTML = '<svg class="w-4.5 h-4.5 text-rose-400" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>';
         }
 
-        toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+        toast.classList.remove('opacity-0', '-translate-y-4', 'pointer-events-none');
         toast.classList.add('opacity-100', 'translate-y-0');
     }
 
     function hideToast(delay = 1500) {
         const toast = document.getElementById('serialToast');
         toastTimeout = setTimeout(() => {
-            toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+            toast.classList.add('opacity-0', '-translate-y-4', 'pointer-events-none');
             toast.classList.remove('opacity-100', 'translate-y-0');
         }, delay);
     }
