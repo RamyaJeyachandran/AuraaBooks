@@ -57,7 +57,7 @@ class BranchListView(TemplateView):
     template_name = 'branch.html'
 
     def get_context_data(self, **kwargs):
-        from .models import Branch, EntityBankDetail, EntityShippingAddress
+        from .models import Branch, EntityBankDetail, EntityShippingAddress, BranchAttachment
         import json
         context = super().get_context_data(**kwargs)
         
@@ -131,6 +131,7 @@ class BranchListView(TemplateView):
                     'mobile': ship.mobile or '',
                     'map_coordinates': ship.map_coordinates or ''
                 } for ship in ships_by_branch.get(b.id, [])],
+                'attachments': [{'id': att.id, 'name': att.filename, 'url': att.file.url if att.file else ''} for att in b.attachments.all()],
                 'tag_accesses': [t.tag_name for t in b.tag_accesses.all()]
             })
             
@@ -144,8 +145,10 @@ class BranchListView(TemplateView):
     def post(self, request, *args, **kwargs):
         from django.http import JsonResponse
         import json
-        from .models import Branch, EntityBankDetail, EntityShippingAddress, BranchTagAccess
+        from .models import Branch, EntityBankDetail, EntityShippingAddress, BranchTagAccess, BranchAttachment
         from django.db import transaction
+        import base64
+        from django.core.files.base import ContentFile
 
         try:
             data = json.loads(request.body)
@@ -171,8 +174,15 @@ class BranchListView(TemplateView):
                         branch.is_msme = entry.get('is_msme', False)
                         branch.msme_type = entry.get('msme_type', '')
                         branch.msme_number = entry.get('msme_number', '')
-                        branch.logo = entry.get('logo', '')
-                        branch.attachment = entry.get('attachment')
+                        
+                        logo_str = entry.get('logo', '')
+                        if logo_str and logo_str.startswith('data:'):
+                            fmt, imgstr = logo_str.split(';base64,')
+                            ext = fmt.split('/')[-1]
+                            branch.logo = f"data:{fmt.split(':')[1]};base64,{imgstr}"
+                        elif not logo_str:
+                            branch.logo = ''
+                            
                         branch.map_coordinates = entry.get('map_coordinates')
                         branch.parent_branch_id = entry.get('parent_branch_id')
                         branch.address1 = entry.get('address1')
@@ -197,8 +207,6 @@ class BranchListView(TemplateView):
                             is_msme=entry.get('is_msme', False),
                             msme_type=entry.get('msme_type', ''),
                             msme_number=entry.get('msme_number', ''),
-                            logo=entry.get('logo'),
-                            attachment=entry.get('attachment'),
                             map_coordinates=entry.get('map_coordinates'),
                             parent_branch_id=entry.get('parent_branch_id'),
                             address1=entry.get('address1'),
@@ -208,6 +216,12 @@ class BranchListView(TemplateView):
                             country=entry.get('country'),
                             postal_code=entry.get('postal_code')
                         )
+                        
+                        logo_str = entry.get('logo', '')
+                        if logo_str and logo_str.startswith('data:'):
+                            fmt, imgstr = logo_str.split(';base64,')
+                            branch.logo = f"data:{fmt.split(':')[1]};base64,{imgstr}"
+                            branch.save()
                     
                     # Update Bank Details
                     EntityBankDetail.objects.filter(entity_type='Branch', entity_id=branch.id).delete()
@@ -253,6 +267,29 @@ class BranchListView(TemplateView):
                     for tag in tags:
                         if tag:
                             BranchTagAccess.objects.create(branch=branch, tag_name=tag)
+                            
+                    # Multiple attachments from base64
+                    attach_str = entry.get('attachment', '')
+                    if attach_str:
+                        try:
+                            attachments = json.loads(attach_str)
+                            kept_ids = [att['id'] for att in attachments if 'id' in att]
+                            BranchAttachment.objects.filter(branch=branch).exclude(id__in=kept_ids).delete()
+                            
+                            for att in attachments:
+                                if 'data' in att and att['data'].startswith('data:'):
+                                    fmt, imgstr = att['data'].split(';base64,')
+                                    ext = fmt.split('/')[-1]
+                                    filename = att.get('name', f'attachment.{ext}')
+                                    BranchAttachment.objects.create(
+                                        branch=branch,
+                                        file=ContentFile(base64.b64decode(imgstr), name=filename),
+                                        filename=filename
+                                    )
+                        except:
+                            pass
+                    else:
+                        BranchAttachment.objects.filter(branch=branch).delete()
 
                     
                     branch_data = {
@@ -306,6 +343,7 @@ class BranchListView(TemplateView):
                             'mobile': ship.mobile or '',
                             'map_coordinates': ship.map_coordinates or ''
                         } for ship in EntityShippingAddress.objects.filter(entity_type='Branch', entity_id=branch.id)],
+                        'attachments': [{'id': att.id, 'name': att.filename, 'url': att.file.url if att.file else ''} for att in branch.attachments.all()],
                         'tag_accesses': [t.tag_name for t in branch.tag_accesses.all()]
                     }
                 return JsonResponse({'status': 'success', 'message': 'Branch saved successfully.', 'branch': branch_data})
@@ -316,6 +354,7 @@ class BranchListView(TemplateView):
                     Branch.objects.filter(id=branch_id).delete()
                     EntityBankDetail.objects.filter(entity_type='Branch', entity_id=branch_id).delete()
                     EntityShippingAddress.objects.filter(entity_type='Branch', entity_id=branch_id).delete()
+                    BranchAttachment.objects.filter(branch_id=branch_id).delete()
                     return JsonResponse({'status': 'success', 'message': 'Branch deleted successfully.'})
                 return JsonResponse({'status': 'error', 'message': 'Invalid branch ID.'}, status=400)
 

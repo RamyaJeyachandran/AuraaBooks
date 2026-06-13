@@ -149,6 +149,14 @@ class BranchTagAccess(BaseModel):
     class Meta:
         db_table = 'tbl_branch_tags'
 
+class BranchAttachment(BaseModel):
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='attachments')
+    file = models.FileField(upload_to='branch_attachments/')
+    filename = models.CharField(max_length=255)
+
+    class Meta:
+        db_table = 'tbl_branch_attachments'
+
 class Tag(BaseModel):
     name = models.CharField(max_length=100, db_column='tagName')
     tag_type = models.CharField(max_length=10, default='B', db_column='tagType')

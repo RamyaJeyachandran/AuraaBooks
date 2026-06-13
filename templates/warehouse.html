@@ -128,13 +128,13 @@
         <table class="w-full text-left border-collapse">
             <thead>
                 <tr class="bg-[var(--accent)]">
-                    <th data-col-index="0" class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Stock Location Name</th>
-                    <th data-col-index="1" class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Contact Person</th>
-                    <th data-col-index="2" class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Contact Mobile</th>
-                    <th data-col-index="3" class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Work Phone</th>
-                    <th data-col-index="4" class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Address</th>
-                    <th data-col-index="5" class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest">Bank Details</th>
-                    <th data-col-index="6" class="px-8 py-5 text-[11px] font-black text-white uppercase tracking-widest text-right">Action</th>
+                    <th data-col-index="0" class="px-8 py-3 text-[11px] font-black text-white uppercase tracking-widest">Stock Location Name</th>
+                    <th data-col-index="1" class="px-8 py-3 text-[11px] font-black text-white uppercase tracking-widest">Contact Person</th>
+                    <th data-col-index="2" class="px-8 py-3 text-[11px] font-black text-white uppercase tracking-widest">Contact Mobile</th>
+                    <th data-col-index="3" class="px-8 py-3 text-[11px] font-black text-white uppercase tracking-widest">Work Phone</th>
+                    <th data-col-index="4" class="px-8 py-3 text-[11px] font-black text-white uppercase tracking-widest">Address</th>
+                    <th data-col-index="5" class="px-8 py-3 text-[11px] font-black text-white uppercase tracking-widest">Bank Details</th>
+                    <th data-col-index="6" class="px-8 py-3 text-[11px] font-black text-white uppercase tracking-widest text-right">Action</th>
                 </tr>
             </thead>
             <tbody id="warehouseTableBody" class="divide-y divide-slate-50">
@@ -1176,12 +1176,12 @@ function renderWarehouseTable(data) {
         tr.className = 'hover:bg-slate-50 transition-colors border-b border-slate-50/50';
         
         tr.innerHTML = `
-            <td class="px-8 py-4 text-[13px] font-bold text-slate-700">${w.name || '-'}</td>
-            <td class="px-8 py-4 text-[13px] font-bold text-slate-700">${w.contact_person || '-'}</td>
-            <td class="px-8 py-4 text-[13px] font-bold text-slate-700">${w.mobile || '-'}</td>
-            <td class="px-8 py-4 text-[13px] font-bold text-slate-700">${w.work_phone || '-'}</td>
-            <td class="px-8 py-4 text-[13px] font-medium text-slate-500 max-w-[200px] truncate">${w.shipping_addresses && w.shipping_addresses.length > 0 ? w.shipping_addresses[0].address1 || '-' : '-'}</td>
-            <td class="px-8 py-4 text-[13px] font-medium text-slate-500">
+            <td class="px-8 py-2.5 text-[13px] font-bold text-slate-700">${w.name || '-'}</td>
+            <td class="px-8 py-2.5 text-[13px] font-bold text-slate-700">${w.contact_person || '-'}</td>
+            <td class="px-8 py-2.5 text-[13px] font-bold text-slate-700">${w.mobile || '-'}</td>
+            <td class="px-8 py-2.5 text-[13px] font-bold text-slate-700">${w.work_phone || '-'}</td>
+            <td class="px-8 py-2.5 text-[13px] font-medium text-slate-500 max-w-[200px] truncate">${w.shipping_addresses && w.shipping_addresses.length > 0 ? w.shipping_addresses[0].address1 || '-' : '-'}</td>
+            <td class="px-8 py-2.5 text-[13px] font-medium text-slate-500">
                 ${w.bank_details && w.bank_details.length > 0 ? `
                     <div class="flex flex-col gap-0.5 leading-tight">
                         ${w.bank_details[0].bank_name ? `<span class="font-bold text-slate-700">${w.bank_details[0].bank_name}</span>` : ''}
@@ -1191,7 +1191,7 @@ function renderWarehouseTable(data) {
                     </div>
                 ` : '-'}
             </td>
-            <td class="px-8 py-4 text-center">
+            <td class="px-8 py-2.5 text-center">
                 <div class="flex items-center justify-center gap-2 transition-opacity">
                     <button type="button" onclick="editWarehouse(${w.id}); event.stopPropagation();" class="w-8 h-8 rounded-lg bg-[var(--accent)] text-white hover:brightness-110 flex items-center justify-center transition-all shadow-sm">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.89 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.89l12.683-12.683z" /></svg>
